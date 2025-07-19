@@ -14,7 +14,7 @@ struct MujeApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
         .environmentObject(container)
     }

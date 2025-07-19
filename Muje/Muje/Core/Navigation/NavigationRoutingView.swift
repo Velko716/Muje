@@ -16,7 +16,7 @@ struct NavigationRoutingView: View {
         Group {
             switch destination {
             case .contentView: // 임시
-                ContentView() // 임시
+                RootView() // 임시
             }
         }
         // 각 하위 뷰에도 DIContainer를 공유해줌
