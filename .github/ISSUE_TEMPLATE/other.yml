@@ -1,0 +1,27 @@
+name: "🔧 기타 작업"
+description: 기타 작업 템플릿입니다.
+title: "🔧[ETC] "
+labels: ["ETC"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        아래 항목을 작성해주세요. 이 작업은 기능, 버그, 리팩토링과 직접 연관되지 않은 ETC 작업입니다.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 설명
+      placeholder: "최대한 자세하게 작성해주세요."
+    validations:
+      required: true
+
+  - type: textarea
+    id: checklist
+    attributes:
+      label: 할 일 체크리스트
+      description: 구현을 위해 필요한 작업을 확인하고 수정하세요.
+      value: |
+        - [ ] 할 일1:
+        - [ ] 할 일2:
+        - [ ] 할 일3:

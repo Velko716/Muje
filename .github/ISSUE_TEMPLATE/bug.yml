@@ -1,0 +1,55 @@
+name: "🐛 버그 리포트"
+description: 버그 발생 상황을 재현하고 상세히 작성해주세요.
+title: "🐛 [Fix] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        아래 항목을 빠짐없이 작성해주시면 버그를 더 빠르게 해결할 수 있어요.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 버그 설명
+      description: 어떤 문제가 발생했는지 구체적으로 작성해주세요.
+      placeholder: "예: 로그인 버튼을 눌러도 반응이 없습니다."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 절차
+      description: 버그가 발생하는 구체적인 절차를 단계별로 작성해주세요.
+      placeholder: |
+        1. 앱 실행
+        2. 로그인 화면 이동
+        3. 로그인 버튼 클릭
+        4. 아무 반응 없음
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대 동작
+      description: 정상적으로 동작했을 때 기대했던 결과를 작성해주세요.
+      placeholder: "예: 로그인 후 메인 화면으로 이동해야 함"
+      
+  - type: textarea
+    id: checklist
+    attributes:
+      label: 할 일 체크리스트
+      description: 기능 구현을 위해 필요한 작업을 확인하고 수정하세요.
+      value: |
+        - [ ] 할 일1: 
+        - [ ] 할 일2: 
+        - [ ] 할 일3: 
+
+  - type: textarea
+    id: reference
+    attributes:
+      label: 스크린샷 또는 참고 자료
+      description: 재현에 도움이 되는 자료가 있다면 첨부해주세요.
+      placeholder: "에러 메시지 로그, 동영상, 캡처 등"

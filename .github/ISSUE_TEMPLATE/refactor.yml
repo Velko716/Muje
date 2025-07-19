@@ -1,0 +1,39 @@
+name: "♻️ 리팩토링"
+description: 동작은 그대로 유지하면서 코드 구조를 개선하는 작업입니다.
+title: "♻️ [Refactor] "
+labels: ["refactor"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        `refactor`는 기능이나 동작 변경 없이 코드의 가독성, 유지보수성을 높이기 위한 작업입니다.  
+        아래 항목을 채워주세요.
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 리팩토링 배경 및 이유
+      description: 왜 이 부분을 리팩토링하려는지 설명해주세요.
+      placeholder: |
+        - 코드가 너무 길고 복잡함
+        - 네이밍이 불명확함
+        - 중복 코드가 많음
+    validations:
+      required: true
+
+  - type: textarea
+    id: checklist
+    attributes:
+      label: 할 일 체크리스트
+      description: 기능 구현을 위해 필요한 작업을 확인하고 수정하세요.
+      value: |
+        - [ ] 할 일1:
+        - [ ] 할 일2:
+        - [ ] 할 일3:
+
+  - type: textarea
+    id: reference
+    attributes:
+      label: 참고 자료 (선택)
+      description: 관련 커밋, 문서, 레퍼런스 링크가 있다면 작성해주세요.
+      placeholder: PR 링크, 커밋 ID, 리팩토링 가이드 문서 등

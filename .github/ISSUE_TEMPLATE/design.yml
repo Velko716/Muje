@@ -1,0 +1,35 @@
+name: "💄 디자인 반영"
+description: 디자인 반영 템플릿입니다.
+title: "💄[Design] "
+labels: ["design"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        아래 항목을 따라 디자인 반영 작업을 작성해주세요.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 디자인 반영
+      description: 디자인 반영에 대해 설명해주세요.
+      placeholder: "최대한 자세하게 작성해주세요."
+    validations:
+      required: true
+
+  - type: textarea
+    id: checklist
+    attributes:
+      label: 할 일 체크리스트
+      description: 구현을 위해 필요한 작업을 확인하고 수정하세요.
+      value: |
+        - [ ] 할 일1:
+        - [ ] 할 일2:
+        - [ ] 할 일3:
+
+  - type: textarea
+    id: reference
+    attributes:
+      label: 참고 자료
+      description: 관련 문서나 외부 레퍼런스가 있다면 작성해주세요
+      placeholder: "디자인 시안, 기획 문서, 유사 기능 링크 등"
