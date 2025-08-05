@@ -19,6 +19,7 @@ struct NavigationRoutingView: View {
                 RootView() // 임시
             }
         }
+        .hideBackButton()
         .environmentObject(router)
     }
 }
