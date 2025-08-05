@@ -7,10 +7,9 @@
 
 import Foundation
 
-@Observable
-class NavigationRouter: NavigationRoutable {
+class NavigationRouter: ObservableObject, NavigationRoutable {
     
-    var destination: [NavigationDestination] = []
+    @Published var destination: [NavigationDestination] = []
 
     func push(to view: NavigationDestination) { destination.append(view) }
     func pop() { _ = destination.popLast() }

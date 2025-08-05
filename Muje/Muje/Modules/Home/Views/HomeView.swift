@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var router: NavigationRouter
+    
     var body: some View {
         Text("HomeView")
     }
@@ -15,4 +17,5 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+        .environmentObject(NavigationRouter())
 }

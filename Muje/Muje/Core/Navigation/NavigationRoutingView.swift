@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NavigationRoutingView: View {
     
-    // @EnvironmentObject var container: DIContainer
+    @EnvironmentObject var router: NavigationRouter
     @State var destination: NavigationDestination
     
     var body: some View {
@@ -19,7 +19,6 @@ struct NavigationRoutingView: View {
                 RootView() // 임시
             }
         }
-        // 각 하위 뷰에도 DIContainer를 공유해줌
-        // .environmentObject(container)
+        .environmentObject(router)
     }
 }

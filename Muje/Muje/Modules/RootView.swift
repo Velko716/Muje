@@ -9,11 +9,12 @@ import SwiftUI
 
 struct RootView: View {
     
-    @State var tabcase: TabCase = .home
-    @EnvironmentObject var container: DIContainer
+    @EnvironmentObject private var router: NavigationRouter
+    @State private var tabcase: TabCase = .home
+
     
     var body: some View {
-        NavigationStack(path: $container.navigationRouter.destination) {
+        NavigationStack(path: $router.destination) {
             TabView(selection: $tabcase, content: {
                 ForEach(TabCase.allCases, id: \.rawValue) { tab in
                     Tab(
@@ -27,10 +28,10 @@ struct RootView: View {
                         })
                 }
             })
-        }
-        .navigationDestination(for: NavigationDestination.self) { destination in
-            NavigationRoutingView(destination: destination)
-                .environmentObject(container)
+            .navigationDestination(for: NavigationDestination.self) { destination in
+                NavigationRoutingView(destination: destination)
+                    .environmentObject(router)
+            }
         }
     }
     
@@ -59,11 +60,10 @@ struct RootView: View {
                 MyPageView()
             }
         }
-        .environmentObject(container)
     }
 }
 
 #Preview {
     RootView()
-        .environmentObject(DIContainer())
+        .environmentObject(NavigationRouter())
 }

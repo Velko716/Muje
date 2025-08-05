@@ -20,13 +20,13 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct MujeApp: App {
-    @StateObject var container: DIContainer = .init()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject var router: NavigationRouter = .init()
     
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environmentObject(router)
         }
-        .environmentObject(container)
     }
 }
