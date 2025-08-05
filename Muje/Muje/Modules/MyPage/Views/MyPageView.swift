@@ -23,4 +23,5 @@ struct MyPageView: View {
 
 #Preview {
     MyPageView()
+        .environmentObject(NavigationRouter())
 }
