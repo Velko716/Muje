@@ -7,17 +7,6 @@
 
 import Foundation
 
-
-protocol NavigationRoutable {
-
-    var destination: [NavigationDestination] { get set }
-    
-    func push(to view: NavigationDestination)
-    func pop()
-    func popToRootView()
-}
-
-
 @Observable
 class NavigationRouter: NavigationRoutable {
     
