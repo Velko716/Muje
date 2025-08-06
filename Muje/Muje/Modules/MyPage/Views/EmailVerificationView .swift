@@ -54,7 +54,7 @@ struct EmailVerificationView : View {
     private var bottomButtonView: some View {
         VStack {
             Button {
-                
+                viewModel.sendVerificationEmail()
             } label: {
                 Text("인증 요청")
             }

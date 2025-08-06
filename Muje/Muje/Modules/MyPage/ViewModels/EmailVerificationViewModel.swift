@@ -14,6 +14,12 @@ final class EmailVerificationViewModel {
     
     
     func sendVerificationEmail() {
-        
+        Task {
+            do {
+                try await FirebaseAuthManager.shared.sendSignInLink(to: "rlawlsgur7@postech.ac.kr")
+            } catch {
+                print("error: \(error)")
+            }
+        }
     }
 }
