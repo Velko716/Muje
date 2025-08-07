@@ -19,6 +19,8 @@ struct NavigationRoutingView: View {
                 RootView() // 임시
             case .emailVerificationView:
                 EmailVerificationView()
+            case .userInfoInputView:
+                UserInfoInputView()
             }
         }
         .hideBackButton()
