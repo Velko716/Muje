@@ -17,6 +17,8 @@ struct NavigationRoutingView: View {
             switch destination {
             case .contentView: // 임시
                 RootView() // 임시
+            case .RecruitmentDetailView(let postId):
+                RecruitmentDetailView(postId: postId)
             }
         }
         .hideBackButton()
