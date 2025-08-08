@@ -38,7 +38,7 @@ struct CustomQuestion: Codable {
     }
 }
 
-extension CustomQuestion {
+extension CustomQuestion: EntityRepresentable {
     var entityName: CollectionType { .customQuestions }
 
     var documentID: String { questionId.uuidString }
