@@ -83,14 +83,6 @@ extension ApplicationFormView {
           .fill(Color.clear)
           .stroke(Color.gray, lineWidth: 1)
       )
-//      .overlay(alignment: .topLeading) {
-//        if questionAnswer[questionIdString]?.isEmpty ?? true {
-//          Text("내용을 입력해주세요")
-//            .foregroundStyle(.secondary)
-//            .padding(.horizontal, 16)
-//            .padding(.vertical, 18)
-//        }
-//      }
     }
     .padding(.horizontal, 16)
   }
