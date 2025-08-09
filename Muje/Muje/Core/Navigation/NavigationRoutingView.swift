@@ -19,6 +19,11 @@ struct NavigationRoutingView: View {
                 RootView() // 임시
             case .RecruitmentDetailView(let postId):
                 RecruitmentDetailView(postId: postId)
+            case .ApplicationFormView(let postId, let requirementFlags):
+              ApplicationFormView(
+                postId: postId,
+                requirementFlags: requirementFlags
+              )
             }
         }
         .hideBackButton()

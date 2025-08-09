@@ -10,6 +10,7 @@ import SwiftUI
 struct RecruitmentDetailView: View {
   
   @State private var viewModel = RecruitmentViewModel()
+  @EnvironmentObject private var router: NavigationRouter
   
   let postId: String
   
@@ -29,7 +30,18 @@ struct RecruitmentDetailView: View {
     .navigationBarBackButtonHidden()
     .ignoresSafeArea(.all, edges: .top)
     
-    BottomButtonView()
+    BottomButtonView {
+      guard let post = viewModel.post else {
+        print("지원서에 전달 할 post 정보를 가져오지 못했습니다.")
+        return
+      }
+      router.push(
+        to: .ApplicationFormView(
+          postId: postId,
+          requirementFlags: RequirementFlags(from: post)
+        )
+      )
+    }
   }
 }
 

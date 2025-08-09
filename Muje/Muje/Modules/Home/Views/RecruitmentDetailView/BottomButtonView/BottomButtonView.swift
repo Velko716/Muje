@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BottomButtonView: View {
+  let action: () -> Void
   var body: some View {
     HStack {
       Button {
@@ -22,7 +23,7 @@ struct BottomButtonView: View {
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       Button {
-        // 네비게이션 연결
+        action()
       } label: {
         Text("지원하기")
           .font(.system(size: 18))
@@ -37,6 +38,6 @@ struct BottomButtonView: View {
   }
 }
 
-#Preview {
-  BottomButtonView()
-}
+//#Preview {
+//  BottomButtonView()
+//}
