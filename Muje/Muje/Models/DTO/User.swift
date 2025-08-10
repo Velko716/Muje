@@ -37,9 +37,7 @@ struct User: Codable {
     let gender: String
     let department: String
     let studentId: String
-    let phone: String
     let emailVerified: Bool
-    let phoneVerified: Bool
     let termsAgreed: Bool
     let privacyAgreed: Bool
     @ServerTimestamp var createdAt: Timestamp?
@@ -55,9 +53,7 @@ struct User: Codable {
         gender: String,
         department: String,
         studentId: String,
-        phone: String,
         emailVerified: Bool,
-        phoneVerified: Bool,
         termsAgreed: Bool,
         privacyAgreed: Bool,
         createdAt: Timestamp? = nil,
@@ -72,9 +68,7 @@ struct User: Codable {
         self.gender = gender
         self.department = department
         self.studentId = studentId
-        self.phone = phone
         self.emailVerified = emailVerified
-        self.phoneVerified = phoneVerified
         self.termsAgreed = termsAgreed
         self.privacyAgreed = privacyAgreed
         self.createdAt = createdAt
@@ -90,9 +84,7 @@ struct User: Codable {
         case gender
         case department
         case studentId = "student_id"
-        case phone
         case emailVerified = "email_verified"
-        case phoneVerified = "phone_verified"
         case termsAgreed = "terms_agreed"
         case privacyAgreed = "privacy_agreed"
         case createdAt = "created_at"
@@ -113,9 +105,7 @@ extension User: EntityRepresentable {
             "gender": gender,
             "department": department,
             "student_id": studentId,
-            "phone": phone,
             "email_verified": emailVerified,
-            "phone_verified": phoneVerified,
             "terms_agreed": termsAgreed,
             "privacy_agreed": privacyAgreed
 //            "created_at": createdAt ?? FieldValue.serverTimestamp(),

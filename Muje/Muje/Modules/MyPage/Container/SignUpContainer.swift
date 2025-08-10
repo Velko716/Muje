@@ -30,9 +30,7 @@ final class SignUpContainer {
             gender: userInfoVM.gender,
             department: userInfoVM.department,
             studentId: userInfoVM.studentId,
-            phone: phone,
             emailVerified: emailVerified,
-            phoneVerified: phoneVerified,
             termsAgreed: termsAgreed,
             privacyAgreed: privacyAgreed
         )
