@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct EmailVerificationView : View {
-    @State private var viewModel: EmailVerificationViewModel = .init()
-    @State private var emailText: String = ""
+    @Bindable var emailVM: EmailVerificationViewModel
     
     var body: some View {
         VStack {
@@ -42,7 +41,7 @@ struct EmailVerificationView : View {
                 .bold()
             
             HStack(spacing: .zero) {
-                TextField("이메일을 입력해주세요.", text: $emailText)
+                TextField("이메일을 입력해주세요.", text: $emailVM.emailText)
                 Text("@jbnu.ac.kr")
                     .font(.caption)
                     .foregroundStyle(Color.gray)
@@ -54,7 +53,7 @@ struct EmailVerificationView : View {
     private var bottomButtonView: some View {
         VStack {
             Button {
-                viewModel.sendVerificationEmail()
+                emailVM.sendVerificationEmail()
             } label: {
                 Text("인증 요청")
             }
@@ -65,5 +64,5 @@ struct EmailVerificationView : View {
 }
 
 #Preview {
-    EmailVerificationView ()
+    EmailVerificationView(emailVM: EmailVerificationViewModel())
 }

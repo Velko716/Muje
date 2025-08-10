@@ -13,6 +13,7 @@ final class FirebaseAuthManager {
     static let shared = FirebaseAuthManager()
     private init() {}
     
+    var email: String = ""
     
     /// 현재 로그인 유저 이메일 조회
     var currentEmail: String {
@@ -68,6 +69,67 @@ final class FirebaseAuthManager {
             return isNewUser
         } catch {
             throw FirebaseAutoError.firebaseError(error)
+        }
+    }
+    
+    
+    /// 핸드폰 인증으로 로그인 하는 메서드입니다.
+    func verifyPhoneNumberAsync(phoneNumber: String) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            PhoneAuthProvider.provider()
+                .verifyPhoneNumber(phoneNumber, uiDelegate: nil) { verificationID, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    guard let verificationID = verificationID else {
+                        continuation.resume(throwing: NSError(
+                            domain: "PhoneAuth",
+                            code: -1,
+                            userInfo: [NSLocalizedDescriptionKey: "Verification ID is nil"]
+                        ))
+                        return
+                    }
+                    UserDefaults.standard.set(verificationID, forKey: "verificationID") // FIXME: - 파베 공식 문서 방법
+                    continuation.resume(returning: verificationID)
+                }
+        }
+    }
+    
+    
+    /// 전화번호 인증 코드 검증 후, 성공 시 true / 실패 시 false 반환
+    func verifyPhoneCodeAndSignOut(id verificationID: String, code verificationCode: String) async throws -> Bool {
+        do {
+            let credential = PhoneAuthProvider.provider().credential(
+                withVerificationID: verificationID,
+                verificationCode: verificationCode
+            )
+
+            // Firebase Auth 로그인 시도
+            _ = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<AuthDataResult, Error>) in
+                Auth.auth().signIn(with: credential) { result, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else if let result = result {
+                        continuation.resume(returning: result)
+                    } else {
+                        continuation.resume(throwing: NSError(
+                            domain: "PhoneAuth",
+                            code: -1,
+                            userInfo: [NSLocalizedDescriptionKey: "Unknown signIn state"]
+                        ))
+                    }
+                }
+            }
+
+            // 성공 시 로그아웃
+            try Auth.auth().signOut()
+            return true
+        } catch {
+            print("인증 실패: \(error.localizedDescription)")
+            // 혹시 로그인 상태가 남아있으면 방어적으로 로그아웃 시도
+            do { try Auth.auth().signOut() } catch { }
+            return false
         }
     }
 }
