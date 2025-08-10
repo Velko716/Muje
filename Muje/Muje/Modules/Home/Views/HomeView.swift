@@ -9,13 +9,24 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var router: NavigationRouter
-    
+    @State var viewModel: HomeViewModel
+     
     var body: some View {
-        Text("HomeView")
+        VStack {
+            List(viewModel.postList, id: \.self) { post in
+                PostListItem(post: post)
+            }
+            .task { viewModel.postListFetch() }
+            .listStyle(.grouped)
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets())
+            Text("hello?")
+        }
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(viewModel: .mock)
         .environmentObject(NavigationRouter())
 }

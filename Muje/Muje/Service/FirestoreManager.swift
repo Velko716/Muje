@@ -65,6 +65,34 @@ final class FirestoreManager {
             .delete()
     }
     
+    
+    // collectionType: 해당 데이터가 어떤 유형인지
+    // order: 정렬 방식
+    // count: 가져오는 개수(0이면 전부 가져옴)
+    func fetch<T: Decodable>(
+        as type: T.Type,
+        _ collectionType: CollectionType,
+        order: String? = nil,
+        count: Int=0
+    ) async throws -> [T] {
+        var query: Query = db.collection(collectionType.rawValue)
+        if let order = order { query = query.order(by: order, descending: true) }
+        if count > 0 { query = query.limit(to: count) }
+        
+        let snapshot = try await query.getDocuments()
+        
+        let items: [T] = try snapshot.documents.compactMap { document in
+            guard let jsonData = try?
+                    JSONSerialization.data(withJSONObject: document.data()),
+                  let decoded = try? JSONDecoder().decode(T.self, from: jsonData)
+            else {
+                throw Error.decodingFailed
+            }
+            return decoded
+        }
+        return items
+    }
+    
 }
 
 // FIXME: - 임시 (UUID -> UUIDString)
