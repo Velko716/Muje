@@ -64,7 +64,7 @@ final class RecruitmentViewModel {
   
   private func loadPostImage(for postId: String) async {
     do {
-      let images = try await fetchPostImage(postId: postId)
+      let images = try await fetchPostImage(for: postId)
       self.postImages = images
       
     } catch {
@@ -74,7 +74,7 @@ final class RecruitmentViewModel {
   
   private func loadInterviewSlots(for postId: String) async {
     do {
-      let slots = try await fetchInterviewSlots(postId: postId)
+      let slots = try await fetchInterviewSlots(for: postId)
       self.interviewSlots = slots
       
     } catch {
@@ -85,43 +85,21 @@ final class RecruitmentViewModel {
 
 // MARK: - 조건 쿼리문
 private extension RecruitmentViewModel {
-  func fetchPostImage(postId: String) async throws -> [PostImage] {
-    let db = firestoreManager.db
-    
-    let snapshot = try await db.collection(CollectionType.postImages.rawValue)
-      .whereField("post_id", isEqualTo: postId)
-//      .order(by: "image_order")
-      .getDocuments()
-    
-    let images = snapshot.documents.compactMap { document in
-      do {
-        return try document.data(as: PostImage.self)
-      } catch {
-        print("공고 이미지 디코딩 실패")
-        return nil
-      }
-    }
-    return images.sorted { $0.imageOrder < $1.imageOrder}
+  func fetchPostImage(for postId: String) async throws -> [PostImage] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .postImages,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: { $0.imageOrder < $1.imageOrder }
+    )
   }
   
-  func fetchInterviewSlots(postId: String) async throws -> [InterviewSlot] {
-    let db = firestoreManager.db
-    
-    let snapshot = try await db.collection(CollectionType.interviewSlots.rawValue)
-      .whereField("post_id", isEqualTo: postId)
-//      .order(by: "interview_date")
-      .getDocuments()
-    
-    let slots = snapshot.documents.compactMap { document in
-      do {
-        return try document.data(as: InterviewSlot.self)
-      } catch {
-        print("인터뷰 슬롯 디코딩 실패")
-        return nil
-      }
-    }
-    return slots.sorted {
-      $0.interviewDate.dateValue() < $1.interviewDate.dateValue()
-    }
+  func fetchInterviewSlots(for postId: String) async throws -> [InterviewSlot] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .interviewSlots,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: { $0.interviewDate.dateValue() < $1.interviewDate.dateValue() }
+    )
   }
 }

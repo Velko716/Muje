@@ -17,7 +17,7 @@ final class ApplicationFormViewModel {
   
   func loadCustomQuestion(for postId: String) async {
     do {
-      let question = try await fetchCustomQuestion(postId: postId)
+      let question = try await fetchCustomQuestion(for: postId)
       self.customQuestion = question
       
     } catch {
@@ -27,21 +27,12 @@ final class ApplicationFormViewModel {
 }
 
 private extension ApplicationFormViewModel {
-  func fetchCustomQuestion(postId: String) async throws -> [CustomQuestion] {
-    let db = firestoreManager.db
-    let snapshot = try await db.collection(CollectionType.customQuestions.rawValue)
-      .whereField("post_id", isEqualTo: postId)
-    //      .order(by: "question_order")
-      .getDocuments()
-    
-    let question = snapshot.documents.compactMap { document in
-      do {
-        return try document.data(as: CustomQuestion.self)
-      } catch {
-        print("커스텀 질문 목록 디코딩 실패")
-        return nil
-      }
-    }
-    return question.sorted { $0.questionOrder < $1.questionOrder }
+  func fetchCustomQuestion(for postId: String) async throws -> [CustomQuestion] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .customQuestions,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: { $0.questionOrder < $1.questionOrder }
+    )
   }
 }

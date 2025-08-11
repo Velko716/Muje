@@ -83,4 +83,27 @@ extension FirestoreManager {
 
         return blocks
     }
+    
+  func fetchWithCondition<T: Decodable>(
+    from collectionType: CollectionType,
+    whereField field: String,
+    equalTo value: Any,
+    sortedBy sortComparator: @escaping (T, T) -> Bool
+  ) async throws -> [T] {
+    
+    let snapshot = try await db
+      .collection(collectionType.rawValue)
+      .whereField(field, isEqualTo: value)
+      .getDocuments()
+    
+    let items = snapshot.documents.compactMap { document in
+      do {
+        return try document.data(as: T.self)
+      } catch {
+        print("fetch 디코딩 실패 \(error)")
+        return nil
+      }
+    }
+    return items.sorted(by: sortComparator)
+  }
 }
