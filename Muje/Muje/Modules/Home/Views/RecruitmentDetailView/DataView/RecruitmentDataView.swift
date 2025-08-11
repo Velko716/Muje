@@ -21,9 +21,7 @@ struct RecruitmentDataView: View {
       content
     }
   }
-}
-
-extension RecruitmentDataView {
+  
   private var postTitle: some View {
     VStack {
       Text(viewModel.post?.organization ?? "단체명 없음")
@@ -59,7 +57,6 @@ extension RecruitmentDataView {
       return "\(period.start.shortDateString)  ~  \(period.end.shortDateString)"
     }
   }
-  
   private var content: some View {
     Text(viewModel.post?.content ?? "")
   }
