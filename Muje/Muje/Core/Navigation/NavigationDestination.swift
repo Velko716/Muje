@@ -11,5 +11,4 @@ enum NavigationDestination: Equatable, Hashable {
     case contentView // 임시
     case emailVerificationView // 이메일 인증 뷰
     case userInfoInputView(uuid: String, email: String) // 유저 정보 입력 뷰
-    case phoneVerificationView // 핸드폰 인증 뷰
 }

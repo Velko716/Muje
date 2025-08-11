@@ -95,7 +95,7 @@ struct UserInfoInputView: View {
                     } catch {
                         print("error : \(error.localizedDescription)")
                     }
-                    router.push(to: .phoneVerificationView)
+                    router.popToRootView() // FIXME: - 임시 
                 }
             } label: {
                 Text("다음")
