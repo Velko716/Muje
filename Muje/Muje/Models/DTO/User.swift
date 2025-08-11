@@ -30,7 +30,7 @@ struct Block: Codable {
 
 
 struct User: Codable {
-    let userId: UUID
+    let userId: String
     let email: String
     let name: String
     let birthYear: Int
@@ -46,7 +46,7 @@ struct User: Codable {
 //    let updatedAt: Date
     
     init(
-        userId: UUID,
+        userId: String,
         email: String,
         name: String,
         birthYear: Int,
@@ -94,11 +94,10 @@ struct User: Codable {
 
 extension User: EntityRepresentable {
     var entityName: CollectionType { .user }
-    var documentID: String { userId.uuidString }
-   
+    var documentID: String { userId }
     var asDictionary: [String: Any]? {
         [
-            "user_id": userId.uuidString,
+            "user_id": userId,
             "email": email,
             "name": name,
             "birth_year": birthYear,
@@ -118,9 +117,9 @@ extension User {
     func addBlock(_ block: Block) async throws {
         let docRef = Firestore.firestore()
             .collection("User")
-            .document(self.userId.uuidString)
+            .document(self.userId)
             .collection("blocks")
-            .document(self.userId.uuidString)
+            .document(self.userId)
 
         try await docRef.setData(block.asDictionary)
     }
