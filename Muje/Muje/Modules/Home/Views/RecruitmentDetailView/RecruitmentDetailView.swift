@@ -21,7 +21,7 @@ struct RecruitmentDetailView: View {
         RecruitmentDataView(postId: postId, viewModel: viewModel)
       }
       TopButtonView {
-        // 네비게이션 연결
+        router.pop()
       }
     }
     .task {
@@ -31,16 +31,16 @@ struct RecruitmentDetailView: View {
     .ignoresSafeArea(.all, edges: .top)
     
     BottomButtonView {
-      guard let post = viewModel.post else {
-        print("지원서에 전달 할 post 정보를 가져오지 못했습니다.")
-        return
-      }
+      guard let post = viewModel.post else { return }
       router.push(
         to: .ApplicationFormView(
           postId: postId,
-          requirementFlags: RequirementFlags(from: post)
+          requirementFlags: RequirementFlags(from: post),
+          postBasicInfo: PostBasicInfo(from: post)
         )
       )
+    } contactAction: {
+      // 문의하기 뷰로 이동
     }
   }
 }
@@ -61,5 +61,6 @@ extension RecruitmentDetailView {
 }
 
 #Preview {
-  RecruitmentDetailView(postId: "")
+  RecruitmentDetailView(postId: "mock_id")
+    .environmentObject(NavigationRouter())
 }

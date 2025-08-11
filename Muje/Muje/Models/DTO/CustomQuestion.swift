@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct CustomQuestion: Codable {
+struct CustomQuestion: Codable, Equatable, Hashable {
     let questionId: UUID
     let postId: String
     let questionText: String

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ApplicationFormView: View {
   
+  @EnvironmentObject var router: NavigationRouter
+  
   @State var viewModel = ApplicationFormViewModel()
   
   @State var questionAnswer: [String: String] = [:]
@@ -17,6 +19,7 @@ struct ApplicationFormView: View {
   
   let postId: String
   let requirementFlags: RequirementFlags
+  let postBasicInfo: PostBasicInfo
   
   var body: some View {
     VStack(spacing: 0) {
@@ -29,20 +32,28 @@ struct ApplicationFormView: View {
         infoSection
         customQuestionSection
       }
-      .contentMargins(.vertical, 20)
+      //.contentMargins(.vertical, 20)
       .navigationBarBackButtonHidden()
-      .ignoresSafeArea(.all, edges: .top)
+      //.ignoresSafeArea(.all, edges: .top)
       .sheet(isPresented: $showExitsheet) {
-        ExitSheetView()
-          .presentationDetents([.fraction(0.45)])
-          .presentationCornerRadius(20)
-          .clipShape(RoundedRectangle(cornerRadius: 20))
+        ExitSheetView(
+          exitAction: {
+            showExitsheet = false
+            router.pop()
+          },
+          keepAction: {
+            showExitsheet = false
+          }
+        )
+        .presentationDetents([.fraction(0.45)])
+        .presentationCornerRadius(20)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
       }
-      bottomButtonSection
     }
     .task {
       await viewModel.loadCustomQuestion(for: postId)
     }
+    bottomButtonSection
   }
 }
 

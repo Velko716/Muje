@@ -19,10 +19,25 @@ struct NavigationRoutingView: View {
                 RootView() // 임시
             case .RecruitmentDetailView(let postId):
                 RecruitmentDetailView(postId: postId)
-            case .ApplicationFormView(let postId, let requirementFlags):
+            case .ApplicationFormView(let postId, let requirementFlags, let postBasicInfo):
               ApplicationFormView(
                 postId: postId,
-                requirementFlags: requirementFlags
+                requirementFlags: requirementFlags,
+                postBasicInfo: postBasicInfo
+              )
+            case .ApplicationPreview(
+              let postId,
+              let requirementFlags,
+              let postBasicInfo,
+              let customQuestion,
+              let questionAnswer
+            ):
+              ApplicationPreview(
+                postId: postId,
+                requirementFlags: requirementFlags,
+                postBasicInfo: postBasicInfo,
+                customQuestion: customQuestion,
+                questionAnswer: .constant(questionAnswer)
               )
             }
         }

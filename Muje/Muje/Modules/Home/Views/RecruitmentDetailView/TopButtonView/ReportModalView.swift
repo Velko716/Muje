@@ -20,7 +20,7 @@ struct ReportModalView: View {
   
   private var reportButton: some View {
     Button {
-      //
+      // 신고하기 뷰로 이동
     } label: {
       HStack {
         Image(systemName: "light.beacon.min.fill")
