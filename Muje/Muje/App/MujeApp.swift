@@ -48,7 +48,7 @@ struct MujeApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView() // FIXME: - RootView로 변경하기
+            RootView()
                 .onOpenURL { url in
                         Task {
                             do {
@@ -58,7 +58,30 @@ struct MujeApp: App {
                                 )
                                 
                                 if isNewUser {
-                                    router.push(to: .userInfoInputView) // 회원 가입 뷰로 이동
+                                    if let uid = Auth.auth().currentUser?.uid {
+                                        print("[Auth] New user UID: \(uid)")
+                                        
+                                        let newUser = User(
+                                            userId: uid,
+                                            email: FirebaseAuthManager.shared.email,
+                                            name: "",
+                                            birthYear: 0,
+                                            gender: "",
+                                            department: "",
+                                            studentId: "",
+                                            emailVerified: true,
+                                            termsAgreed: false,
+                                            privacyAgreed: false
+                                        )
+                                        let _ = try await FirestoreManager.shared.create(newUser) // 새 유저 이메일 인증 시 파이어베이스 등록
+                                        router.push(to: .userInfoInputView(uuid: uid, email: FirebaseAuthManager.shared.email)) // 네비게이션 이동
+                                        FirebaseAuthManager.shared.email = "" // 싱글톤 이메일 변수 초기화
+                                    } else {
+                                        print("[Auth] currentUser is nil. UID unavailable.")
+                                    }
+                                    print("이메일 새유저")
+                                    
+                                    //router.push(to: .userInfoInputView) // 회원 가입 뷰로 이동
                                 } else {
                                     FirebaseAuthManager.shared.email = "" // 이메일 초기화
                                     // TODO: 로그인 완료, 키체인 유저 정보 입력, 마이 페이지 루트 뷰로 이동
