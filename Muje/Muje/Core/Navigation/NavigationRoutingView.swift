@@ -20,11 +20,8 @@ struct NavigationRoutingView: View {
                 RootView() // 임시
             case .emailVerificationView:
                 EmailVerificationView(emailVM: signUpContainer.emailVM)
-            case .userInfoInputView:
-                UserInfoInputView(
-                    emailVerificationVM: signUpContainer.emailVM,
-                    userInfoVM: signUpContainer.userInfoVM
-                )
+            case .userInfoInputView(let uuid, let email):
+                UserInfoInputView(uuid: uuid, email: email)                
             case .phoneVerificationView:
                 PhoneVerificationView(
                     phoneVM: signUpContainer.phoneVM
