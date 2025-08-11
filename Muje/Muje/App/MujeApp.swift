@@ -43,7 +43,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct MujeApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @State private var signUpContainer = SignUpContainer()
     @StateObject var router: NavigationRouter = .init()
     
     var body: some Scene {
@@ -91,7 +90,6 @@ struct MujeApp: App {
                             }
                         }
                     }
-                .environment(signUpContainer)
                 .environmentObject(router)
         }
     }

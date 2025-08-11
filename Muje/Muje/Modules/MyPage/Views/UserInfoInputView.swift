@@ -10,8 +10,18 @@ import SwiftUI
 struct UserInfoInputView: View {
     
     @EnvironmentObject private var router: NavigationRouter
-    @Bindable var emailVerificationVM: EmailVerificationViewModel
-    @Bindable var userInfoVM: UserInfoInputViewModel
+//    @Bindable var emailVerificationVM: EmailVerificationViewModel
+//    @Bindable var userInfoVM: UserInfoInputViewModel
+    
+    let uuid: String
+    let email: String
+    
+    @State private var name: String = ""
+    @State private var birthYear: String = "" // FIXME: - DTO는 Int
+    @State private var gender: String = ""
+    @State private var department: String = ""
+    @State private var studentId: String = ""
+    
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -35,30 +45,30 @@ struct UserInfoInputView: View {
     private var middleInfoInputView: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("이름")
-            TextField("이름을 입력해주세요.", text: $userInfoVM.name)
+            TextField("이름을 입력해주세요.", text: $name)
             
             Text("출생년도")
-            TextField("출생년도를 입력해주세요.", text: $userInfoVM.birthYear)
+            TextField("출생년도를 입력해주세요.", text: $birthYear)
             
             HStack(spacing: 8) {
                 Button {
-                    userInfoVM.gender = Gender.male.rawValue
+                    self.gender = Gender.male.rawValue
                 } label: {
                     Text("남")
                 }
                 
                 Button {
-                    userInfoVM.gender = Gender.female.rawValue
+                    self.gender = Gender.female.rawValue
                 } label: {
                     Text("여")
                 }
             }
             
             Text("학과")
-            TextField("학과를 입력해주세요.", text: $userInfoVM.department)
+            TextField("학과를 입력해주세요.", text: $department)
             
             Text("학번")
-            TextField("학번을 입력해주세요.", text: $userInfoVM.studentId)
+            TextField("학번을 입력해주세요.", text: $studentId)
         }
     }
     
@@ -66,7 +76,27 @@ struct UserInfoInputView: View {
     private var bottomNextButtonView: some View {
         VStack {
             Button {
-                router.push(to: .phoneVerificationView)
+                let user = User(
+                    userId: self.uuid,
+                    email: self.email,
+                    name: name,
+                    birthYear: Int(birthYear) ?? 0,
+                    gender: gender,
+                    department: department,
+                    studentId: studentId,
+                    emailVerified: true,
+                    termsAgreed: true,
+                    privacyAgreed: true
+                )
+                
+                Task {
+                    do {
+                        let _ = try await FirestoreManager.shared.update(user)
+                    } catch {
+                        print("error : \(error.localizedDescription)")
+                    }
+                    router.push(to: .phoneVerificationView)
+                }
             } label: {
                 Text("다음")
                     .font(.subheadline)
@@ -82,15 +112,6 @@ struct UserInfoInputView: View {
 }
 
 #Preview {
-    UserInfoInputView(
-        emailVerificationVM: EmailVerificationViewModel(),
-        userInfoVM: UserInfoInputViewModel(
-            name: "",
-            birthYear: "",
-            gender: "",
-            department: "",
-            studentId: ""
-        )
-    )
+    UserInfoInputView(uuid: "", email: "")
         .environmentObject(NavigationRouter())
 }

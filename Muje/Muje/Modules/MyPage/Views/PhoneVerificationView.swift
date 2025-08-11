@@ -11,9 +11,8 @@ struct PhoneVerificationView: View {
     @State private var phoneNumber: String = "" // 임시
     @State private var verificationCode: String = "" // 임시
     
-    @Bindable var phoneVM: PhoneVerificationViewModel
+//    @Bindable var phoneVM: PhoneVerificationViewModel
     
-    @Environment(SignUpContainer.self) var signUpContainer
     @EnvironmentObject private var router: NavigationRouter
     
     var body: some View {
@@ -42,8 +41,8 @@ struct PhoneVerificationView: View {
             
             // TODO: 인증 시작 버튼(디자이너에게 물어보기)
             Button {
-                let phoneNumber = phoneVM.formatPhoneNumberToKorean(phoneNumber)
-                phoneVM.requestPhoneVerification(phoneNumber: phoneNumber)
+//                let phoneNumber = phoneVM.formatPhoneNumberToKorean(phoneNumber)
+//                phoneVM.requestPhoneVerification(phoneNumber: phoneNumber)
             } label: {
                 Text("인증 요청 하기")
             }
@@ -83,17 +82,17 @@ struct PhoneVerificationView: View {
                 // TODO: 위 로직에 따라 Bool 값에 따라 파이어베이스에 유저 저장, 혹은 실패 처리로 구현
                 Task {
                     do {
-                        let ok = try await FirebaseAuthManager.shared.verifyPhoneCodeAndSignOut(
-                            id: phoneVM.verificationID ?? "",
-                            code: verificationCode
-                        )
+//                        let ok = try await FirebaseAuthManager.shared.verifyPhoneCodeAndSignOut(
+//                            id: phoneVM.verificationID ?? "",
+//                            code: verificationCode
+//                        )
                         
-                        if ok {
+//                        if ok {
                             
                             // signUpContainer.phoneNumber = phoneNumber
                             
-                            let created = try await signUpContainer.createUserInFirestore(with: phoneNumber)
-                            print("createUser: \(created)")
+                            //let created = try await signUpContainer.createUserInFirestore(with: phoneNumber)
+                            //print("createUser: \(created)")
                             
                             router.popToRootView()
                             
@@ -114,10 +113,10 @@ struct PhoneVerificationView: View {
 //                            )
 //                            let createUser = try await FirestoreManager.shared.create(user)
 //                            print("createUser : \(createUser)")
-                        }
-                        else {
-                            print("인증번호가 틀렸다는 UI표시하기")
-                        }
+//                        }
+//                        else {
+//                            print("인증번호가 틀렸다는 UI표시하기")
+//                        }
                     } catch {
                         print("error: \(error.localizedDescription)")
                     }
@@ -137,9 +136,6 @@ struct PhoneVerificationView: View {
 }
 
 #Preview {
-    PhoneVerificationView(
-        phoneVM: PhoneVerificationViewModel()
-    )
-    .environment(SignUpContainer())
+    PhoneVerificationView()
     .environmentObject(NavigationRouter())
 }

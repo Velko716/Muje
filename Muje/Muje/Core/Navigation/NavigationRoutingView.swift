@@ -9,8 +9,6 @@ import SwiftUI
 
 struct NavigationRoutingView: View {
     @EnvironmentObject var router: NavigationRouter
-    @Environment(SignUpContainer.self) var signUpContainer
-    
     @State var destination: NavigationDestination
     
     var body: some View {
@@ -19,13 +17,11 @@ struct NavigationRoutingView: View {
             case .contentView: // 임시
                 RootView() // 임시
             case .emailVerificationView:
-                EmailVerificationView(emailVM: signUpContainer.emailVM)
+                EmailVerificationView()
             case .userInfoInputView(let uuid, let email):
                 UserInfoInputView(uuid: uuid, email: email)                
             case .phoneVerificationView:
-                PhoneVerificationView(
-                    phoneVM: signUpContainer.phoneVM
-                )
+                PhoneVerificationView()
             }
         }
         .hideBackButton()

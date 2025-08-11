@@ -10,13 +10,12 @@ import Foundation
 @Observable
 final class EmailVerificationViewModel {
     
-    var emailText: String = ""
     
-    func sendVerificationEmail() {
+    func sendVerificationEmail(emailText: String) {
         Task {
             do {
-                try await FirebaseAuthManager.shared.sendSignInLink(to: self.emailText) // FIXME: - ⚠️ 추후 이메일 @jbnu.ac.kr 고정
-                FirebaseAuthManager.shared.email = self.emailText
+                try await FirebaseAuthManager.shared.sendSignInLink(to: emailText) // FIXME: - ⚠️ 추후 이메일 @jbnu.ac.kr 고정
+                FirebaseAuthManager.shared.email = emailText
                 
             } catch {
                 print("error: \(error.localizedDescription)")
