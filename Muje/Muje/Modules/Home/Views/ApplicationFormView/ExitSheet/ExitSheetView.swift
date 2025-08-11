@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct ExitSheetView: View {
+  
+  let exitAction: () -> Void
+  let keepAction: () -> Void
+  
   var body: some View {
     VStack {
       content
@@ -27,7 +31,7 @@ struct ExitSheetView: View {
   private var ButtonView: some View {
     VStack(spacing: 12) {
       Button {
-        // 네비게이션 이동
+        exitAction()
       } label: {
         Text("제출하지 않고 나가기")
           .foregroundStyle(.white)
@@ -37,7 +41,7 @@ struct ExitSheetView: View {
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       Button {
-        // 네비게이션 이동
+        keepAction()
       } label: {
         Text("계속 작성하기")
           .foregroundStyle(.white)
@@ -51,6 +55,6 @@ struct ExitSheetView: View {
   }
 }
 
-#Preview {
-  ExitSheetView()
-}
+//#Preview {
+//  ExitSheetView()
+//}

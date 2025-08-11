@@ -37,6 +37,7 @@ extension ApplicationFormView {
         //        InfoTag(title: "성별", isActive: false)
       }
     }
+    .padding(.vertical, 30)
   }
   
   var customQuestionSection: some View {
@@ -50,7 +51,15 @@ extension ApplicationFormView {
   var bottomButtonSection: some View {
     VStack {
       Button {
-        // 네비게이션 이동
+        router.push(
+          to: .ApplicationPreview(
+            postId: postId,
+            requirementFlags: requirementFlags,
+            postBasicInfo: postBasicInfo,
+            customQuestion: viewModel.customQuestion,
+            questionAnswer: questionAnswer,
+          )
+        )
       } label: {
         Text("지원서 작성 완료")
           .foregroundStyle(.white)
