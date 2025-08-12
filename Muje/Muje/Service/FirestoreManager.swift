@@ -17,7 +17,7 @@ final class FirestoreManager {
         _ data: T,
         isCreate: Bool
     ) async throws -> T {
-        guard var dict = data.asDictionary else { throw Error.encodingFailed }
+        guard var dict = data.asDictionary else { throw FirestoreError.encodingFailed }
         
         if isCreate {
             dict["created_at"] = FieldValue.serverTimestamp()
@@ -48,7 +48,7 @@ final class FirestoreManager {
     func get<T: Decodable>(_ id: String, from type: CollectionType) async throws -> T {
         let snapshot = try await db.collection(type.rawValue).document(id).getDocument()
         guard let data = try? snapshot.data(as: T.self) else {
-            throw Error.fetchFailed(
+            throw FirestoreError.fetchFailed(
                 underlying: NSError(
                     domain: "", code: -1,
                     userInfo: [NSLocalizedDescriptionKey: "문서가 존재하지 않습니다."]
