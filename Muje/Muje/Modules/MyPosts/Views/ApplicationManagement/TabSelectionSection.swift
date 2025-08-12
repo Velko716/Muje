@@ -36,6 +36,7 @@ extension ApplicationManagementView {
             }
           }
       }
+      .padding(.horizontal, 16)
       rectangle
     }
     
@@ -53,6 +54,7 @@ extension ApplicationManagementView {
         .offset(x: selectedTab == .management ? 0 : geometry.size.width / 2)
         .animation(.easeInOut(duration: 0.3), value: selectedTab)
     }
+    .padding(.horizontal, 16)
     .frame(height: 2)
   }
   }
