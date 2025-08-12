@@ -32,7 +32,7 @@ struct TopButtonView: View {
       Image(systemName: "text.append")
     }
     .sheet(isPresented: $showReportModal) {
-      ReportModalView()
+        ReportModalView(showReportModal: $showReportModal)
         .presentationDetents([.fraction(0.2)])
         .presentationCornerRadius(20)
         .clipShape(RoundedRectangle(cornerRadius: 20))
@@ -50,6 +50,6 @@ struct TopButtonView: View {
   }
 }
 
-#Preview {
-  TopButtonView(action: {})
-}
+//#Preview {
+//  TopButtonView(action: {})
+//}

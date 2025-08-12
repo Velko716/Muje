@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct ReportModalView: View {
-  @Environment(\.dismiss) private var dismiss
+  
+  @Binding var showReportModal: Bool
   
   var body: some View {
     VStack {
@@ -36,7 +37,7 @@ struct ReportModalView: View {
   
   private var dismissButton: some View {
     Button {
-      dismiss()
+      showReportModal = false
     } label: {
       Text("닫기")
         .foregroundStyle(.gray)
@@ -46,6 +47,6 @@ struct ReportModalView: View {
   }
 }
 
-#Preview {
-  ReportModalView()
-}
+//#Preview {
+//  ReportModalView()
+//}
