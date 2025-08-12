@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Error: LocalizedError {
+enum FirestoreError: LocalizedError {
     case addFailed(underlying: Swift.Error)
     case fetchFailed(underlying: Swift.Error)
     case deleteFailed(underlying: Swift.Error)

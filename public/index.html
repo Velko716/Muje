@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firebase Email Link</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 90%;
+      width: 320px;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    .btn {
+      background-color: #4285F4;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .btn:hover {
+      background-color: #3367D6;
+    }
+    .logo {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 1.5rem;
+    }
+    .error-message {
+      color: #D32F2F;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+      <path fill="#FFA000" d="M96 16l-72 128h144z"/>
+      <path fill="#F57F17" d="M96 16v128l72 0z"/>
+      <path fill="#FFCA28" d="M96 16l-72 128 36-24z"/>
+    </svg>
+    <h1>계속하려면 앱으로 이동하세요</h1>
+    <button id="openAppButton" class="btn">앱에서 계속하기</button>
+    <p id="errorMessage" class="error-message">유효하지 않은 링크입니다. 잠시 후 다시 시도해주세요.</p>
+    <p id="redirectMessage" style="display: none; margin-top: 1rem; font-size: 0.9rem;">앱이 열리지 않으면 버튼을 다시 눌러주세요.</p>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // URL 파라미터 추출
+      const urlParams = new URLSearchParams(window.location.search);
+      const apiKey = urlParams.get('apiKey');
+      const oobCode = urlParams.get('oobCode');
+      const mode = urlParams.get('mode');
+      const continueUrl = urlParams.get('continueUrl');
+      
+      // 필수 파라미터 확인
+      if (!apiKey || !oobCode || !mode) {
+        document.getElementById('errorMessage').style.display = 'block';
+        document.getElementById('openAppButton').disabled = true;
+        return;
+      }
+      
+      // Custom URL Scheme 생성 (muje 스킴 사용)
+      let customUrlScheme = `muje://email-verified?apiKey=${encodeURIComponent(apiKey)}&oobCode=${encodeURIComponent(oobCode)}&mode=${encodeURIComponent(mode)}`;
+      if (continueUrl) {
+        customUrlScheme += `&continueUrl=${encodeURIComponent(continueUrl)}`;
+      }
+      
+      // 버튼 클릭 시 앱으로 리디렉션
+      document.getElementById('openAppButton').addEventListener('click', function() {
+        window.location.href = customUrlScheme;
+        document.getElementById('redirectMessage').style.display = 'block';
+      });
+    });
+  </script>
+</body>
+</html>

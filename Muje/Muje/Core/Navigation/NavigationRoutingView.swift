@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct NavigationRoutingView: View {
-    
     @EnvironmentObject var router: NavigationRouter
     @State var destination: NavigationDestination
     
@@ -17,6 +16,10 @@ struct NavigationRoutingView: View {
             switch destination {
             case .contentView: // 임시
                 RootView() // 임시
+            case .emailVerificationView:
+                EmailVerificationView()
+            case .userInfoInputView(let uuid, let email):
+                UserInfoInputView(uuid: uuid, email: email)                
             }
         }
         .hideBackButton()
