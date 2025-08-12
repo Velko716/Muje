@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct CustomQuestion: Codable {
+struct CustomQuestion: Codable, Equatable, Hashable {
     let questionId: UUID
     let postId: String
     let questionText: String
@@ -38,7 +38,7 @@ struct CustomQuestion: Codable {
     }
 }
 
-extension CustomQuestion {
+extension CustomQuestion: EntityRepresentable {
     var entityName: CollectionType { .customQuestions }
 
     var documentID: String { questionId.uuidString }
