@@ -19,6 +19,8 @@ struct ApplicationManagementView: View {
   @State var allApplicants: [Application] = []
   @State var selectedApplicantId: Set<UUID> = []
   
+  @State private var isSticky: Bool = false
+  
   let postId: String
   
   var body: some View {
@@ -28,21 +30,50 @@ struct ApplicationManagementView: View {
           // 네비게이션 연결
         }
       ScrollView {
-        postInfoSection
-        tabSelctionSection
-        contentSection
+        
+        LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+          postInfoSection
+            .transaction { t in
+              t.disablesAnimations = true }
+            .padding(.bottom, 8)
+          
+          Section {
+            contentSection
+          } header: {
+            stickyHeader
+          }
+        }
       }
-      bottomButton
+      .animation(.none, value: selectedTab)
+      .animation(.none, value: selectedManagementStage)
+      if isSelectionMode {
+        bottomButton
+      }
     }
     .onAppear {
       loadData()
     }
   }
   
+  private var stickyHeader: some View {
+    VStack(spacing: 0) {
+      tabSelctionSection
+      if selectedTab == .management {
+        managementTabSection
+        selectAndSearchBar
+      } else {
+        searchBar
+      }
+    }
+    .padding(.bottom, 16)
+    .background(Color.white)
+    .zIndex(1)
+//    .shadow(color: Color.black.opacity(0.05), radius: 2, y: 1)
+  }
+  
   private var bottomButton: some View {
     
     HStack {
-      if isSelectionMode {
         if selectedManagementStage == .reviewCompleted {
           Button {
             //
@@ -84,7 +115,6 @@ struct ApplicationManagementView: View {
           .disabled(selectedApplicantId.isEmpty)
           .opacity(selectedApplicantId.isEmpty ? 0.5 : 1.0)
         }
-      }
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 12)
@@ -215,8 +245,111 @@ struct ApplicationManagementView: View {
         postTitle: "댄스 동아리 ○○ 모집합니다",
         postOrganization: "동아리명",
         postAuthorUserId: "author1"
+      ),
+      Application(
+        applicationId: UUID(),
+        applicantUserId: "user5",
+        postId: postId,
+        status: ApplicationStatus.reviewCompleted.rawValue,
+        isPassed: true,
+        applicantName: "윈",
+        applicantBirthYear: 2000,
+        applicantGender: "F",
+        applicantDepartment: "심리학과",
+        applicantStudentId: "202012346",
+        applicantPhone: "010-5678-9012",
+        postTitle: "댄스 동아리 ○○ 모집합니다",
+        postOrganization: "동아리명",
+        postAuthorUserId: "author1"
+      ),
+      Application(
+        applicationId: UUID(),
+        applicantUserId: "user5",
+        postId: postId,
+        status: ApplicationStatus.reviewCompleted.rawValue,
+        isPassed: true,
+        applicantName: "윈",
+        applicantBirthYear: 2000,
+        applicantGender: "F",
+        applicantDepartment: "심리학과",
+        applicantStudentId: "202012346",
+        applicantPhone: "010-5678-9012",
+        postTitle: "댄스 동아리 ○○ 모집합니다",
+        postOrganization: "동아리명",
+        postAuthorUserId: "author1"
+      ),
+      Application(
+        applicationId: UUID(),
+        applicantUserId: "user5",
+        postId: postId,
+        status: ApplicationStatus.reviewCompleted.rawValue,
+        isPassed: true,
+        applicantName: "윈",
+        applicantBirthYear: 2000,
+        applicantGender: "F",
+        applicantDepartment: "심리학과",
+        applicantStudentId: "202012346",
+        applicantPhone: "010-5678-9012",
+        postTitle: "댄스 동아리 ○○ 모집합니다",
+        postOrganization: "동아리명",
+        postAuthorUserId: "author1"
+      ),
+      Application(
+        applicationId: UUID(),
+        applicantUserId: "user5",
+        postId: postId,
+        status: ApplicationStatus.reviewCompleted.rawValue,
+        isPassed: true,
+        applicantName: "윈",
+        applicantBirthYear: 2000,
+        applicantGender: "F",
+        applicantDepartment: "심리학과",
+        applicantStudentId: "202012346",
+        applicantPhone: "010-5678-9012",
+        postTitle: "댄스 동아리 ○○ 모집합니다",
+        postOrganization: "동아리명",
+        postAuthorUserId: "author1"
+      ),
+      Application(
+        applicationId: UUID(),
+        applicantUserId: "user5",
+        postId: postId,
+        status: ApplicationStatus.reviewCompleted.rawValue,
+        isPassed: true,
+        applicantName: "윈",
+        applicantBirthYear: 2000,
+        applicantGender: "F",
+        applicantDepartment: "심리학과",
+        applicantStudentId: "202012346",
+        applicantPhone: "010-5678-9012",
+        postTitle: "댄스 동아리 ○○ 모집합니다",
+        postOrganization: "동아리명",
+        postAuthorUserId: "author1"
+      ),
+      Application(
+        applicationId: UUID(),
+        applicantUserId: "user5",
+        postId: postId,
+        status: ApplicationStatus.reviewCompleted.rawValue,
+        isPassed: true,
+        applicantName: "윈",
+        applicantBirthYear: 2000,
+        applicantGender: "F",
+        applicantDepartment: "심리학과",
+        applicantStudentId: "202012346",
+        applicantPhone: "010-5678-9012",
+        postTitle: "댄스 동아리 ○○ 모집합니다",
+        postOrganization: "동아리명",
+        postAuthorUserId: "author1"
       )
     ]
+  }
+}
+
+struct HeaderOffsetKey: PreferenceKey {
+  static var defaultValue: CGFloat = 0
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = nextValue()
   }
 }
 

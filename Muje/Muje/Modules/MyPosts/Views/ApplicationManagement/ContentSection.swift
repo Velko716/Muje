@@ -21,20 +21,20 @@ extension ApplicationManagementView {
   
   private var applicantManagementContent: some View {
     VStack(alignment: .leading) {
-      managementTabSection
-      selectAndSearchBar
+//      managementTabSection
+//      selectAndSearchBar
       applicantManagementList
     }
   }
   
   private var applicantFullContent: some View {
     VStack(alignment: .leading) {
-      searchBar
+//      searchBar
       applicantFullList
     }
   }
   
-  private var managementTabSection: some View {
+  var managementTabSection: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: 8) {
         managementTabButton(stage: .submitted)
