@@ -12,11 +12,11 @@ struct ApplicationManagementView: View {
   // 탭 선택
   @State var selectedTab: ApplicationTab = .management
   // 지원자 프로세스 관리
-  @State var selectedManagementStage: ManagementStage = .submitted
+  @State var selectedManagementStage: ApplicationStatus = .submitted
   // 선택 모드 관련 상태
   @State var isSelectionMode: Bool = false
   
-  @State private var allApplicants: [Application] = []
+  @State var allApplicants: [Application] = []
   @State var selectedApplicantId: Set<UUID> = []
   
   let postId: String
@@ -31,11 +31,89 @@ struct ApplicationManagementView: View {
         postInfoSection
         tabSelctionSection
         contentSection
-        applicantManagementList
       }
+      bottomButton
     }
     .onAppear {
       loadData()
+    }
+  }
+  
+  private var bottomButton: some View {
+    
+    HStack {
+      if isSelectionMode {
+        if selectedManagementStage == .reviewCompleted {
+          Button {
+            //
+          } label: {
+            Text(leftButton)
+              .font(.system(size: 18))
+              .frame(maxWidth: .infinity)
+              .padding(.vertical, 16)
+              .foregroundStyle(.white)
+              .background(Color.gray)
+              .clipShape(RoundedRectangle(cornerRadius: 10))
+          }
+        } else {
+          Button {
+            //
+          } label: {
+            Text(leftButton)
+              .font(.headline)
+              .frame(maxWidth: .infinity)
+              .padding(.vertical, 16)
+              .foregroundStyle(.white)
+              .background(Color.red)
+              .clipShape(RoundedRectangle(cornerRadius: 10))
+          }
+          .disabled(selectedApplicantId.isEmpty)
+          .opacity(selectedApplicantId.isEmpty ? 0.5 : 1.0)
+          
+          Button {
+            //
+          } label: {
+            Text(rightButton)
+              .font(.system(size: 18))
+              .frame(maxWidth: .infinity)
+              .padding(.vertical, 16)
+              .foregroundStyle(.white)
+              .background(Color.gray)
+              .clipShape(RoundedRectangle(cornerRadius: 10))
+          }
+          .disabled(selectedApplicantId.isEmpty)
+          .opacity(selectedApplicantId.isEmpty ? 0.5 : 1.0)
+        }
+      }
+    }
+    .padding(.horizontal, 16)
+    .padding(.vertical, 12)
+    .background(Color(.systemBackground))
+  }
+  
+  private var leftButton: String {
+    switch selectedManagementStage {
+    case .submitted:
+      return "불합격"
+    case .interviewWaiting:
+      return "면접 취소"
+    case .reviewWaiting:
+      return "불합격"
+    case .reviewCompleted:
+      return "모두에게 심사 결과 알리기"
+    }
+  }
+  
+  private var rightButton: String {
+    switch selectedManagementStage {
+    case .submitted:
+      return "면접 제안"
+    case .interviewWaiting:
+      return "면접 완료"
+    case .reviewWaiting:
+      return "합격"
+    case .reviewCompleted:
+      return "모두에게 심사 결과 알리기"
     }
   }
   
@@ -127,6 +205,7 @@ struct ApplicationManagementView: View {
         applicantUserId: "user5",
         postId: postId,
         status: ApplicationStatus.reviewCompleted.rawValue,
+        isPassed: true,
         applicantName: "윈",
         applicantBirthYear: 2000,
         applicantGender: "F",
