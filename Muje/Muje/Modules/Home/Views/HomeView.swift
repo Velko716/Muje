@@ -11,22 +11,38 @@ struct HomeView: View {
     @EnvironmentObject var router: NavigationRouter
     @State var viewModel: HomeViewModel
      
-    var body: some View {
-        VStack {
-            List(viewModel.postList, id: \.self) { post in
-                PostListItem(post: post)
-            }
-            .task { viewModel.postListFetch() }
-            .listStyle(.grouped)
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
-            .listRowInsets(EdgeInsets())
-            Text("hello?")
-        }
-    }
-}
-
-#Preview {
-    HomeView(viewModel: .mock)
-        .environmentObject(NavigationRouter())
+    
+   var body: some View {
+       VStack {
+           HStack {
+               Text("oo대학교 구인공고")
+               Spacer()
+               
+               //MARK: 검색 아이콘
+               Button(action: {
+                   router.push(to: .searchView)
+               }) {
+                   Image(systemName: "magnifyingglass")
+               }
+               
+               //MARK: 알림 아이콘
+               Button(action: {
+                   router.push(to: .notificationView)
+               }) {
+                   Image(systemName: "bell")
+               }
+           } //: HSTACK
+           .padding(.horizontal, 16)
+           List(viewModel.postList, id: \.self) { post in
+               PostListItem(post: post)
+           }
+           .task { viewModel.postListFetch() }
+           .frame(maxWidth: .infinity, maxHeight: .infinity)
+           .listStyle(.grouped)
+           .listRowBackground(Color.clear)
+           .listRowSeparator(.hidden)
+           .listRowInsets(EdgeInsets())
+           .ignoresSafeArea()
+       }
+   }
 }
