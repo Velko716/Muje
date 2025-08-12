@@ -2,7 +2,7 @@
 //  SearchResultItemView.swift
 //  Muje
 //
-//  Created by 김서현 on 8/13/25.
+//  Created by 김서현 on 8/12/25.
 //
 
 import SwiftUI
