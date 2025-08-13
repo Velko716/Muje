@@ -14,6 +14,7 @@ struct ApplicationManagementPostInfo: Equatable, Hashable {
   let recruitmentStart: Timestamp
   let recruitmentEnd: Timestamp
   let status: String
+  let hasInterview: Bool
   
   init(from post: Post) {
     self.title = post.title
@@ -21,5 +22,6 @@ struct ApplicationManagementPostInfo: Equatable, Hashable {
     self.recruitmentStart = post.recruitmentStart
     self.recruitmentEnd = post.recruitmentEnd
     self.status = post.status
+    self.hasInterview = post.hasInterview
   }
 }
