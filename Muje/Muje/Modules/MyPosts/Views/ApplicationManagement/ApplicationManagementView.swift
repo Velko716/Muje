@@ -29,29 +29,41 @@ struct ApplicationManagementView: View {
         title: "내가 올린 공고") {
           // 네비게이션 연결
         }
-      ScrollView {
-        
-        LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-          postInfoSection
-            .transaction { t in
-              t.disablesAnimations = true }
-            .padding(.bottom, 8)
-          
-          Section {
-            contentSection
-          } header: {
-            stickyHeader
+      ScrollViewReader { proxy in
+        ScrollView {
+          LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+            postInfoSection
+              .id("contentTop")
+              .transaction { t in
+                t.disablesAnimations = true }
+              .padding(.bottom, 8)
+            
+            Section {
+              contentSection
+            } header: {
+              stickyHeader
+            }
+          }
+        }
+        .animation(.none, value: selectedTab)
+        //      .animation(.none, value: selectedManagementStage)
+        .onChange(of: selectedManagementStage) {
+          withAnimation(.easeInOut(duration: 0.5)) {
+            proxy.scrollTo("contentTop", anchor: .top)
+          }
+        }
+        .onChange(of: selectedTab) {
+          withAnimation(.easeInOut(duration: 0.5)) {
+            proxy.scrollTo("contentTop", anchor: .top)
           }
         }
       }
-      .animation(.none, value: selectedTab)
-//      .animation(.none, value: selectedManagementStage)
       if isSelectionMode {
         bottomButton
       }
     }
-    .onAppear {
-      loadData()
+    .task {
+      await loadApplicationData(for: postId)
     }
   }
   
@@ -82,7 +94,7 @@ struct ApplicationManagementView: View {
     HStack {
         if selectedManagementStage == .reviewCompleted {
           Button {
-            //
+            handleLeftButtonAction()
           } label: {
             Text(leftButton)
               .font(.system(size: 18))
@@ -94,7 +106,7 @@ struct ApplicationManagementView: View {
           }
         } else {
           Button {
-            //
+            handleLeftButtonAction()
           } label: {
             Text(leftButton)
               .font(.headline)
@@ -108,7 +120,7 @@ struct ApplicationManagementView: View {
           .opacity(selectedApplicantId.isEmpty ? 0.5 : 1.0)
           
           Button {
-            //
+            handleRightButtonAction()
           } label: {
             Text(rightButton)
               .font(.system(size: 18))
