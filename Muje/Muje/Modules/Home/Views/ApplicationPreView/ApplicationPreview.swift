@@ -115,6 +115,43 @@ struct ApplicationPreview: View {
   }
 }
 
-//#Preview {
-//  ApplicationPreview(postId: "", customQuestion: "", requirementFlags: RequirementFlags(from: Post(postId: UUID(), authorUserId: "", title: "ddddddd", organization: "ddddd", content: "ddddd", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), status: "PostStatus.recruiting", authorName: "dd", authorOrganization: "dd")))
-//}
+#Preview {
+  ApplicationPreview(
+    postId: "",
+    requirementFlags: RequirementFlags(
+      from: Post(
+        postId: UUID(),
+        authorUserId: "",
+        title: "ddddd",
+        organization: "dddddd",
+        content: "ddddddd",
+        recruitmentStart: Timestamp(date: Date()),
+        recruitmentEnd: Timestamp(date: Date()),
+        status: PostStatus.recruiting.rawValue,
+        authorName: "박기연",
+        authorOrganization: "MAD"
+      )
+    ),
+    postBasicInfo: PostBasicInfo(
+      from: Post(
+        postId: UUID(),
+        authorUserId: "dd",
+        title: "dd",
+        organization: "dd",
+        content: "dd",
+        recruitmentStart: Timestamp(date: Date()),
+        recruitmentEnd: Timestamp(date: Date()),
+        status: PostStatus.recruiting.rawValue,
+        authorName: "박기연",
+        authorOrganization: "MAD"
+      )
+    ),
+    customQuestion: CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 1
+    ),
+    questionAnswer: <#T##Binding<[String : String]>#>
+  )
+}

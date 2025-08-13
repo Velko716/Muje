@@ -44,7 +44,8 @@ extension ApplicationManagementView {
       }
       .padding(.horizontal, 16)
     }
-    .padding(.vertical, 12)
+    .padding(.top, 16)
+    .padding(.bottom, 8)
   }
   
   private func managementTabButton(stage: ApplicationStatus) -> some View {
@@ -68,33 +69,53 @@ extension ApplicationManagementView {
   var selectAndSearchBar: some View {
     VStack {
       if isSelectionMode {
-        HStack(spacing: 16) {
+        HStack(spacing: 8) {
           Spacer()
           Button {
             selectAll()
           } label: {
             Text(selectedApplicantId.count == filterApplicants.count ? "전체 해제" : "전체 선택")
+              .font(.system(size: 16))
+              .padding(.vertical, 6)
+              .padding(.horizontal, 8)
+              .background(Color.white)
+              .clipShape(RoundedRectangle(cornerRadius: 20))
           }
           Button {
             isSelectionMode = false
             selectedApplicantId.removeAll()
           } label: {
             Text("취소")
+              .font(.system(size: 16))
+              .padding(.vertical, 6)
+              .padding(.horizontal, 8)
+              .background(Color.white)
+              .clipShape(RoundedRectangle(cornerRadius: 20))
           }
         }
         .padding(.trailing, 16)
       } else {
-        HStack(spacing: 16) {
+        HStack(spacing: 8) {
           Spacer()
           Button {
             isSelectionMode = true
           } label: {
             Text("선택")
+              .font(.system(size: 16))
+              .padding(.vertical, 6)
+              .padding(.horizontal, 8)
+              .background(Color.white)
+              .clipShape(RoundedRectangle(cornerRadius: 20))
           }
           Button {
             // TODO: - 리스트 검색 기능 구현
           } label: {
             Image(systemName: "magnifyingglass")
+              .font(.system(size: 16))
+              .padding(.vertical, 6)
+              .padding(.horizontal, 8)
+              .background(Color.white)
+              .clipShape(RoundedRectangle(cornerRadius: 100))
           }
         }
         .padding(.trailing, 16)
@@ -110,6 +131,11 @@ extension ApplicationManagementView {
         // TODO: - 리스트 검색 기능 구현
       } label: {
         Image(systemName: "magnifyingglass")
+          .font(.system(size: 16))
+          .padding(.vertical, 6)
+          .padding(.horizontal, 8)
+          .background(Color.white)
+          .clipShape(RoundedRectangle(cornerRadius: 100))
       }
     }
     .padding(.top, 16)

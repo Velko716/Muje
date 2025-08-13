@@ -45,7 +45,7 @@ struct ApplicationManagementView: View {
         }
       }
       .animation(.none, value: selectedTab)
-      .animation(.none, value: selectedManagementStage)
+//      .animation(.none, value: selectedManagementStage)
       if isSelectionMode {
         bottomButton
       }
@@ -58,17 +58,23 @@ struct ApplicationManagementView: View {
   private var stickyHeader: some View {
     VStack(spacing: 0) {
       tabSelctionSection
-      if selectedTab == .management {
-        managementTabSection
-        selectAndSearchBar
+        .background(Color.white)
+      if selectedTab == .management && !isSelectionMode {
+        VStack {
+          managementTabSection
+            .background(Color.white)
+          selectAndSearchBar
+        }
+      } else if selectedTab == .management && isSelectionMode {
+        VStack {
+          selectAndSearchBar
+            .padding(.top, 16)
+        }
       } else {
         searchBar
       }
     }
-    .padding(.bottom, 16)
-    .background(Color.white)
     .zIndex(1)
-//    .shadow(color: Color.black.opacity(0.05), radius: 2, y: 1)
   }
   
   private var bottomButton: some View {
