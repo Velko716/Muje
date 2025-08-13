@@ -12,9 +12,20 @@ import SwiftUI
 struct SearchBar: View {
     @Binding var typingStatus: Bool
     @Binding var searchText: String
+    @EnvironmentObject var router: NavigationRouter
     
     var body: some View {
         HStack {
+            
+            //MARK: 왼쪽 셰브론
+            Button(action: {
+                router.pop()
+            }) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 24))
+            }
+            
+            //MARK: 검색바
             HStack {
                 Image(systemName: "magnifyingglass")
                 Text(
@@ -30,9 +41,6 @@ struct SearchBar: View {
                 RoundedRectangle(cornerRadius: 100)
                     .fill(Color.white)
             )
-            .frame(maxWidth: .infinity)
-            .padding(.trailing, 13)
-            Text("취소")
         }
         .frame(maxWidth: .infinity)
     }

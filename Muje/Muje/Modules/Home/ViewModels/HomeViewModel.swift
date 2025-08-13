@@ -8,9 +8,10 @@
 import Foundation
 import Firebase
 
-@MainActor
+
+@Observable
 final class HomeViewModel {
-    @Published var postList: [Post] = []
+    var postList: [Post] = []
     var errorMessage: String? = nil
     var isLoading: Bool = false
     
@@ -22,6 +23,7 @@ final class HomeViewModel {
         Task {
             do {
                 isLoading = true
+                errorMessage = nil
                 
                 let fetchPosts = try await
                 FirestoreManager.shared.fetch(
@@ -30,11 +32,13 @@ final class HomeViewModel {
                     order: "createdAt"
                 )
                 postList = fetchPosts
-                
                 isLoading = false
                 
             } catch {
                 errorMessage = error.localizedDescription
+                isLoading = false
+                
+                print("❌ HomeViewModel - postListFetch() error: \(error)")
             }
         }
     }
