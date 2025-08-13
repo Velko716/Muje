@@ -66,7 +66,7 @@ struct ApplicationPreview: View {
   private var userInfoDetailSection: some View {
     VStack(spacing: 5) {
       if requirementFlags.requiresPhone {
-        InfoRow(title: "연락처", value: viewModel.userInfo?.phone ?? "")
+        //InfoRow(title: "연락처", value: viewModel.userInfo?.phone ?? "")
       }
       if requirementFlags.requiresStudentId {
         InfoRow(title: "학번", value: viewModel.userInfo?.studentId ?? "")

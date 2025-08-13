@@ -102,7 +102,7 @@ final class ApplicationPreviewModel {
     
     return Application(
       applicationId: UUID(),
-      applicantUserId: userInfo.userId.uuidString,
+      applicantUserId: userInfo.userId,
       postId: postId,
       status: ApplicationStatus.submitted.rawValue,
       isPassed: nil,
@@ -113,7 +113,7 @@ final class ApplicationPreviewModel {
       applicantGender: requirement.requiresGender ? userInfo.gender : nil,
       applicantDepartment: requirement.requiresDepartment ? userInfo.department : nil,
       applicantStudentId: requirement.requiresStudentId ? userInfo.studentId : nil,
-      applicantPhone: requirement.requiresPhone ? userInfo.phone : nil,
+//      applicantPhone: requirement.requiresPhone ? userInfo.phone : nil,
       postTitle: post.title,
       postOrganization: post.organization,
       postAuthorUserId: post.authorUserId
