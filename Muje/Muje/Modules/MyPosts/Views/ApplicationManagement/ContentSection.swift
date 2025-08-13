@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 extension ApplicationManagementView {
   var contentSection: some View {
@@ -295,4 +296,162 @@ extension ApplicationManagementView {
       selectedApplicantId = Set(filterApplicants.map { $0.applicationId })
     }
   }
+  
+  
+  // MARK: - 메서드
+  func promoteApplicant() {
+    guard !selectedApplicantId.isEmpty else { return }
+    
+    let nextStatus = getnextStatus(from: selectedManagementStage)
+    
+    updateApplicationStatus(
+      applicantIds: Array(selectedApplicantId),
+      newStatus: nextStatus
+    )
+    exitSelectionMode()
+  }
+  
+  func rejectApplicant() {
+    guard !selectedApplicantId.isEmpty else { return }
+    
+    updateApplicationStatus(
+      applicantIds: Array(selectedApplicantId),
+      newStatus: ApplicationStatus.reviewCompleted.rawValue,
+      isPassed: false
+    )
+    exitSelectionMode()
+  }
+  
+  func passApplicant() {
+    guard !selectedApplicantId.isEmpty else { return }
+    
+    updateApplicationStatus(
+      applicantIds: Array(selectedApplicantId),
+      newStatus: ApplicationStatus.reviewCompleted.rawValue,
+      isPassed: true
+    )
+  }
+  
+  func notifyAllResults() {
+    let _ = filterApplicants.filter { application in
+      application.status == ApplicationStatus.reviewCompleted.rawValue
+    }
+    
+    // TODO: 실제 알림 로직
+  }
+  
+  func getnextStatus(from currentStage: ApplicationStatus) -> String {
+    switch currentStage {
+    case .submitted:
+      return ApplicationStatus.interviewWaiting.rawValue
+    case .interviewWaiting:
+      return ApplicationStatus.reviewWaiting.rawValue
+    case .reviewWaiting:
+      return ApplicationStatus.reviewCompleted.rawValue
+    case .reviewCompleted:
+      return ApplicationStatus.reviewCompleted.rawValue
+    }
+  }
+  
+  func updateApplicationStatus(
+    applicantIds: [UUID],
+    newStatus: String,
+    isPassed: Bool? = nil
+  ) {
+    
+    for i in 0..<allApplicants.count {
+      if applicantIds.contains(allApplicants[i].applicationId) {
+        allApplicants[i].status = newStatus
+        allApplicants[i].updatedAt = Timestamp()
+        
+        if let paseed = isPassed {
+          allApplicants[i].isPassed = paseed
+        }
+      }
+    }
+    Task {
+      await updateFirestore(
+        applicantIds: applicantIds,
+        newStatus: newStatus,
+        isPaseed: isPassed
+      )
+    }
+  }
+  
+  func updateFirestore(
+    applicantIds: [UUID],
+    newStatus: String,
+    isPaseed: Bool? = nil
+  ) async {
+    
+    for applicationId in applicantIds {
+      do {
+        guard let index = allApplicants.firstIndex(where: { $0.applicationId == applicationId }) else { continue }
+        
+        var updatedApplication = allApplicants[index]
+        updatedApplication.status = newStatus
+        
+        if let passed = isPaseed {
+          updatedApplication.isPassed = passed
+        }
+        
+        let _ = try await FirestoreManager.shared.update(updatedApplication)
+        
+        print("Firestore 업데이트 성공: \(applicationId)")
+        
+      } catch {
+        print("Firestore 업데이트 실패 \(error)")
+      }
+    }
+  }
+  
+  func exitSelectionMode() {
+    withAnimation(.easeInOut(duration: 0.3)) {
+      isSelectionMode = false
+    }
+    selectedApplicantId.removeAll()
+  }
+  
+  func handleRightButtonAction() {
+    switch selectedManagementStage {
+    case .submitted:
+      promoteApplicant()
+    case .interviewWaiting:
+      promoteApplicant()
+    case .reviewWaiting:
+      passApplicant()
+    case .reviewCompleted:
+      notifyAllResults()
+    }
+  }
+  
+  func handleLeftButtonAction() {
+    switch selectedManagementStage {
+    case .submitted, .interviewWaiting, .reviewWaiting:
+      rejectApplicant()
+    case .reviewCompleted:
+      notifyAllResults()
+    }
+  }
+  
+  func loadApplicationData(for postId: String) async {
+    do {
+      let applicationData = try await fetchApplicationData(for: postId)
+      self.allApplicants = applicationData
+      
+    } catch {
+      print("커스텀 질문 목록 로드 실패")
+    }
+  }
+  
+  func fetchApplicationData(for postId: String) async throws -> [Application] {
+    
+    return try await FirestoreManager.shared.fetchWithCondition(
+      from: .applications,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date() }
+    )
+  }
 }
+
