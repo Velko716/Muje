@@ -33,16 +33,18 @@ struct HomeView: View {
                }
            } //: HSTACK
            .padding(.horizontal, 16)
+           
+           
            List(viewModel.postList, id: \.self) { post in
                PostListItem(post: post)
            }
-           .task { viewModel.postListFetch() }
            .frame(maxWidth: .infinity, maxHeight: .infinity)
            .listStyle(.grouped)
            .listRowBackground(Color.clear)
            .listRowSeparator(.hidden)
            .listRowInsets(EdgeInsets())
            .ignoresSafeArea()
+           
        }
    }
 }
