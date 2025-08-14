@@ -50,7 +50,7 @@ struct MujeApp: App {
             RootView()
                 .onOpenURL { url in
                         Task {
-                            do {
+                              do {
                                 let isNewUser = try await FirebaseAuthManager.shared.handleEmailSignInLink(
                                     url: url,
                                     inputEmail: FirebaseAuthManager.shared.email
@@ -90,6 +90,21 @@ struct MujeApp: App {
                             }
                         }
                     }
+                .task {
+                    Task {
+                        if let uid = Auth.auth().currentUser?.uid {
+                            print("현재 접속자 UID: \(uid)")
+                            let user: User = try await FirestoreManager.shared.get(
+                                uid,
+                                from: .user
+                            )
+                            FirebaseAuthManager.shared.currentUser = user
+                            print("FirebaseAuthManager \(String(describing: FirebaseAuthManager.shared.currentUser))")
+                        } else {
+                            print("비로그인 상태")
+                        }
+                    }
+                }
                 .environmentObject(router)
         }
     }
