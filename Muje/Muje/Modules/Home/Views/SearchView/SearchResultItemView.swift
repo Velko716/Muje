@@ -8,8 +8,20 @@
 import SwiftUI
 
 struct SearchResultItemView: View {
+    @EnvironmentObject var router: NavigationRouter
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            Button {
+                router.pop()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 24))
+            }
+
+            Text("임시 뷰 입니다.")
+        }
+        
     }
 }
 

@@ -10,7 +10,6 @@
 import SwiftUI
 
 struct SearchBar: View {
-    @Binding var typingStatus: Bool
     @Binding var searchText: String
     @EnvironmentObject var router: NavigationRouter
     
@@ -19,6 +18,7 @@ struct SearchBar: View {
             
             //MARK: 왼쪽 셰브론
             Button(action: {
+                searchText = ""
                 router.pop()
             }) {
                 Image(systemName: "chevron.left")
@@ -28,11 +28,12 @@ struct SearchBar: View {
             //MARK: 검색바
             HStack {
                 Image(systemName: "magnifyingglass")
-                Text(
-                    typingStatus
-                     ? searchText
-                     : "제목, 검색어"
+                TextField(
+                    "",
+                    text: $searchText,
+                    prompt: Text("제목, 작성자") //폰트, 컬러 설정할 수 있음
                 )
+                
                 Spacer()
             }
             .padding(.vertical, 11)

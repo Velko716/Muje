@@ -12,9 +12,25 @@ struct SearchView: View {
     @State var viewModel: SearchViewModel
     
     var body: some View {
-        SearchBar(typingStatus: $viewModel.isTyping, searchText: $viewModel.searchText)
-        
+        VStack {
+            SearchBar(searchText: $viewModel.searchText)
+                .padding(.horizontal, 8)
+                .onChange(of: viewModel.searchText) {
+                    viewModel.filterPosts()
+                }
+            if viewModel.searchResults.isEmpty {
+                Text("hehe")
+            }
+            
+            Button {
+                router.push(to: .searchResultView)
+            } label: {
+                Circle().fill(Color.blue)
+            }
+
+        } //: VSTACK
     }
+        
 }
 
 #Preview {

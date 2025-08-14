@@ -81,12 +81,11 @@ final class FirestoreManager {
         
         let snapshot = try await query.getDocuments()
         
-        let items: [T] = try snapshot.documents.compactMap { document in
-            guard let jsonData = try?
-                    JSONSerialization.data(withJSONObject: document.data()),
+        let items: [T] = snapshot.documents.compactMap { document in
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: document.data()),
                   let decoded = try? JSONDecoder().decode(T.self, from: jsonData)
             else {
-                throw Error.decodingFailed
+                return nil  // throw 대신 nil 반환
             }
             return decoded
         }

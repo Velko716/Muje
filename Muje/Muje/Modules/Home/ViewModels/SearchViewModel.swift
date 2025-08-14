@@ -15,31 +15,20 @@ import Combine
 @Observable
 final class SearchViewModel {
     var searchText = ""
-    var isTyping: Bool = false
     var allPosts: [Post] = []
-    var cancellables = Set<AnyCancellable>()
     var searchResults: [Post] = []
     var errorMessage: String?
-    
-    private var db = Firestore.firestore()
+
     
     init() {
-        //휴
+        searchResults = []
+        searchText = ""
     }
     
-    func setPosts(_ posts: [Post]) {
-        allPosts = posts
-        errorMessage = nil
-        
-        if !searchText.isEmpty {
-            filterPosts(with: searchText)
-        }
-    }
-    
-    func filterPosts(with searchText: String) {
+    func filterPosts() {
+        print("🔫 filterPosts 작동")
         if searchText.isEmpty {
             searchResults = []
-            isTyping = false
         } else {
             searchResults = allPosts.filter { post in
                 post.title.localizedCaseInsensitiveContains(searchText) ||
@@ -52,13 +41,4 @@ final class SearchViewModel {
         }
     }
     
-    func updateSearchResults(results: [Post]) {
-        self.searchResults = results
-    }
-    
-    
-    //MARK: 검색 내용 초기화 함수
-    func clearSearch() {
-        searchText = ""
-    }
 }
