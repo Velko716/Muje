@@ -55,7 +55,7 @@ struct RootView: View {
             case .myPosts:
                 MyPostsView()
             case .inbox:
-                InboxView()
+                InboxListView()
             case .myPage:
                 MyPageView()
             }
