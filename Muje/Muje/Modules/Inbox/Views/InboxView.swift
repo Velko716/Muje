@@ -12,8 +12,10 @@ struct InboxView: View {
         ZStack {
             VStack {
                 topCurrentPostView
+                Divider()
                 Spacer()
             }
+            .paddingH16()
         }
         .toolbar {
             navigationToolbarItems
@@ -50,8 +52,19 @@ struct InboxView: View {
     
     // MARK: - 탑 현재 공고 뷰
     private var topCurrentPostView: some View {
-        InboxCurrentPostView(title: "댄스월드 연합 댄스 동아리💃 춤도 추고 친목도 다질 사람 모여라🙌") // FIXME: - 공고 타이틀로 수정
+        VStack(spacing: .zero) {
+            InboxCurrentPostView(title: "댄스월드 연합 댄스 동아리💃 춤도 추고 친목도 다질 사람 모여라🙌") // FIXME: - 공고 타이틀로 수정
+                .padding(.vertical, 20)
+        }
     }
+    
+    // MARK: - 중간 쪽지 내용 뷰
+    private var middleInboxContentView: some View {
+        VStack {
+            
+        }
+    }
+    
     
 }
 
