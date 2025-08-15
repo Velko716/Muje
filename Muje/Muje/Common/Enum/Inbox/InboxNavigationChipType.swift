@@ -5,7 +5,7 @@
 //  Created by 김진혁 on 8/15/25.
 //
 
-import Foundation
+import SwiftUI
 
 enum InboxNavigationChipType {
     case applicant
