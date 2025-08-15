@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-enum ApplicationStatus: String, Codable {
+enum ApplicationStatus: String, Codable, CaseIterable {
     case submitted = "지원서 제출됨"
     case interviewWaiting = "면접 대기 중"
     case reviewWaiting = "심사 대기 중"
