@@ -11,11 +11,14 @@ struct InboxNavigationChip: View {
     let type: InboxNavigationChipType
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 200)
-            .fill(type.color)
-            .overlay {
-                Text(type.displayName)
-            }
+        
+        
+        Text(type.displayName)
+            .font(Font.system(size: 14, weight: .semibold))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 4)
+            .background(type.color)
+            .clipShape(RoundedRectangle(cornerRadius: 200))
     }
 }
 
