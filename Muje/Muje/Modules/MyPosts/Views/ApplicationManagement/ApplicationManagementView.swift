@@ -9,17 +9,7 @@ import SwiftUI
 
 struct ApplicationManagementView: View {
   
-  // 탭 선택
-  @State var selectedTab: ApplicationTab = .management
-  // 지원자 프로세스 관리
-  @State var selectedManagementStage: ApplicationStatus = .submitted
-  // 선택 모드 관련 상태
-  @State var isSelectionMode: Bool = false
-  
-  @State var allApplicants: [Application] = []
-  @State var selectedApplicantId: Set<UUID> = []
-  
-  @State private var isSticky: Bool = false
+  @State var viewModel: ApplicationManagementViewModel = .init()
   
   let postId: String
   
@@ -45,39 +35,42 @@ struct ApplicationManagementView: View {
             }
           }
         }
-        .animation(.none, value: selectedTab)
-        //      .animation(.none, value: selectedManagementStage)
-        .onChange(of: selectedManagementStage) {
+        .animation(.none, value: viewModel.selectedTab)
+        .animation(.none, value: viewModel.selectedManagementStage)
+        .onChange(of: viewModel.selectedManagementStage) {
           withAnimation(.easeInOut(duration: 0.5)) {
             proxy.scrollTo("contentTop", anchor: .top)
           }
         }
-        .onChange(of: selectedTab) {
+        .onChange(of: viewModel.selectedTab) {
           withAnimation(.easeInOut(duration: 0.5)) {
             proxy.scrollTo("contentTop", anchor: .top)
           }
         }
       }
-      if isSelectionMode {
+      if viewModel.isSelectionMode {
         bottomButton
       }
     }
-    .task {
-      await loadApplicationData(for: postId)
+    .onAppear {
+      loadData()
     }
+    //    .task {
+    //      await loadApplicationData(for: postId)
+    //    }
   }
   
   private var stickyHeader: some View {
     VStack(spacing: 0) {
       tabSelctionSection
         .background(Color.white)
-      if selectedTab == .management && !isSelectionMode {
+      if viewModel.selectedTab == .management && !viewModel.isSelectionMode {
         VStack {
           managementTabSection
             .background(Color.white)
           selectAndSearchBar
         }
-      } else if selectedTab == .management && isSelectionMode {
+      } else if viewModel.selectedTab == .management && viewModel.isSelectionMode {
         VStack {
           selectAndSearchBar
             .padding(.top, 16)
@@ -89,50 +82,75 @@ struct ApplicationManagementView: View {
     .zIndex(1)
   }
   
-  private var bottomButton: some View {
-    
-    HStack {
-        if selectedManagementStage == .reviewCompleted {
-          Button {
-            handleLeftButtonAction()
-          } label: {
-            Text(leftButton)
-              .font(.system(size: 18))
-              .frame(maxWidth: .infinity)
-              .padding(.vertical, 16)
-              .foregroundStyle(.white)
-              .background(Color.gray)
-              .clipShape(RoundedRectangle(cornerRadius: 10))
-          }
-        } else {
-          Button {
-            handleLeftButtonAction()
-          } label: {
-            Text(leftButton)
-              .font(.headline)
-              .frame(maxWidth: .infinity)
-              .padding(.vertical, 16)
-              .foregroundStyle(.white)
-              .background(Color.red)
-              .clipShape(RoundedRectangle(cornerRadius: 10))
-          }
-          .disabled(selectedApplicantId.isEmpty)
-          .opacity(selectedApplicantId.isEmpty ? 0.5 : 1.0)
-          
-          Button {
-            handleRightButtonAction()
-          } label: {
-            Text(rightButton)
-              .font(.system(size: 18))
-              .frame(maxWidth: .infinity)
-              .padding(.vertical, 16)
-              .foregroundStyle(.white)
-              .background(Color.gray)
-              .clipShape(RoundedRectangle(cornerRadius: 10))
-          }
-          .disabled(selectedApplicantId.isEmpty)
-          .opacity(selectedApplicantId.isEmpty ? 0.5 : 1.0)
+  private var managementTabSection: some View {
+    ScrollView(.horizontal, showsIndicators: false) {
+      HStack(spacing: 8) {
+        ForEach(ApplicationStatus.allCases, id: \.self) { stage in
+          ManagementTabButton(
+            viewModel: viewModel,
+            isSelected: viewModel.selectedManagementStage == stage,
+            stage: stage
+          )
         }
+      }
+      .padding(.horizontal, 16)
+    }
+  }
+  
+  private var contentSection: some View {
+    Group {
+      switch viewModel.selectedTab {
+      case .management:
+        applicantManagementList
+      case .list:
+        applicantFullList
+      }
+    }
+  }
+  
+  private var bottomButton: some View {
+    HStack {
+      if viewModel.selectedManagementStage == .reviewCompleted {
+        Button {
+          viewModel.handleLeftButtonAction()
+        } label: {
+          Text(leftButton)
+            .font(.system(size: 18))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .foregroundStyle(.white)
+            .background(Color.gray)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+      } else {
+        Button {
+          viewModel.handleLeftButtonAction()
+        } label: {
+          Text(leftButton)
+            .font(.headline)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .foregroundStyle(.white)
+            .background(Color.red)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .disabled(viewModel.selectedApplicantId.isEmpty)
+        .opacity(viewModel.selectedApplicantId.isEmpty ? 0.5 : 1.0)
+        
+        Button {
+          viewModel.handleRightButtonAction()
+        } label: {
+          Text(rightButton)
+            .font(.system(size: 18))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .foregroundStyle(.white)
+            .background(Color.gray)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .disabled(viewModel.selectedApplicantId.isEmpty)
+        .opacity(viewModel.selectedApplicantId.isEmpty ? 0.5 : 1.0)
+      }
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 12)
@@ -140,7 +158,7 @@ struct ApplicationManagementView: View {
   }
   
   private var leftButton: String {
-    switch selectedManagementStage {
+    switch viewModel.selectedManagementStage {
     case .submitted:
       return "불합격"
     case .interviewWaiting:
@@ -153,7 +171,7 @@ struct ApplicationManagementView: View {
   }
   
   private var rightButton: String {
-    switch selectedManagementStage {
+    switch viewModel.selectedManagementStage {
     case .submitted:
       return "면접 제안"
     case .interviewWaiting:
@@ -165,28 +183,20 @@ struct ApplicationManagementView: View {
     }
   }
   
-  var filterApplicants: [Application] {
-    return allApplicants.filter { application in
-      switch selectedManagementStage {
-      case .submitted:
-        return application.status == ApplicationStatus.submitted.rawValue
-      case .interviewWaiting:
-        return application.status == ApplicationStatus.interviewWaiting.rawValue
-      case .reviewWaiting:
-        return application.status == ApplicationStatus.reviewWaiting.rawValue
-      case .reviewCompleted:
-        return application.status == ApplicationStatus.reviewCompleted.rawValue
-      }
+  struct HeaderOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+      value = nextValue()
     }
   }
   
-  
+  // MARK: - 프리뷰용 목데이터
   private func loadData() {
     
     print("Loading data for postId: \(postId)")
     
     // 임시 테스트 데이터 생성
-    allApplicants = [
+    viewModel.allApplicants = [
       Application(
         applicationId: UUID(),
         applicantUserId: "user1",
@@ -364,12 +374,7 @@ struct ApplicationManagementView: View {
   }
 }
 
-struct HeaderOffsetKey: PreferenceKey {
-  static var defaultValue: CGFloat = 0
-  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-    value = nextValue()
-  }
-}
+
 
 
 #Preview {
