@@ -116,7 +116,9 @@ struct ApplicationPreview: View {
 }
 
 #Preview {
-  ApplicationPreview(
+  @Previewable @State var viewModel = ApplicationPreviewModel()
+    
+  return ApplicationPreview(
     postId: "",
     requirementFlags: RequirementFlags(
       from: Post(
@@ -127,7 +129,14 @@ struct ApplicationPreview: View {
         content: "ddddddd",
         recruitmentStart: Timestamp(date: Date()),
         recruitmentEnd: Timestamp(date: Date()),
+        hasInterview: true,
         status: PostStatus.recruiting.rawValue,
+        requiresName: true,
+        requiresStudentId: true,
+        requiresDepartment: true,
+        requiresGender: true,
+        requiresAge: true,
+        requiresPhone: true,
         authorName: "박기연",
         authorOrganization: "MAD"
       )
@@ -135,23 +144,50 @@ struct ApplicationPreview: View {
     postBasicInfo: PostBasicInfo(
       from: Post(
         postId: UUID(),
-        authorUserId: "dd",
-        title: "dd",
-        organization: "dd",
-        content: "dd",
+        authorUserId: "",
+        title: "ddddd",
+        organization: "dddddd",
+        content: "ddddddd",
         recruitmentStart: Timestamp(date: Date()),
         recruitmentEnd: Timestamp(date: Date()),
+        hasInterview: true,
         status: PostStatus.recruiting.rawValue,
+        requiresName: true,
+        requiresStudentId: true,
+        requiresDepartment: true,
+        requiresGender: true,
+        requiresAge: true,
+        requiresPhone: true,
         authorName: "박기연",
         authorOrganization: "MAD"
       )
     ),
-    customQuestion: CustomQuestion(
+    customQuestion: [CustomQuestion(
       questionId: UUID(),
       postId: "",
       questionText: "햄버거 햄버거",
       questionOrder: 1
-    ),
-    questionAnswer: <#T##Binding<[String : String]>#>
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 2
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 3
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 4
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 5
+    )],
+    questionAnswer: .constant(["" : "우아아아아ㅏㅇ아ㅏ아"])
   )
 }
