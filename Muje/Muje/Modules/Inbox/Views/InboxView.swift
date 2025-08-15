@@ -10,7 +10,10 @@ import SwiftUI
 struct InboxView: View {
     var body: some View {
         ZStack {
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+            VStack {
+                topCurrentPostView
+                Spacer()
+            }
         }
         .toolbar {
             navigationToolbarItems
@@ -44,6 +47,12 @@ struct InboxView: View {
             }
         }
     }
+    
+    // MARK: - 탑 현재 공고 뷰
+    private var topCurrentPostView: some View {
+        InboxCurrentPostView(title: "댄스월드 연합 댄스 동아리💃 춤도 추고 친목도 다질 사람 모여라🙌") // FIXME: - 공고 타이틀로 수정
+    }
+    
 }
 
 #Preview {
