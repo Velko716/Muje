@@ -10,7 +10,7 @@ import SwiftUI
 struct InboxView: View {
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 24) {
                 topCurrentPostView
                 Divider()
                 Spacer()

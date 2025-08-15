@@ -38,5 +38,5 @@ struct OutgoingMessageBubble: View {
         OutgoingMessageBubble(text: "안녕하세요!", time: Date())
         OutgoingMessageBubble(text: "휴학생은 가능하고, 졸업생은 받지 않아요. 죄송합니다🥲", time: Date())
     }
-    .padding()
+    .padding(.horizontal, 16)
 }
