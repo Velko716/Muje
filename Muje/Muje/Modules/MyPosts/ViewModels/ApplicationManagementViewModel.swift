@@ -79,6 +79,49 @@ final class ApplicationManagementViewModel {
     }
   }
   
+  // MARK: - 이전 프로세스 단계로 변환
+  func canMovePreviousStage(application: Application) -> Bool {
+    return getPreviousStageStatus(from: application.status) != nil
+  }
+  
+  private func getPreviousStageStatus(from currentStatus: String) -> String? {
+    guard let currentStage = ApplicationStatus(rawValue: currentStatus) else {
+      return nil
+    }
+    
+    switch currentStage {
+    case .submitted:
+      return nil
+    case .interviewWaiting:
+      return ApplicationStatus.submitted.rawValue
+    case .reviewWaiting:
+      return ApplicationStatus.interviewWaiting.rawValue
+    case .reviewCompleted:
+      return ApplicationStatus.reviewWaiting.rawValue
+    }
+  }
+  
+  func moveApplicationToPreviousStage(applicationId: UUID) {
+    guard let application = allApplicants.first(where: { $0.applicationId == applicationId }),
+          let previousStatus = getPreviousStageStatus(from: application.status) else {
+      return
+    }
+    
+    updateApplicationStatus(
+      applicantIds: [applicationId],
+      newStatus: previousStatus,
+      isPassed: nil
+    )
+  }
+  
+  func getPreviousStageDisplayName(for application: Application) -> String? {
+    guard let previousStatus = getPreviousStageStatus(from: application.status),
+          let previousStage = ApplicationStatus(rawValue: previousStatus) else {
+      return nil
+    }
+    return previousStage.displayName
+  }
+  
   func getnextStatus(from currentStage: ApplicationStatus) -> String {
     switch currentStage {
     case .submitted:

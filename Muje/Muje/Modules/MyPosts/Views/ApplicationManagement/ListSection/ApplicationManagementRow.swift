@@ -11,6 +11,9 @@ struct ApplicationManagementRow: View {
   
   @Bindable var viewModel: ApplicationManagementViewModel
   
+  @State private var showPreviousStageActionSheet: Bool = false
+  @State private var isLongPressed: Bool = false
+  
   let isSelected: Bool
   let application: Application
   
@@ -29,6 +32,16 @@ struct ApplicationManagementRow: View {
       RoundedRectangle(cornerRadius: 10)
         .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
     )
+    .scaleEffect(isLongPressed ? 1.05 : 1.0)
+    .shadow(
+      color: .black.opacity(
+        isLongPressed ? 0.2 : 0
+      ),
+      radius: isLongPressed ? 8 : 0,
+      x: 0,
+      y: isLongPressed ? 4 : 0
+    )
+    .animation(.easeInOut(duration: 0.5), value: isLongPressed)
     .contentShape(Rectangle())
     .onTapGesture {
       if viewModel.isSelectionMode {
@@ -36,6 +49,21 @@ struct ApplicationManagementRow: View {
       } else {
         // TODO: 지원자 상세 모달 구현
       }
+    }
+    .onLongPressGesture(
+      minimumDuration: 0.5,
+      perform: {
+        handleLongPress()
+      },
+      onPressingChanged: { pressing in
+        withAnimation(.easeInOut(duration: 0.15)) {
+          isLongPressed = pressing
+        }
+      })
+    .alert("이전 단계로 되돌리기", isPresented: $showPreviousStageActionSheet) {
+      previousStageAcionButton
+    } message: {
+      Text("\(application.applicantName)님을 이전 단계로 되돌리시겠습니까?")
     }
   }
   
@@ -81,6 +109,25 @@ struct ApplicationManagementRow: View {
           Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
         }
       }
+    }
+  }
+  
+  @ViewBuilder
+  private var previousStageAcionButton: some View {
+    if let displayName = viewModel.getPreviousStageDisplayName(for: application) {
+      Button("\(displayName)로 되돌리기") {
+        viewModel.moveApplicationToPreviousStage(applicationId: application.applicationId)
+      }
+    }
+    Button("취소", role: .cancel) {}
+  }
+  
+  private func handleLongPress() {
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    impactFeedback.impactOccurred()
+    
+    if viewModel.canMovePreviousStage(application: application) {
+      showPreviousStageActionSheet = true
     }
   }
 }
