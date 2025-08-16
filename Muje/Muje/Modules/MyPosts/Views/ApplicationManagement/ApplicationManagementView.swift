@@ -53,7 +53,7 @@ struct ApplicationManagementView: View {
       }
       Group {
         if viewModel.selectedTab == .management {
-          bottomButtonj
+          bottomButton
         }
       }
       .transition(.identity) // 그룹에 적용

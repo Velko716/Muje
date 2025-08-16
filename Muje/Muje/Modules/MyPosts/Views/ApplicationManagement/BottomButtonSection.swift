@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 extension ApplicationManagementView {
-  var bottomButtonj: some View {
+  var bottomButton: some View {
     HStack {
       if viewModel.selectedManagementStage == .reviewCompleted && !viewModel.isSelectionMode {
         notifyButtons(NotifyButtonType.allNotify)
@@ -60,20 +60,6 @@ extension ApplicationManagementView {
     }
   }
   
-  private var notifyButton: some View {
-    Button {
-      //
-    } label: {
-      Text("dd")
-        .font(.system(size: 18))
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
-        .foregroundStyle(.white)
-        .background(Color.gray)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-    }
-  }
-  
   private func notifyButtons(_ type: NotifyButtonType) -> some View {
     Button {
       //
@@ -88,7 +74,7 @@ extension ApplicationManagementView {
     }
   }
   
-  private func processButton(_ type: buttonType) -> some View {
+  private func processButton(_ type: ManagementButtonType) -> some View {
     HStack {
       Button {
         viewModel.handleLeftButtonAction()
@@ -122,49 +108,4 @@ extension ApplicationManagementView {
     //    .padding(.vertical, 12)
     //    .background(Color(.systemBackground))
   }
-  
-  
-  enum buttonType: String {
-    case submitted
-    case interviewWaiting
-    case reviewWaiting
-    
-    var LeftDisplayName: String {
-      switch self {
-      case .submitted:
-        return "불합격"
-      case .interviewWaiting:
-        return "면접 취소"
-      case .reviewWaiting:
-        return "불합격"
-      }
-    }
-    
-    var RightDisplayName: String {
-      switch self {
-      case .submitted:
-        return "면접 제안"
-      case .interviewWaiting:
-        return "면접 완료"
-      case .reviewWaiting:
-        return "합격"
-      }
-    }
-  }
-  
-  enum NotifyButtonType: String {
-    case allNotify
-    case selectedNotify
-    
-    var dispayName: String {
-      switch self {
-      case .allNotify:
-        return "모두에게 심사 결과 알리기"
-      case .selectedNotify:
-        return "심사 결과 알리기"
-      }
-    }
-  }
-  
-  
 }
