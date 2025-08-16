@@ -33,7 +33,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             completionHandler(.noData)
             return
         }
-
+        
         // 다른 알림 처리 (예: FCM 등)
         completionHandler(.noData)
     }
@@ -43,69 +43,94 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct MujeApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject var router: NavigationRouter = .init()
-    
+    @StateObject private var router: NavigationRouter = .init()
+
+    @State private var isReady = false
+    @State private var bootError: String?
+
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .onOpenURL { url in
-                        Task {
-                              do {
-                                let isNewUser = try await FirebaseAuthManager.shared.handleEmailSignInLink(
-                                    url: url,
-                                    inputEmail: FirebaseAuthManager.shared.email
+            Group {
+                if isReady {
+                    RootView()
+                } else {
+                    ProgressView("로딩 중...") // FIXME: - 스플래시 대체
+                }
+            }
+            // 앱 최초 부팅 시 사용자 세션/프로필 로드
+            .task { await boot() }
+            // 이메일 링크 딥링크 처리
+            .onOpenURL { url in
+                Task {
+                    do {
+                        let isNewUser = try await FirebaseAuthManager.shared.handleEmailSignInLink(
+                            url: url,
+                            inputEmail: FirebaseAuthManager.shared.email
+                        )
+
+                        if isNewUser {
+                            if let uid = Auth.auth().currentUser?.uid {
+                                print("[Auth] New user UID: \(uid)")
+
+                                let newUser = User(
+                                    userId: uid,
+                                    email: FirebaseAuthManager.shared.email,
+                                    name: "",
+                                    birthYear: 0,
+                                    gender: "",
+                                    department: "",
+                                    studentId: "",
+                                    emailVerified: true,
+                                    termsAgreed: false,
+                                    privacyAgreed: false
                                 )
-                                
-                                if isNewUser {
-                                    if let uid = Auth.auth().currentUser?.uid {
-                                        print("[Auth] New user UID: \(uid)")
-                                        
-                                        let newUser = User(
-                                            userId: uid,
-                                            email: FirebaseAuthManager.shared.email,
-                                            name: "",
-                                            birthYear: 0,
-                                            gender: "",
-                                            department: "",
-                                            studentId: "",
-                                            emailVerified: true,
-                                            termsAgreed: false,
-                                            privacyAgreed: false
-                                        )
-                                        let _ = try await FirestoreManager.shared.create(newUser) // 새 유저 이메일 인증 시 파이어베이스 등록
-                                        router.push(to: .userInfoInputView(uuid: uid, email: FirebaseAuthManager.shared.email)) // 네비게이션 이동
-                                        FirebaseAuthManager.shared.email = "" // 싱글톤 이메일 변수 초기화
-                                    } else {
-                                        print("[Auth] currentUser is nil. UID unavailable.")
-                                    }
-                                    print("이메일 새유저")
-                                    
-                                    //router.push(to: .userInfoInputView) // 회원 가입 뷰로 이동
-                                } else {
-                                    FirebaseAuthManager.shared.email = "" // 이메일 초기화
-                                    // TODO: 로그인 완료, 키체인 유저 정보 입력, 마이 페이지 루트 뷰로 이동
-                                }
-                            } catch {
-                                print("error: \(error.localizedDescription)")
+                                _ = try await FirestoreManager.shared.create(newUser)
+
+                                // 뷰 전환이 즉시 가능하도록 먼저 준비 완료 표시
+                                isReady = true
+                                // 회원정보 입력 화면으로 이동
+                                router.push(to: .userInfoInputView(uuid: uid, email: FirebaseAuthManager.shared.email))
+                                // 싱글톤 이메일 초기화
+                                FirebaseAuthManager.shared.email = ""
+                            } else {
+                                print("[Auth] currentUser is nil. UID unavailable.")
+                                isReady = true
                             }
-                        }
-                    }
-                .task {
-                    Task {
-                        if let uid = Auth.auth().currentUser?.uid {
-                            print("현재 접속자 UID: \(uid)")
-                            let user: User = try await FirestoreManager.shared.get(
-                                uid,
-                                from: .user
-                            )
-                            FirebaseAuthManager.shared.currentUser = user
-                            print("FirebaseAuthManager \(String(describing: FirebaseAuthManager.shared.currentUser))")
+                            print("이메일 새유저")
                         } else {
-                            print("비로그인 상태")
+                            // 기존 유저 로그인 완료
+                            FirebaseAuthManager.shared.email = ""
+                            isReady = true
+                            // 필요 시 여기서 라우팅 추가
                         }
+                    } catch {
+                        print("error: \(error.localizedDescription)")
+                        isReady = true
                     }
                 }
-                .environmentObject(router)
+            }
+            .environmentObject(router)
+        }
+    }
+
+    // MARK: - 현재 유저 로드
+    @MainActor
+    private func boot() async {
+        do {
+            if let uid = Auth.auth().currentUser?.uid {
+                print("현재 접속자 UID: \(uid)")
+                let user: User = try await FirestoreManager.shared.get(uid, from: .user)
+                FirebaseAuthManager.shared.currentUser = user
+                print("FirebaseAuthManager \(String(describing: FirebaseAuthManager.shared.currentUser))")
+            } else {
+                print("비로그인 상태")
+            }
+            isReady = true
+        } catch {
+            bootError = error.localizedDescription
+            print("부팅 오류: \(bootError!)")
+            // 오류가 있어도 진입은 가능하게
+            isReady = true
         }
     }
 }
