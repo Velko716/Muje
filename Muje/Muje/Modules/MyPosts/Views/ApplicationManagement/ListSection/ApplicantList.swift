@@ -17,7 +17,7 @@ struct ApplicantList: View {
       departmentSection
     }
     .padding(.horizontal, 16)
-    .padding(.vertical, 18)
+    .padding(.vertical, 12)
     .background(
       Color.gray.opacity(0.2)
     )
