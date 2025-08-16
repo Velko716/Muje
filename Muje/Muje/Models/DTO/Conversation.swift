@@ -8,21 +8,6 @@
 import Foundation
 import FirebaseFirestore
 
-
-enum ParticipantRole: String, Codable {
-    case recruiter
-    case applicant
-    
-    var displayName: String {
-        switch self {
-        case .recruiter:
-            "모집자"
-        case .applicant:
-            "참여자"
-        }
-    }
-}
-
 struct Conversation: Codable {
     var conversationId: UUID
     let participant1UserId: String
@@ -34,8 +19,17 @@ struct Conversation: Codable {
     let participant1Role: ParticipantRole
     let participant2Name: String
     let participant2Role: ParticipantRole
+    
+    // 미리보기/정렬용
+    var lastMessageText: String? = nil
+    var lastSenderUserId: String? = nil
+    var lastMessageAt: Timestamp? = nil
+    
     @ServerTimestamp var createdAt: Timestamp?
     @ServerTimestamp var updatedAt: Timestamp?
+    
+    /// 쿼리용 편의 프로퍼티 
+    var participants: [String] { [participant1UserId, participant2UserId] }
     
     init(
         conversationId: UUID,
@@ -49,7 +43,10 @@ struct Conversation: Codable {
         participant2Name: String,
         participant2Role: ParticipantRole,
         createdAt: Timestamp? = nil,
-        updatedAt: Timestamp? = nil
+        updatedAt: Timestamp? = nil,
+        lastMessageText: String? = nil,
+        lastSenderUserId: String? = nil,
+        lastMessageAt: Timestamp? = nil
     ) {
         self.conversationId = conversationId
         self.participant1UserId = participant1UserId
@@ -63,6 +60,9 @@ struct Conversation: Codable {
         self.participant2Role = participant2Role
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.lastMessageText = lastMessageText
+        self.lastSenderUserId = lastSenderUserId
+        self.lastMessageAt = lastMessageAt
     }
     
     enum CodingKeys: String, CodingKey {
@@ -76,16 +76,21 @@ struct Conversation: Codable {
         case participant1Role   = "participant1_role"
         case participant2Name   = "participant2_name"
         case participant2Role   = "participant2_role"
+        case lastMessageText    = "last_message"
+        case lastSenderUserId   = "last_sender_user_id"
+        case lastMessageAt      = "last_message_at"    // ← 이제 Optional Timestamp?로 안전
         case createdAt          = "created_at"
         case updatedAt          = "updated_at"
     }
 }
 
-extension Conversation: EntityRepresentable {    
+extension Conversation: EntityRepresentable {
     var entityName: CollectionType { .conversations }
     var documentID: String { conversationId.uuidString }
+
     var asDictionary: [String: Any]? {
-        [
+        var dict: [String: Any] = [
+            "conversation_id": conversationId.uuidString,
             "participant1_user_id": participant1UserId,
             "participant2_user_id": participant2UserId,
             "post_id": postId,
@@ -94,7 +99,29 @@ extension Conversation: EntityRepresentable {
             "participant1_name": participant1Name,
             "participant1_role": participant1Role.rawValue,
             "participant2_name": participant2Name,
-            "participant2_role": participant2Role.rawValue
+            "participant2_role": participant2Role.rawValue,
+            "participants": [participant1UserId, participant2UserId]
         ]
+        if let lastMessageText { dict["last_message"] = lastMessageText }
+        if let lastSenderUserId { dict["last_sender_user_id"] = lastSenderUserId }
+        // last_message_at 은 sendMessage 배치에서 FieldValue.serverTimestamp()로 세팅
+        return dict
     }
+}
+
+struct Message: Identifiable, Codable, Equatable {
+    @DocumentID var id: String?
+    let senderUserId: String
+    let text: String
+    @ServerTimestamp var createdAt: Timestamp?
+    @ServerTimestamp var updatedAt: Timestamp?
+
+    enum CodingKeys: String, CodingKey {
+        case senderUserId = "sender_user_id"
+        case text
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+
+    var createdDate: Date { createdAt?.dateValue() ?? .init() }
 }
