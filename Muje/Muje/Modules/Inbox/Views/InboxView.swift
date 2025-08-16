@@ -112,7 +112,7 @@ struct InboxView: View {
                 .padding(.vertical, 12)
             }
             // 새 메시지 오면 하단으로 스크롤
-            .onChange(of: viewModel.messages.last?.id) { id in
+            .onChange(of: viewModel.messages.last?.id) { id, _ in
                 guard let id else { return }
                 withAnimation(.easeOut(duration: 0.2)) {
                     proxy.scrollTo(id, anchor: .bottom)
