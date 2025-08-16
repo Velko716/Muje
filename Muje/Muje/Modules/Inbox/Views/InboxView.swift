@@ -63,7 +63,7 @@ struct InboxView: View {
         
         ToolbarItem(placement: .principal) {
             HStack(spacing: 8) {
-                Text("\(String(describing: FirebaseAuthManager.shared.currentUser?.name))")
+                Text("\(FirebaseAuthManager.shared.currentUser?.name ?? "")")
                 InboxNavigationChip(type: .applicant) // FIXME: - 쪽지 타입을 Post Firebase에서 불러오게끔 변경해야함. (임시뷰)
                     .frame(width: 61)
             }
@@ -97,7 +97,7 @@ struct InboxView: View {
                         ProgressView().onAppear { Task { await viewModel.loadMore() } }
                     }
                     
-                    ForEach(viewModel.messages) { msg in
+                    ForEach(viewModel.messages, id: \.id) { msg in
                         let isMine = (msg.senderUserId == viewModel.currentUserId)
                         Group {
                             if isMine {
@@ -106,7 +106,7 @@ struct InboxView: View {
                                 IncomingMessageBubble(text: msg.text, time: msg.createdDate)
                             }
                         }
-                        .id(msg.id ?? UUID().uuidString)
+                        .id(msg.id)
                     }
                 }
                 .padding(.vertical, 12)
@@ -116,13 +116,6 @@ struct InboxView: View {
                 guard let id else { return }
                 withAnimation(.easeOut(duration: 0.2)) {
                     proxy.scrollTo(id, anchor: .bottom)
-                }
-            }
-            .onAppear {
-                if let last = viewModel.messages.last?.id {
-                    DispatchQueue.main.async {
-                        proxy.scrollTo(last, anchor: .bottom)
-                    }
                 }
             }
         }
