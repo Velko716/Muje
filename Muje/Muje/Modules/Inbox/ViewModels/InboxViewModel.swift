@@ -6,3 +6,15 @@
 //
 
 import Foundation
+
+@Observable
+final class InboxViewModel {
+    
+    
+    
+    func send(text: String) -> String {
+        let msg = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !msg.isEmpty else { return "" }
+        return ""
+    }
+}
