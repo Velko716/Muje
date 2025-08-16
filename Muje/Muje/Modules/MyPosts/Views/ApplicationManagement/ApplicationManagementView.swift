@@ -51,35 +51,42 @@ struct ApplicationManagementView: View {
           }
         }
       }
-      if viewModel.isSelectionMode {
-        bottomButton
+      Group {
+        if viewModel.selectedTab == .management {
+          bottomButtonj
+        }
       }
+      .transition(.identity) // 그룹에 적용
+      .animation(nil, value: viewModel.selectedTab)
     }
-    .onAppear {
-      loadData()
-    }
-    //    .task {
-    //      await loadApplicationData(for: postId)
+    //    .onAppear {
+    //      loadData()
     //    }
+    .task {
+      await viewModel.loadApplicationData(for: postId)
+    }
   }
   
   private var stickyHeader: some View {
     VStack(spacing: 0) {
       tabSelctionSection
+        .padding(.top, 8)
         .background(Color.white)
       if viewModel.selectedTab == .management && !viewModel.isSelectionMode {
-        VStack {
+        VStack(spacing: 0) {
           managementTabSection
             .background(Color.white)
           selectAndSearchBar
         }
       } else if viewModel.selectedTab == .management && viewModel.isSelectionMode {
-        VStack {
+        VStack(spacing: 0) {
           selectAndSearchBar
-            .padding(.top, 16)
         }
+        .padding(.top, 16)
       } else {
-        searchBar
+        VStack {
+          searchBar
+        }
       }
     }
     .zIndex(1)
@@ -111,87 +118,7 @@ struct ApplicationManagementView: View {
     }
   }
   
-  private var bottomButton: some View {
-    HStack {
-      if viewModel.selectedManagementStage == .reviewCompleted {
-        Button {
-          viewModel.handleLeftButtonAction()
-        } label: {
-          Text(leftButton)
-            .font(.system(size: 18))
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .foregroundStyle(.white)
-            .background(Color.gray)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-        }
-      } else {
-        Button {
-          viewModel.handleLeftButtonAction()
-        } label: {
-          Text(leftButton)
-            .font(.headline)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .foregroundStyle(.white)
-            .background(Color.red)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-        }
-        .disabled(viewModel.selectedApplicantId.isEmpty)
-        .opacity(viewModel.selectedApplicantId.isEmpty ? 0.5 : 1.0)
-        
-        Button {
-          viewModel.handleRightButtonAction()
-        } label: {
-          Text(rightButton)
-            .font(.system(size: 18))
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .foregroundStyle(.white)
-            .background(Color.gray)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-        }
-        .disabled(viewModel.selectedApplicantId.isEmpty)
-        .opacity(viewModel.selectedApplicantId.isEmpty ? 0.5 : 1.0)
-      }
-    }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 12)
-    .background(Color(.systemBackground))
-  }
-  
-  private var leftButton: String {
-    switch viewModel.selectedManagementStage {
-    case .submitted:
-      return "불합격"
-    case .interviewWaiting:
-      return "면접 취소"
-    case .reviewWaiting:
-      return "불합격"
-    case .reviewCompleted:
-      return "모두에게 심사 결과 알리기"
-    }
-  }
-  
-  private var rightButton: String {
-    switch viewModel.selectedManagementStage {
-    case .submitted:
-      return "면접 제안"
-    case .interviewWaiting:
-      return "면접 완료"
-    case .reviewWaiting:
-      return "합격"
-    case .reviewCompleted:
-      return "모두에게 심사 결과 알리기"
-    }
-  }
-  
-  struct HeaderOffsetKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-      value = nextValue()
-    }
-  }
+
   
   // MARK: - 프리뷰용 목데이터
   private func loadData() {
@@ -377,9 +304,23 @@ struct ApplicationManagementView: View {
   }
 }
 
-
-
-
 #Preview {
-  ApplicationManagementView(postId: "post_id")
+  ApplicationManagementView(
+    postId: "post_id",
+    postInfo: ApplicationManagementPostInfo(
+      from: Post(
+        postId: UUID(),
+        authorUserId: "dd",
+        title: "집에 가고 싶다~",
+        organization: "MAD",
+        content: "",
+        recruitmentStart: Timestamp(date: Date()),
+        recruitmentEnd: Timestamp(date: Date()),
+        hasInterview: true,
+        status: PostStatus.recruiting.rawValue,
+        authorName: "dd",
+        authorOrganization: "MAD"
+      )
+    )
+  )
 }
