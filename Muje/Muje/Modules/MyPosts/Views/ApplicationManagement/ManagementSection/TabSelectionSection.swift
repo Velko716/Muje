@@ -21,7 +21,9 @@ extension ApplicationManagementView {
           .onTapGesture {
             withAnimation(.easeInOut(duration: 0.3)) {
               viewModel.selectedTab = .management
+              viewModel.exitSelectionMode()
             }
+            viewModel.exitSearchMode()
           }
         Text("지원자 리스트")
           .font(.headline)
@@ -33,13 +35,14 @@ extension ApplicationManagementView {
           .onTapGesture {
             withAnimation(.easeInOut(duration: 0.3)) {
               viewModel.selectedTab = .list
+              viewModel.exitSelectionMode()
             }
+            viewModel.exitSearchMode()
           }
       }
       .padding(.horizontal, 16)
       rectangle
     }
-    
   }
   
   private var rectangle: some View {
@@ -47,15 +50,15 @@ extension ApplicationManagementView {
       Rectangle()
         .fill(Color.gray.opacity(0.3))
         .frame(height: 2)
-    GeometryReader { geometry in
-      Rectangle()
-        .fill(Color.primary)
-        .frame(width: geometry.size.width / 2, height: 2)
-        .offset(x: viewModel.selectedTab == .management ? 0 : geometry.size.width / 2)
-        .animation(.easeInOut(duration: 0.3), value: viewModel.selectedTab)
+      GeometryReader { geometry in
+        Rectangle()
+          .fill(Color.primary)
+          .frame(width: geometry.size.width / 2, height: 2)
+          .offset(x: viewModel.selectedTab == .management ? 0 : geometry.size.width / 2)
+          .animation(.easeInOut(duration: 0.3), value: viewModel.selectedTab)
+      }
+      .padding(.horizontal, 16)
+      .frame(height: 2)
     }
-    .padding(.horizontal, 16)
-    .frame(height: 2)
-  }
   }
 }
