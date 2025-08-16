@@ -22,4 +22,8 @@ struct Message: Identifiable, Codable, Equatable {
     }
 
     var createdDate: Date { createdAt?.dateValue() ?? .init() }
+    
+    var stableId: String {
+        id ?? "\(senderUserId)|\(createdAt?.seconds ?? 0)|\(abs(text.hashValue))"
+    }
 }

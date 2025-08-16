@@ -97,7 +97,7 @@ struct InboxView: View {
                         ProgressView().onAppear { Task { await viewModel.loadMore() } }
                     }
                     
-                    ForEach(viewModel.messages, id: \.id) { msg in
+                    ForEach(viewModel.messages, id: \.stableId) { msg in
                         let isMine = (msg.senderUserId == viewModel.currentUserId)
                         Group {
                             if isMine {
@@ -106,13 +106,13 @@ struct InboxView: View {
                                 IncomingMessageBubble(text: msg.text, time: msg.createdDate)
                             }
                         }
-                        .id(msg.id)
+                        .id(msg.stableId)
                     }
                 }
                 .padding(.vertical, 12)
             }
             // 새 메시지 오면 하단으로 스크롤
-            .onChange(of: viewModel.messages.last?.id) { id, _ in
+            .onChange(of: viewModel.messages.last?.stableId) { id, _ in
                 guard let id else { return }
                 withAnimation(.easeOut(duration: 0.2)) {
                     proxy.scrollTo(id, anchor: .bottom)
