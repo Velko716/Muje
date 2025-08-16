@@ -6,15 +6,18 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct ApplicationManagementView: View {
   
   @State var viewModel: ApplicationManagementViewModel = .init()
+  @FocusState var isSearchFieldFocused: Bool
   
   let postId: String
+  let postInfo: ApplicationManagementPostInfo
   
   var body: some View {
-    VStack {
+    VStack(spacing: 0) {
       CustomNavigationBar(
         title: "내가 올린 공고") {
           // 네비게이션 연결

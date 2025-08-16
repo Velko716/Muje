@@ -17,6 +17,9 @@ final class ApplicationManagementViewModel {
   var isSelectionMode: Bool = false
   var isSticky: Bool = false
   
+  var isSearching: Bool = false
+  var searchText: String = ""
+  
   // 모든 지원자들의 배열, 선택된 지원자의 ID 배열
   var allApplicants: [Application] = []
   var selectedApplicantId: Set<UUID> = []
@@ -38,6 +41,45 @@ final class ApplicationManagementViewModel {
       case .reviewCompleted:
         return application.status == ApplicationStatus.reviewCompleted.rawValue
       }
+    }
+  }
+  // MARK: - 지원자 검색 기능
+  private var currentBaseList: [Application] {
+    switch selectedTab {
+    case .management:
+      return filterApplicants
+    case .list:
+      return allApplicants
+    }
+  }
+  
+  var searchFilterApplicants: [Application] {
+    let baseList = currentBaseList
+    
+    if searchText.isEmpty {
+      return baseList
+    }
+    
+    return baseList.filter { applicant in
+      applicant.applicantName.localizedCaseInsensitiveContains(searchText) ||
+      (applicant.applicantDepartment?.localizedCaseInsensitiveContains(searchText) ?? false) || (applicant.applicantStudentId?.localizedStandardContains(searchText) ?? false)
+    }
+  }
+  
+  func getCurrentApplicant() -> [Application] {
+    return searchFilterApplicants
+  }
+  
+  func startSearching() {
+    withAnimation(.easeInOut(duration: 0.3)) {
+      isSearching = true
+    }
+  }
+  
+  func endSearching() {
+    withAnimation(.easeInOut(duration: 0.3)) {
+      isSearching = false
+      searchText = ""
     }
   }
   
@@ -142,6 +184,10 @@ final class ApplicationManagementViewModel {
     selectedApplicantId.removeAll()
   }
   
+  func exitSearchMode() {
+      isSearching = false
+  }
+  
   func promoteApplicant() {
     guard !selectedApplicantId.isEmpty else { return }
     
@@ -173,6 +219,7 @@ final class ApplicationManagementViewModel {
       newStatus: ApplicationStatus.reviewCompleted.rawValue,
       isPassed: true
     )
+    exitSelectionMode()
   }
   
   func notifyAllResults() {
@@ -243,7 +290,7 @@ extension ApplicationManagementViewModel {
       self.allApplicants = applicationData
       
     } catch {
-      print("커스텀 질문 목록 로드 실패")
+      print("지원자 정보 로드 실패")
     }
   }
   
