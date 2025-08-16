@@ -28,7 +28,6 @@ struct ManagementTabButton: View {
           withAnimation(.easeInOut(duration: 0.2)) {
             viewModel.selectedManagementStage = stage
           }
-          viewModel.exitSearchMode()
         }
     }
     .padding(.vertical, 16)

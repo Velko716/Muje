@@ -23,7 +23,6 @@ extension ApplicationManagementView {
               viewModel.selectedTab = .management
               viewModel.exitSelectionMode()
             }
-            viewModel.exitSearchMode()
           }
         Text("지원자 리스트")
           .font(.headline)
@@ -37,7 +36,6 @@ extension ApplicationManagementView {
               viewModel.selectedTab = .list
               viewModel.exitSelectionMode()
             }
-            viewModel.exitSearchMode()
           }
       }
       .padding(.horizontal, 16)
