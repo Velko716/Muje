@@ -45,8 +45,7 @@ struct NavigationRoutingView: View {
                 EmailVerificationView()
             case .userInfoInputView(let uuid, let email):
                 UserInfoInputView(uuid: uuid, email: email)
-            case .searchResultView:
-                SearchResultItemView()
+
             }
         }
         .hideBackButton()

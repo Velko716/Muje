@@ -26,5 +26,4 @@ enum NavigationDestination: Equatable, Hashable {
   )
     case emailVerificationView // 이메일 인증 뷰
     case userInfoInputView(uuid: String, email: String) // 유저 정보 입력 뷰
-    case searchResultView
 }

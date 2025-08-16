@@ -11,7 +11,9 @@ import SwiftUI
 
 struct SearchBar: View {
     @Binding var searchText: String
+    @Binding var status: SearchStatus
     @EnvironmentObject var router: NavigationRouter
+    @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
         HStack {
@@ -33,6 +35,13 @@ struct SearchBar: View {
                     text: $searchText,
                     prompt: Text("제목, 작성자") //폰트, 컬러 설정할 수 있음
                 )
+                .submitLabel(.search)
+                .focused($isTextFieldFocused)
+                .onChange(of: isTextFieldFocused) { oldValue, newValue in
+                    if newValue {
+                        status = .typing
+                    }
+                }
                 
                 Spacer()
             }
