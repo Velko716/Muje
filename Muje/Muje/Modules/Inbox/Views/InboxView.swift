@@ -6,15 +6,28 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct InboxView: View {
-    @State private var viewModel: InboxViewModel = .init()
+    
+    @EnvironmentObject private var rotuer: NavigationRouter
+    
+    @State private var viewModel: InboxViewModel
     @State private var text: String = ""
     @FocusState private var isFocused: Bool
     private let buttonSize: CGFloat = 40 // SendButton 버튼 사이즈 비교
     
     private var sendEnabled: Bool {
         !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
+    // 외부에서 conversationId 주입
+    init(conversationId: UUID) {
+        let uid = Auth.auth().currentUser?.uid ?? "anonymous"
+        _viewModel = State(wrappedValue: InboxViewModel(
+            conversationId: conversationId,
+            currentUserId: uid
+        ))
     }
     
     var body: some View {
@@ -33,6 +46,8 @@ struct InboxView: View {
         .toolbar {
             navigationToolbarItems
         }
+        .onAppear { viewModel.start() }
+        .onDisappear { viewModel.stop() }
     }
     
     // MARK: - 네비게이션 툴 바 아이템
@@ -40,7 +55,7 @@ struct InboxView: View {
     private var navigationToolbarItems: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Button {
-                // TODO: 뒤로가기 수행
+                rotuer.pop()
             } label: {
                 Image(systemName: "chevron.left")
             }
@@ -73,8 +88,43 @@ struct InboxView: View {
     
     // MARK: - 중간 쪽지 내용 뷰
     private var middleInboxContentView: some View {
-        VStack {
-            
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 12) {
+                    
+                    // 위로 스크롤 시 과거 로드 트리거
+                    if viewModel.messages.count >= 20 {
+                        ProgressView().onAppear { Task { await viewModel.loadMore() } }
+                    }
+                    
+                    ForEach(viewModel.messages) { msg in
+                        let isMine = (msg.senderUserId == viewModel.currentUserId)
+                        Group {
+                            if isMine {
+                                OutgoingMessageBubble(text: msg.text, time: msg.createdDate)
+                            } else {
+                                IncomingMessageBubble(text: msg.text, time: msg.createdDate)
+                            }
+                        }
+                        .id(msg.id ?? UUID().uuidString)
+                    }
+                }
+                .padding(.vertical, 12)
+            }
+            // 새 메시지 오면 하단으로 스크롤
+            .onChange(of: viewModel.messages.last?.id) { id in
+                guard let id else { return }
+                withAnimation(.easeOut(duration: 0.2)) {
+                    proxy.scrollTo(id, anchor: .bottom)
+                }
+            }
+            .onAppear {
+                if let last = viewModel.messages.last?.id {
+                    DispatchQueue.main.async {
+                        proxy.scrollTo(last, anchor: .bottom)
+                    }
+                }
+            }
         }
     }
     
@@ -99,8 +149,11 @@ struct InboxView: View {
                         .stroke(.secondary.opacity(0.12), lineWidth: 1)
                 )
                 .frame(minHeight: 44)
-                
-                InboxSendButton(sendEnabled: sendEnabled) { self.text = viewModel.send(text: text)
+            
+                InboxSendButton(sendEnabled: sendEnabled) {
+                    let msg = text
+                    text = ""
+                    Task { await viewModel.send(text: msg) }
                 }
                     .frame(width: buttonSize, height: buttonSize)
                     .padding(.trailing, 8)
@@ -116,6 +169,7 @@ struct InboxView: View {
 
 #Preview {
     NavigationStack {
-        InboxView()
+        InboxView(conversationId: UUID())
+            .environmentObject(NavigationRouter())
     }
 }

@@ -76,34 +76,152 @@ extension FirestoreManager {
             .collection("blocks")
             .order(by: "created_at", descending: true)
             .getDocuments()
-
+        
         let blocks = try snapshot.documents.compactMap { document in
             try document.data(as: Block.self)
         }
-
+        
         return blocks
     }
     
-  func fetchWithCondition<T: Decodable>(
-    from collectionType: CollectionType,
-    whereField field: String,
-    equalTo value: Any,
-    sortedBy sortComparator: @escaping (T, T) -> Bool
-  ) async throws -> [T] {
-    
-    let snapshot = try await db
-      .collection(collectionType.rawValue)
-      .whereField(field, isEqualTo: value)
-      .getDocuments()
-    
-    let items = snapshot.documents.compactMap { document in
-      do {
-        return try document.data(as: T.self)
-      } catch {
-        print("fetch 디코딩 실패 \(error)")
-        return nil
-      }
+    func fetchWithCondition<T: Decodable>(
+        from collectionType: CollectionType,
+        whereField field: String,
+        equalTo value: Any,
+        sortedBy sortComparator: @escaping (T, T) -> Bool
+    ) async throws -> [T] {
+        
+        let snapshot = try await db
+            .collection(collectionType.rawValue)
+            .whereField(field, isEqualTo: value)
+            .getDocuments()
+        
+        let items = snapshot.documents.compactMap { document in
+            do {
+                return try document.data(as: T.self)
+            } catch {
+                print("fetch 디코딩 실패 \(error)")
+                return nil
+            }
+        }
+        return items.sorted(by: sortComparator)
     }
-    return items.sorted(by: sortComparator)
-  }
+}
+
+// MARK: - 쪽지 내용 관련
+extension FirestoreManager {
+    
+    // 메시지 전송 + 대화 메타 동시 업데이트
+    func sendMessage(
+        conversationId: UUID,
+        senderUserId: String,
+        text: String
+    ) async throws {
+        let body = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !body.isEmpty else { return }
+        
+        let convoRef = db.collection("conversations").document(conversationId.uuidString)
+        let msgRef = convoRef.collection("messages").document()
+        
+        let batch = db.batch()
+        // 메시지 생성
+        batch.setData([
+            "sender_user_id": senderUserId,
+            "text": body,
+            "created_at": FieldValue.serverTimestamp(),
+            "updated_at": FieldValue.serverTimestamp()
+        ], forDocument: msgRef)
+        
+        // 대화 문서 메타 갱신(목록 정렬/미리보기용)
+        batch.setData([
+            "last_message": body,
+            "last_sender_user_id": senderUserId,
+            "last_message_at": FieldValue.serverTimestamp(),
+            "updated_at": FieldValue.serverTimestamp()
+        ], forDocument: convoRef, merge: true)
+        
+        try await batch.commit()
+    }
+    
+    // 실시간 구독: 최신 n개를 받아서 UI는 정방향으로 사용
+    // onChange로 역순을 뒤집어 전달하고, 가장 오래된 문서 스냅샷(페이징 커서)도 함께 전달
+    func listenMessages(
+        conversationId: UUID,
+        pageSize: Int = 30,
+        onChange: @escaping ([Message], DocumentSnapshot?) -> Void
+    ) -> ListenerRegistration {
+        let ref = db.collection("conversations")
+            .document(conversationId.uuidString)
+            .collection("messages")
+        
+        let q = ref.order(by: "created_at", descending: true).limit(to: pageSize)
+        
+        return q.addSnapshotListener { snapshot, _ in
+            guard let docs = snapshot?.documents else {
+                onChange([], nil)
+                return
+            }
+            let page = docs.compactMap { try? $0.data(as: Message.self) }.reversed()
+            onChange(Array(page), docs.last) // docs.last = 이 페이지에서 가장 오래된 문서
+        }
+    }
+    
+    // 과거 페이지 더 불러오기(페이징)
+    func fetchMoreMessages(
+        conversationId: UUID,
+        after oldestCursor: DocumentSnapshot,
+        pageSize: Int = 30
+    ) async throws -> ([Message], DocumentSnapshot?) {
+        let ref = db.collection("conversations")
+            .document(conversationId.uuidString)
+            .collection("messages")
+        
+        let snap = try await ref
+            .order(by: "created_at", descending: true)
+            .start(afterDocument: oldestCursor)
+            .limit(to: pageSize)
+            .getDocuments()
+        
+        let items = snap.documents.compactMap { try? $0.data(as: Message.self) }.reversed()
+        return (Array(items), snap.documents.last)
+    }
+}
+
+// MARK: - 쪽지 리스트
+
+extension FirestoreManager {
+    func fetchConversationsForUser(_ userId: String) async throws -> [Conversation] {
+        
+        print("DEBUG uid:", userId, "len:", userId.count)
+        print("DEBUG project:", db.app.options.projectID ?? "nil")
+        
+        let q = db.collection("conversations")
+            .whereField("participants", arrayContains: userId)
+            .order(by: "updated_at", descending: true)
+        
+        do {
+            let snap = try await q.getDocuments()
+            print("DEBUG count:", snap.documents.count, "isFromCache:", snap.metadata.isFromCache)
+            snap.documents.forEach { print("DEBUG docId:", $0.documentID, "participants:", $0["participants"] ?? "nil") }
+            
+            var list = snap.documents.compactMap { doc in
+                do { return try doc.data(as: Conversation.self) }
+                catch {
+                    print("DECODE FAIL \(doc.documentID):", error)
+                    return nil
+                }
+            }
+            
+            list.sort {
+                let l = $0.updatedAt?.dateValue() ?? $0.createdAt?.dateValue() ?? .distantPast
+                let r = $1.updatedAt?.dateValue() ?? $1.createdAt?.dateValue() ?? .distantPast
+                return l > r
+            }
+            return list
+            
+        } catch {
+            print("DEBUG query error:", error)   // 인덱스/권한 오류 확인
+            throw error
+        }
+    }
 }

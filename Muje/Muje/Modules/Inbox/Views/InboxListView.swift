@@ -6,38 +6,102 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct InboxListView: View {
     @EnvironmentObject private var router: NavigationRouter
+    @State private var viewModel: InboxListViewModel
     
+    init() {
+        let uid = FirebaseAuthManager.shared.currentUser?.userId ?? "anonymous"
+        _viewModel = State(initialValue: InboxListViewModel(currentUserId: uid))
+    }
     
     var body: some View {
-        Button {
-//            let conversation = Conversation(
-//                conversationId: UUID(),
-//                participant1UserId: "", // 참여자1 ID (users 참조)
-//                participant2UserId: "", // 참여자2 ID (users 참조)
-//                postId: "", // 관련 공고 ID (posts 참조)
-//                postTitle: "", // 공고 제목 (비정규화: posts.title)
-//                postOrganization: "", // 단체명 (비정규화: posts.organization)
-//                participant1Name: "", // 참여자1 이름 (비정규화: users.name)
-//                participant1Role: .applicant,
-//                participant2Name: "",
-//                participant2Role: .recruiter
-//            )
-//            
-//            Task {
-//                let newChat = try await FirestoreManager.shared.create(conversation)
-//                print("채팅기록 생성 : \(newChat)")
-//            }
-            router.push(to: .inboxView)
-        } label: {
-            Text("쪽지화면으로")
+        ZStack {
+            VStack {
+                Group {
+                    if viewModel.isLoading { middleLoadingView }
+                    else if viewModel.conversations.isEmpty { middleContentUnavailableView }
+                    else { middleListView }
+                }
+                .animation(.easeInOut, value: viewModel.isLoading)
+                .task { await viewModel.load() } // 화면 뜰 때 로드
+                .refreshable { await viewModel.load() } // 당겨서 새로고침
+                testBUttonView
+            }
+            .navigationTitle("나의 쪽지함")
+            .navigationBarTitleDisplayMode(.automatic)
         }
+    }
+    
+    // MARK: - Middle Loding View
+    private var middleLoadingView: some View {
+        VStack(spacing: 12) {
+            ProgressView()
+            Text("쪽지를 불러오는 중…")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    // MARK: - Middle ContentUnavailableView
+    private var middleContentUnavailableView: some View {
+        ContentUnavailableView(
+            "대화를 시작해보세요",
+            systemImage: "rectangle.and.pencil.and.ellipsis"
+        )
+    }
+    
+    // MARK: - Middle ListView
+    private var middleListView: some View {
+        List {
+            ForEach(viewModel.conversations, id: \.conversationId) { convo in
+                Button {
+                    router.push(to: .inboxView(conversationId: convo.conversationId))
+                } label: {
+                    ConversationRow(
+                        conversation: convo,
+                        currentUserId: viewModel.currentUserId
+                    )
+                }
+            }
+        }
+        .listStyle(.plain)
+    }
+    
+    // MARK: - 테스트 버튼 (삭제 예정)
+    private var testBUttonView: some View {
+        // 임시: 대화 생성 → 생성된 UUID로 이동
+        Button {
+            Task {
+                do {
+                    let meId = viewModel.currentUserId
+                    let newChat = try await viewModel.createConversation(
+                        postId: "post_123",
+                        postTitle: "댄스월드 연합 동아리",
+                        postOrganization: "댄스월드",
+                        participant1: (id: meId, name: "나", role: .applicant),
+                        participant2: (id: "recruiter_uid", name: "모집자", role: .recruiter)
+                    )
+                    router.push(to: .inboxView(conversationId: newChat.conversationId)) // 여기서 생성된 UUID 사용
+                } catch {
+                    print("create convo error:", error)
+                }
+            }
+        } label: {
+            Text("새 쪽지 시작하기")
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .padding()
     }
 }
 
 #Preview {
-    InboxListView()
-        .environmentObject(NavigationRouter())
+    NavigationStack {
+        InboxListView()
+            .environmentObject(NavigationRouter())
+    }
 }
