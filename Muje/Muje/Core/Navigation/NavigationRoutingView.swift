@@ -38,6 +38,11 @@ struct NavigationRoutingView: View {
                 customQuestion: customQuestion,
                 questionAnswer: .constant(questionAnswer)
               )
+            case .ApplicationManagementView(let postId, let postInfo):
+              ApplicationManagementView(
+                postId: postId,
+                postInfo: postInfo
+              )
             case .emailVerificationView:
                 EmailVerificationView()
             case .userInfoInputView(let uuid, let email):

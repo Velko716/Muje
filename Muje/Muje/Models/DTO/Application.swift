@@ -26,7 +26,7 @@ struct Application: Codable {
     let postOrganization: String
     let postAuthorUserId: String
 
-    @ServerTimestamp var appliedAt: Timestamp? = nil
+    @ServerTimestamp var createdAt: Timestamp? = nil
     @ServerTimestamp var updatedAt: Timestamp? = nil
     
     init(
@@ -46,7 +46,7 @@ struct Application: Codable {
         postTitle: String,
         postOrganization: String,
         postAuthorUserId: String,
-        appliedAt: Timestamp? = nil,
+        createdAt: Timestamp? = nil,
         updatedAt: Timestamp? = nil
     ) {
         self.applicationId = applicationId
@@ -65,7 +65,7 @@ struct Application: Codable {
         self.postTitle = postTitle
         self.postOrganization = postOrganization
         self.postAuthorUserId = postAuthorUserId
-        self.appliedAt = appliedAt
+        self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
     
@@ -87,7 +87,7 @@ struct Application: Codable {
         case postTitle = "post_title"
         case postOrganization = "post_organization"
         case postAuthorUserId = "post_author_user_id"
-        case appliedAt = "applied_at"
+        case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
 }
@@ -107,7 +107,7 @@ extension Application: EntityRepresentable {
             "post_title": postTitle,
             "post_organization": postOrganization,
             "post_author_user_id": postAuthorUserId,
-            //"applied_at": appliedAt ?? FieldValue.serverTimestamp(),
+            //"created_at": createdat ?? FieldValue.serverTimestamp(),
             //"updated_at": updatedAt ?? FieldValue.serverTimestamp()
         ]
 
