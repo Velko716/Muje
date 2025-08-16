@@ -19,10 +19,10 @@ extension ApplicationManagementView {
   
   private var titleSection: some View {
     VStack(alignment: .leading) {
-      Text("동아리명")
+      Text("\(postInfo.organization)")
         .font(.caption)
         .fontWeight(.bold)
-      Text("댄스 동아리 MAD 모집합니다.")
+      Text("\(postInfo.title)")
         .font(.title2)
         .fontWeight(.bold)
     }
@@ -30,7 +30,7 @@ extension ApplicationManagementView {
   
   private var statusSection: some View {
     HStack {
-      Text("모집중")
+      Text("\(postInfo.status)")
         .font(.caption)
         .fontWeight(.bold)
         .padding(.horizontal, 10)
@@ -38,7 +38,7 @@ extension ApplicationManagementView {
         .background(Color.green.opacity(0.2))
         .foregroundStyle(.green)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-      Text("면접 진행")
+      Text(postInfo.hasInterview ? "면접 진행" : "면접 없음")
         .font(.caption)
         .fontWeight(.bold)
         .padding(.horizontal, 10)
@@ -57,7 +57,7 @@ extension ApplicationManagementView {
       Text("모집 기간")
         .font(.subheadline)
         .foregroundStyle(.secondary)
-      Text("기간 기간 기간")
+      Text("\(postInfo.recruitmentStart.dateValue().shortDateString) ~ \(postInfo.recruitmentEnd.dateValue().shortDateString)")
     }
   }
 }
