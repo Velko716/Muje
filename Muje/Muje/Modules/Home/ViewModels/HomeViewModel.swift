@@ -18,17 +18,9 @@ final class HomeViewModel {
     }
     var errorMessage: String? = nil
     var isLoading: Bool = false
-    private let isMock: Bool
     
-    init(isMock: Bool = false) {
-        self.isMock = isMock
-        if isMock {
-            print("⭐️ 목 데이터를 사용합니다 ")
-            postList = Self.mockPosts
-        }
-        else {
-            postListFetch()
-        }
+    init() {
+        postListFetch()
     }
     
     func postListFetch() {
@@ -41,30 +33,33 @@ final class HomeViewModel {
                 FirestoreManager.shared.fetch(
                     as: Post.self,
                     .posts,
-                    order: "createdAt"
+                    order: "createdAt",
+                    count: 10
                 )
+                postList = fetchPosts
                 
                 print("✅ 데이터 로드 성공: \(fetchPosts.count)개")
-                postList = fetchPosts
+                print("🔍 첫 번째 게시글 제목: \(postList.first?.title ?? "없음")")
+                
                 isLoading = false
                 
-            } catch {
-                errorMessage = error.localizedDescription
-                isLoading = false
+            }  catch {
+                print("❌ HomeViewModel - postListFetch() error: \(error)")
+                print("❌ 에러 타입: \(type(of: error))")
+                print("❌ 에러 상세: \(error.localizedDescription)")
                 
-                print("❌ HomeViewModel - postListFetch() error: \(error.localizedDescription)")
-                
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    isLoading = false
+                }
             }
         }
     }
     
     //MARK: 목 데이터 사용
     static let mockPosts: [Post] = [
-        Post(postId: UUID(), authorUserId: "temp", title: "동아리 모집합니다", organization: "세오의동아리", content: "내용입니다.", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), hasInterview: true, status: "모집중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "temp", authorOrganization: "세오의 동아리", createdAt: Timestamp(date: Date()), updatedAt: Timestamp(date: Date())),
-        Post(postId: UUID(), authorUserId: "temp", title: "동아리 모집합니다", organization: "세오의동아리", content: "내용입니다.", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), hasInterview: true, status: "모집중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "temp", authorOrganization: "세오의 동아리", createdAt: Timestamp(date: Date()), updatedAt: Timestamp(date: Date()))
+        Post(postId: UUID(), authorUserId: "temp", title: "💃공과대학 댄스동아리 D.I.US 11기 신입부원 모집💃", organization: "세오의동아리", content: "내용입니다.", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), hasInterview: true, status: "모집중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "temp", authorOrganization: "세오의 동아리", createdAt: Timestamp(date: Date()), updatedAt: Timestamp(date: Date())),
+        Post(postId: UUID(), authorUserId: "temp", title: "💃공과대학 댄스동아리 D.I.US 11기 신입부원 모집💃", organization: "세오의동아리", content: "내용입니다.", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), hasInterview: true, status: "모집중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "temp", authorOrganization: "세오의 동아리", createdAt: Timestamp(date: Date()), updatedAt: Timestamp(date: Date()))
     ]
     
-    static var mock: HomeViewModel {
-        return HomeViewModel(isMock: true)
-    }
 }

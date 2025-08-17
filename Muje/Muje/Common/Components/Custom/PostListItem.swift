@@ -18,7 +18,7 @@ struct PostListItem: View {
                 // MARK: 상단 - 동아리명
                 VStack(alignment: .leading){
                     //FIXME: 에셋 추가되면 폰트 수정
-                    Text(post.authorOrganization)
+                    Text(post.organization)
                         .fontWeight(.medium)
                         .font(.system(size: 14))
                         .foregroundStyle(Color(red: 0.53, green: 0.53, blue: 0.53))
@@ -36,24 +36,27 @@ struct PostListItem: View {
                         .font(.system(size: 14))
                         .foregroundStyle(Color(red: 0.66, green: 0.66, blue: 0.66))
                 } //: VSTACK
-                Spacer(minLength: 20)
-                // 정사각형 안에 이미지 넣는거 어떻게 하나 보통?
+                
+                Spacer()
+                
                 // MARK: 우측 - 사진 (미리보기)
-                // FIXME: 이미지 정사각형 어쩌고저쩌고 preference key 써서 고치겠습니다
                 Image(.temp)
                     .resizable()
-                    .aspectRatio(1, contentMode: .fill)
-                    .clipped()
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    
-                    //.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .scaledToFit()
+                    .mask {
+                        RoundedRectangle(cornerRadius: 10)
+                            .aspectRatio(1, contentMode: .fit)
+                    }
+                    .padding(.vertical, 17)
             } //: HSTACK
+            .ignoresSafeArea()
             .frame(maxWidth: .infinity)
+            
             .padding(.vertical, 20)
-            .padding(.horizontal, 14)
-            Divider()
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
         }
+        .onAppear {
+        print("🔍 PostListItem 렌더링: \(post.title)")
     }
+    }
+
 }

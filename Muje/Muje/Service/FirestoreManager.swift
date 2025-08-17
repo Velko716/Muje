@@ -73,22 +73,30 @@ final class FirestoreManager {
         as type: T.Type,
         _ collectionType: CollectionType,
         order: String? = nil,
-        count: Int=0
+        count: Int = 0
     ) async throws -> [T] {
         var query: Query = db.collection(collectionType.rawValue)
-        if let order = order { query = query.order(by: order, descending: true) }
+        
+        print("🔍 컬렉션 이름: \(collectionType.rawValue)") // 디버그용
+        
         if count > 0 { query = query.limit(to: count) }
         
         let snapshot = try await query.getDocuments()
+        print("📄 문서 개수: \(snapshot.documents.count)") // 디버그용
         
-        let items: [T] = snapshot.documents.compactMap { document in
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: document.data()),
-                  let decoded = try? JSONDecoder().decode(T.self, from: jsonData)
-            else {
-                return nil  // throw 대신 nil 반환
+        let items = snapshot.documents.compactMap { document in
+                do {
+                    let decoded = try document.data(as: T.self)
+                    print("✅ 디코딩 성공: \(document.documentID)")
+                    return decoded
+                } catch {
+                    print("❌ 디코딩 실패: \(document.documentID), 에러: \(error)")
+                    return nil
+                }
             }
-            return decoded
-        }
+        if let order = order { query = query.order(by: order, descending: true) }
+        
+        print("✅ 최종 아이템 개수: \(items.count)")
         return items
     }
     

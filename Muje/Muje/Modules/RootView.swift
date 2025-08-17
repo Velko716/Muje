@@ -51,7 +51,7 @@ struct RootView: View {
         Group {
             switch tab {
             case .home:
-                HomeView(viewModel: .mock)
+                HomeView()
             case .myPosts:
                 MyPostsView()
             case .inbox:

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var router: NavigationRouter
-    @State var viewModel: HomeViewModel
+    @State var viewModel = HomeViewModel()
      
     
    var body: some View {
@@ -34,16 +34,16 @@ struct HomeView: View {
            } //: HSTACK
            .padding(.horizontal, 16)
            
-           
-           List(viewModel.postList, id: \.self) { post in
-               PostListItem(post: post)
-           }
-           .frame(maxWidth: .infinity, maxHeight: .infinity)
-           .listStyle(.grouped)
-           .listRowBackground(Color.clear)
-           .listRowSeparator(.hidden)
-           .listRowInsets(EdgeInsets())
-           .ignoresSafeArea()
+               List(viewModel.postList, id: \.postId) { post in
+                   PostListItem(post: post)
+               }
+               .frame(maxWidth: .infinity, maxHeight: .infinity)
+               .padding(.horizontal, 16)
+               .listStyle(.plain)
+               .listRowBackground(Color.clear)
+               .listRowSeparator(.hidden)
+               .listRowInsets(EdgeInsets())
+               .ignoresSafeArea()
            
        }
    }
