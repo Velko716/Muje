@@ -16,6 +16,7 @@ struct ApplicationManagementRow: View {
   
   let isSelected: Bool
   let application: Application
+  let onTap: () -> Void
   
   var body: some View {
     HStack {
@@ -47,7 +48,7 @@ struct ApplicationManagementRow: View {
       if viewModel.isSelectionMode {
         viewModel.toggleSelection(application.applicationId)
       } else {
-        // TODO: 지원자 상세 모달 구현
+        onTap()
       }
     }
     .onLongPressGesture(
@@ -144,6 +145,6 @@ struct ApplicationManagementRow: View {
       postTitle: "동아리 어쩌고",
       postOrganization: "MAD",
       postAuthorUserId: "dddd"
-    )
+    ), onTap: {}
   )
 }
