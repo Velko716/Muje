@@ -14,6 +14,7 @@ struct InboxView: View {
     
     @State private var viewModel: InboxViewModel
     @State private var text: String = ""
+    @State private var showActionSheet = false
     @FocusState private var isFocused: Bool
     private let buttonSize: CGFloat = 40 // SendButton 버튼 사이즈 비교
     
@@ -46,8 +47,31 @@ struct InboxView: View {
         .toolbar {
             navigationToolbarItems
         }
-        .onAppear { viewModel.start() }
+        .onAppear { viewModel.start() } // FIXME: - 코드 수정
         .onDisappear { viewModel.stop() }
+        .overlay {
+            if showActionSheet {
+                InboxActionSheetView(
+                    onReport: {
+                        showActionSheet = false
+                        // TODO: 신고 플로우
+                    },
+                    onBlock: {
+                        showActionSheet = false
+                        // TODO: 차단 플로우
+                    },
+                    onLeave: {
+                        showActionSheet = false
+                        // TODO: "채팅방 나가기" 처리
+                    },
+                    onClose: {
+                        showActionSheet = false
+                    }
+                )
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .animation(.easeInOut(duration: 0.22), value: showActionSheet)
+            }
+        }
     }
     
     // MARK: - 네비게이션 툴 바 아이템
@@ -71,7 +95,7 @@ struct InboxView: View {
         
         ToolbarItem(placement: .topBarTrailing) {
             Button {
-                // TODO: 액션 시트 나오기
+                self.showActionSheet = true
             } label: {
                 Image(.ellipsisVertical)
             }
