@@ -10,8 +10,15 @@ import SwiftUI
 struct SearchView: View {
     @EnvironmentObject var router: NavigationRouter
     @State var viewModel: SearchViewModel
+    let allPosts: [Post]
+    
+    init(allPosts: [Post]) {
+        self.allPosts = allPosts
+        self._viewModel = State(wrappedValue: SearchViewModel(posts: allPosts))
+    }
     
     var body: some View {
+        
         VStack {
             SearchBar(searchText: $viewModel.searchText, status: $viewModel.searchState)
                 .padding(.horizontal, 8)
@@ -47,9 +54,4 @@ struct SearchView: View {
     }
     
     
-}
-
-#Preview {
-    SearchView(viewModel: SearchViewModel())
-        .environmentObject(NavigationRouter())
 }

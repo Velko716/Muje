@@ -14,17 +14,16 @@ import Combine
 
 @Observable
 final class SearchViewModel {
+    let allPosts: [Post]
     var searchText = ""
-    var allPosts: [Post] = []
     var searchResults: [Post] = []
     var errorMessage: String?
     var searchState: SearchStatus = .typing
     
-    
-    init() {
+    init(posts: [Post]) {
         searchResults = []
         searchText = ""
-        allPosts = self.allPosts
+        self.allPosts = posts
     }
     
     func filterPosts() {

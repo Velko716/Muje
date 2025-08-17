@@ -21,7 +21,7 @@ struct HomeView: View {
                 
                 //MARK: 검색 아이콘
                 Button(action: {
-                    router.push(to: .searchView)
+                    router.push(to: .searchView(posts: viewModel.postList))
                 }) {
                     Image(systemName: "magnifyingglass")
                 }

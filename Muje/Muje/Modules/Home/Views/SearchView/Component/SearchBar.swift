@@ -44,7 +44,7 @@ struct SearchBar: View {
                 }
                 // 검색창 들어가자마자 자동으로 키보드 활성화
                 .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    DispatchQueue.main.asyncAfter(deadline: .now()) {
                         self.isTextFieldFocused = true
                     }
                 }

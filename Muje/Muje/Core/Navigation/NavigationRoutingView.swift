@@ -15,8 +15,8 @@ struct NavigationRoutingView: View {
             switch destination {
             case .contentView: // 임시
                 RootView() // 임시
-            case .searchView:
-                SearchView(viewModel: SearchViewModel())
+            case .searchView(let posts):
+                SearchView(allPosts: posts)
             case .notificationView:
                 NotificationView()
             case .RecruitmentDetailView(let postId):

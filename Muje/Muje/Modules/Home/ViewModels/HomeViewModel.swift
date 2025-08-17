@@ -34,7 +34,7 @@ final class HomeViewModel {
                     as: Post.self,
                     .posts,
                     order: "createdAt",
-                    count: 10
+                    count: 0 //count가 0이면 모든 데이터를 가져옴
                 )
                 postList = fetchPosts
                 
@@ -55,11 +55,5 @@ final class HomeViewModel {
             }
         }
     }
-    
-    //MARK: 목 데이터 사용
-    static let mockPosts: [Post] = [
-        Post(postId: UUID(), authorUserId: "temp", title: "💃공과대학 댄스동아리 D.I.US 11기 신입부원 모집💃", organization: "세오의동아리", content: "내용입니다.", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), hasInterview: true, status: "모집중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "temp", authorOrganization: "세오의 동아리", createdAt: Timestamp(date: Date()), updatedAt: Timestamp(date: Date())),
-        Post(postId: UUID(), authorUserId: "temp", title: "💃공과대학 댄스동아리 D.I.US 11기 신입부원 모집💃", organization: "세오의동아리", content: "내용입니다.", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), hasInterview: true, status: "모집중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "temp", authorOrganization: "세오의 동아리", createdAt: Timestamp(date: Date()), updatedAt: Timestamp(date: Date()))
-    ]
     
 }
