@@ -27,7 +27,7 @@ enum ApplicationStatus: String, Codable, CaseIterable {
     }
   }
 }
-
+// MARK: - ManagementView 사용
 extension Application {
   var detailedStatusText: String {
     let status = ApplicationStatus(rawValue: self.status)
