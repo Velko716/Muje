@@ -14,7 +14,10 @@ struct InboxView: View {
     
     @State private var viewModel: InboxViewModel
     @State private var text: String = ""
+    
     @State private var showActionSheet = false
+    @State private var showLeaveAlert = false
+    
     @FocusState private var isFocused: Bool
     private let buttonSize: CGFloat = 40 // SendButton 버튼 사이즈 비교
     
@@ -61,11 +64,8 @@ struct InboxView: View {
                         // TODO: 차단 플로우
                     },
                     onLeave: {
-                        Task {
-                            await viewModel.leave()
-                            rotuer.pop()                 // ← 리스트로 복귀
-                        }
                         showActionSheet = false
+                        showLeaveAlert = true
                     },
                     onClose: {
                         showActionSheet = false
@@ -74,6 +74,17 @@ struct InboxView: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .animation(.easeInOut(duration: 0.22), value: showActionSheet)
             }
+        }
+        .alert("채팅방 나가기", isPresented: $showLeaveAlert) {
+            Button("나가기", role: .destructive) {
+                Task {
+                    await viewModel.leave()
+                    rotuer.pop()                 // ← 리스트로 복귀
+                }
+            }
+            Button("취소", role: .cancel) { }
+        } message: {
+            Text("채팅방을 나가면 대화내용이 삭제됩니다.")
         }
     }
     
