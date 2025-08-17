@@ -5,12 +5,15 @@
 //  Created by 김진혁 on 8/1/25.
 //
 
+import FirebaseStorage
 import FirebaseFirestore
 
 final class FirestoreManager {
     
     static let shared = FirestoreManager()
     let db = Firestore.firestore()
+    private let storage = Storage.storage() //이미지를 불러오기 위함인데 잠시 대기
+    
     private init() {}
     
     private func save<T: EntityRepresentable>(

@@ -38,13 +38,12 @@ struct HomeView: View {
                    PostListItem(post: post)
                }
                .frame(maxWidth: .infinity, maxHeight: .infinity)
-               .padding(.horizontal, 16)
                .listStyle(.plain)
                .listRowBackground(Color.clear)
                .listRowSeparator(.hidden)
                .listRowInsets(EdgeInsets())
-               .ignoresSafeArea()
            
-       }
+       } //: VSTACK
+       
    }
 }
