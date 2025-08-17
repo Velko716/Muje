@@ -7,35 +7,76 @@
 
 import SwiftUI
 import FirebaseCore
-import UserNotifications
 import FirebaseAuth
+import FirebaseMessaging
+import FirebaseFirestore
+import UserNotifications
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
+    
     func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         FirebaseApp.configure()
         
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in
-            
+        // 알림 권한 요청 + 델리게이트 설정
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+            print("Notification permission granted:", granted)
+            DispatchQueue.main.async {
+                UIApplication.shared.registerForRemoteNotifications() // ← 반드시 호출
+            }
         }
         
-        application.registerForRemoteNotifications()
-        
+        Messaging.messaging().delegate = self
         return true
     }
     
-    // MARK: - 휴대전화 인증 시 필요
+    // APNs 토큰 등록 확인 (스위즐링 ON이면 자동 전달되지만, 있으면 더 확실)
     func application(_ application: UIApplication,
-                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
-                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        if Auth.auth().canHandleNotification(userInfo) {
-            // Firebase 인증 관련 알림이면 처리 완료로 반환
-            completionHandler(.noData)
-            return
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        print("APNs deviceToken:", deviceToken.map { String(format: "%02.2hhx", $0) }.joined())
+        // 스위즐링 OFF(Info.plist에 FirebaseAppDelegateProxyEnabled = NO)라면 아래 줄 꼭 필요
+        // Messaging.messaging().apnsToken = deviceToken
+    }
+    
+    // 포그라운드 표시
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound, .badge])
+    }
+    
+    // 탭한 뒤 라우팅
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        print("Tapped notification userInfo:", userInfo)
+        // userInfo["conversation_id"] 활용해 채팅방으로 이동
+        completionHandler()
+    }
+    
+    // 최신 FCM 토큰 콜백
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        print("FCM token(updated):", fcmToken ?? "nil")
+        // Firestore 저장 (아래 함수 참고)
+        if let token = fcmToken { Task { await saveTokenToFirestore(token) } }
+    }
+    
+    private func saveTokenToFirestore(_ token: String) async {
+        guard let uid = FirebaseAuthManager.shared.currentUser?.userId else { return }
+        let ref = Firestore.firestore()
+            .collection("users").document(uid)
+            .collection("fcm_tokens").document(token) // 문서 ID=토큰 문자열
+        do {
+            try await ref.setData([
+                "created_at": FieldValue.serverTimestamp(),
+                "platform": "ios"
+            ], merge: true)
+            print("Saved FCM token to Firestore")
+        } catch {
+            print("Save token error:", error)
         }
-        
-        // 다른 알림 처리 (예: FCM 등)
-        completionHandler(.noData)
     }
 }
 
@@ -44,10 +85,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct MujeApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var router: NavigationRouter = .init()
-
+    @StateObject var push = NotificationCoordinator()
+    
     @State private var isReady = false
     @State private var bootError: String?
-
+    
     var body: some Scene {
         WindowGroup {
             Group {
@@ -67,11 +109,11 @@ struct MujeApp: App {
                             url: url,
                             inputEmail: FirebaseAuthManager.shared.email
                         )
-
+                        
                         if isNewUser {
                             if let uid = Auth.auth().currentUser?.uid {
                                 print("[Auth] New user UID: \(uid)")
-
+                                
                                 let newUser = User(
                                     userId: uid,
                                     email: FirebaseAuthManager.shared.email,
@@ -85,7 +127,7 @@ struct MujeApp: App {
                                     privacyAgreed: false
                                 )
                                 _ = try await FirestoreManager.shared.create(newUser)
-
+                                
                                 // 뷰 전환이 즉시 가능하도록 먼저 준비 완료 표시
                                 isReady = true
                                 // 회원정보 입력 화면으로 이동
@@ -110,9 +152,14 @@ struct MujeApp: App {
                 }
             }
             .environmentObject(router)
+            .environmentObject(push)
+            .onReceive(NotificationCenter.default.publisher(for: .openConversation)) { n in
+                guard let uuid = n.object as? UUID else { return }
+                router.push(to: .inboxView(conversationId: uuid))
+            }
         }
     }
-
+    
     // MARK: - 현재 유저 로드
     @MainActor
     private func boot() async {
@@ -134,3 +181,6 @@ struct MujeApp: App {
         }
     }
 }
+
+final class NotificationCoordinator: ObservableObject {}
+extension Notification.Name { static let openConversation = Notification.Name("openConversation") }

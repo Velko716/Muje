@@ -83,7 +83,7 @@ struct InboxListView: View {
                         postTitle: "댄스월드 연합 동아리",
                         postOrganization: "댄스월드",
                         participant1: (id: meId, name: "나", role: .applicant),
-                        participant2: (id: "recruiter_uid", name: "모집자", role: .recruiter)
+                        participant2: (id: "FTMIffTVLdb8GuhHweHJEgAwFqB2", name: "모집자", role: .recruiter)
                     )
                     router.push(to: .inboxView(conversationId: newChat.conversationId)) // 여기서 생성된 UUID 사용
                 } catch {

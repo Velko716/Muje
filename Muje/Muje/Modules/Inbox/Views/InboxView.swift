@@ -79,7 +79,7 @@ struct InboxView: View {
             Button("나가기", role: .destructive) {
                 Task {
                     await viewModel.leave()
-                    rotuer.pop()                 // ← 리스트로 복귀
+                    rotuer.pop()
                 }
             }
             Button("취소", role: .cancel) { }
