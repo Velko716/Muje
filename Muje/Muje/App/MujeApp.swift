@@ -84,6 +84,8 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 @main
 struct MujeApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @Environment(\.scenePhase) private var scenePhase
+    
     @StateObject private var router: NavigationRouter = .init()
     @StateObject var push = NotificationCoordinator()
     
@@ -156,6 +158,10 @@ struct MujeApp: App {
             .onReceive(NotificationCenter.default.publisher(for: .openConversation)) { n in
                 guard let uuid = n.object as? UUID else { return }
                 router.push(to: .inboxView(conversationId: uuid))
+            }
+            // FIXME: - (임시) 수정
+            .onChange(of: scenePhase) { phase, _ in
+                if phase == .active { UNUserNotificationCenter.current().setBadgeCount(0) } // 뱃지 초기화
             }
         }
     }
