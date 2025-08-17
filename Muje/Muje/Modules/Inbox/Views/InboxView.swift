@@ -111,6 +111,7 @@ struct InboxView: View {
                 }
                 .padding(.vertical, 12)
             }
+            .scrollIndicators(.hidden)
             // 새 메시지 오면 하단으로 스크롤
             .onChange(of: viewModel.messages.last?.stableId) { id, _ in
                 guard let id else { return }
