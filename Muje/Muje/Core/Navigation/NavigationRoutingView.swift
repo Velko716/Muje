@@ -47,6 +47,7 @@ struct NavigationRoutingView: View {
             }
         }
         .hideBackButton()
+        .dismissKeyboardOnTap()
         .environmentObject(router)
     }
 }
