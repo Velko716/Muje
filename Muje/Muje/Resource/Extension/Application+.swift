@@ -7,7 +7,8 @@
 
 import Foundation
 
-extension Application {
+extension Application: Identifiable {
+  var id: UUID { applicationId }
   var genderEnum: Gender? {
     guard let applicantGender else { return nil }
     return Gender(rawValue: applicantGender)
