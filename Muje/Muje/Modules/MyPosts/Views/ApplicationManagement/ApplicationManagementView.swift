@@ -16,6 +16,9 @@ struct ApplicationManagementView: View {
   let postId: String
   let postInfo: ApplicationManagementPostInfo
   
+  // 모달 상태 관리
+  @State var selectedApplicant: Application?
+  
   var body: some View {
     VStack(spacing: 0) {
       CustomNavigationBar(
@@ -64,6 +67,13 @@ struct ApplicationManagementView: View {
     //    }
     .task {
       await viewModel.loadApplicationData(for: postId)
+    }
+    .sheet(item: $selectedApplicant) { applicant in
+      ApplicantDetailModalView(
+        viewModel: viewModel,
+        applicant: applicant,
+        allApplicants: viewModel.getCurrentApplicant()
+      )
     }
   }
   
