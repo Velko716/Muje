@@ -37,11 +37,12 @@ struct SearchView: View {
             switch viewModel.searchState {
             case .typing:
                 SearchSuggestionItemView(filteredPosts: $viewModel.searchResults)
-            case .result(let keyword):
+            case .result(_):
                 SearchResultView(searchText: $viewModel.searchText, filteredPosts: $viewModel.searchResults)
             }
             
         } //: VSTACK
+        .padding(.horizontal, 16)
         
     }
     

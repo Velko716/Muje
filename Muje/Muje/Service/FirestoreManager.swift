@@ -68,6 +68,47 @@ final class FirestoreManager {
             .delete()
     }
     
+}
+
+// FIXME: - 임시 (UUID -> UUIDString)
+extension FirestoreManager {
+    func fetchBlocks(for userId: UUID) async throws -> [Block] {
+        let snapshot = try await db
+            .collection("User")
+            .document(userId.uuidString)
+            .collection("blocks")
+            .order(by: "created_at", descending: true)
+            .getDocuments()
+        
+        let blocks = try snapshot.documents.compactMap { document in
+            try document.data(as: Block.self)
+        }
+        
+        return blocks
+    }
+    
+    func fetchWithCondition<T: Decodable>(
+        from collectionType: CollectionType,
+        whereField field: String,
+        equalTo value: Any,
+        sortedBy sortComparator: @escaping (T, T) -> Bool
+    ) async throws -> [T] {
+        
+        let snapshot = try await db
+            .collection(collectionType.rawValue)
+            .whereField(field, isEqualTo: value)
+            .getDocuments()
+        
+        let items = snapshot.documents.compactMap { document in
+            do {
+                return try document.data(as: T.self)
+            } catch {
+                print("fetch 디코딩 실패 \(error)")
+                return nil
+            }
+        }
+        return items.sorted(by: sortComparator)
+    }
     
     // collectionType: 해당 데이터가 어떤 유형인지
     // order: 정렬 방식
@@ -88,60 +129,18 @@ final class FirestoreManager {
         print("📄 문서 개수: \(snapshot.documents.count)") // 디버그용
         
         let items = snapshot.documents.compactMap { document in
-                do {
-                    let decoded = try document.data(as: T.self)
-                    print("✅ 디코딩 성공: \(document.documentID)")
-                    return decoded
-                } catch {
-                    print("❌ 디코딩 실패: \(document.documentID), 에러: \(error)")
-                    return nil
-                }
+            do {
+                let decoded = try document.data(as: T.self)
+                print("✅ 디코딩 성공: \(document.documentID)")
+                return decoded
+            } catch {
+                print("❌ 디코딩 실패: \(document.documentID), 에러: \(error)")
+                return nil
             }
+        }
         if let order = order { query = query.order(by: order, descending: true) }
         
         print("✅ 최종 아이템 개수: \(items.count)")
         return items
     }
-    
-}
-
-// FIXME: - 임시 (UUID -> UUIDString)
-extension FirestoreManager {
-    func fetchBlocks(for userId: UUID) async throws -> [Block] {
-        let snapshot = try await db
-            .collection("User")
-            .document(userId.uuidString)
-            .collection("blocks")
-            .order(by: "created_at", descending: true)
-            .getDocuments()
-
-        let blocks = try snapshot.documents.compactMap { document in
-            try document.data(as: Block.self)
-        }
-
-        return blocks
-    }
-    
-  func fetchWithCondition<T: Decodable>(
-    from collectionType: CollectionType,
-    whereField field: String,
-    equalTo value: Any,
-    sortedBy sortComparator: @escaping (T, T) -> Bool
-  ) async throws -> [T] {
-    
-    let snapshot = try await db
-      .collection(collectionType.rawValue)
-      .whereField(field, isEqualTo: value)
-      .getDocuments()
-    
-    let items = snapshot.documents.compactMap { document in
-      do {
-        return try document.data(as: T.self)
-      } catch {
-        print("fetch 디코딩 실패 \(error)")
-        return nil
-      }
-    }
-    return items.sorted(by: sortComparator)
-  }
 }

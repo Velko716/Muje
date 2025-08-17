@@ -24,10 +24,7 @@ final class SearchViewModel {
     init() {
         searchResults = []
         searchText = ""
-        allPosts = [
-            Post(postId: UUID(), authorUserId: "temp", title: "동아리 모집합니다", organization: "세오의동아리", content: "내용입니다.", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), hasInterview: true, status: "모집중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "temp", authorOrganization: "세오의 동아리", createdAt: Timestamp(date: Date()), updatedAt: Timestamp(date: Date())),
-            Post(postId: UUID(), authorUserId: "temp", title: "동아리 모집합니다", organization: "서혀니의동아리", content: "내용입니다.", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), hasInterview: true, status: "모집중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "temp", authorOrganization: "서혀니의 동아리", createdAt: Timestamp(date: Date()), updatedAt: Timestamp(date: Date()))
-        ]
+        allPosts = self.allPosts
     }
     
     func filterPosts() {

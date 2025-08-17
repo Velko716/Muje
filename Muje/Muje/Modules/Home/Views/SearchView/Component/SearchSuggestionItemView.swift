@@ -22,7 +22,6 @@ struct SearchSuggestionItemView: View {
         }
         .listStyle(PlainListStyle())
         .listRowSpacing(18)
-        .padding(.horizontal, 16)
     }
 }
 

@@ -42,6 +42,12 @@ struct SearchBar: View {
                         status = .typing
                     }
                 }
+                // 검색창 들어가자마자 자동으로 키보드 활성화
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.isTextFieldFocused = true
+                    }
+                }
                 
                 Spacer()
             }
@@ -49,7 +55,8 @@ struct SearchBar: View {
             .padding(.horizontal, 11.5)
             .background(
                 RoundedRectangle(cornerRadius: 100)
-                    .fill(Color.white)
+                    .fill(Color.gray)
+                    .opacity(0.2)
             )
         }
         .frame(maxWidth: .infinity)
