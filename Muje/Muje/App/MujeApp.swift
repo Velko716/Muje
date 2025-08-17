@@ -27,9 +27,16 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             }
         }
         
+        // 종료 상태에서 알림 탭해 런치된 경우 처리
+        if let remote = launchOptions?[.remoteNotification] as? [AnyHashable: Any] {
+            DeepLinkController.shared.handle(userInfo: remote)
+        }
+        
         Messaging.messaging().delegate = self
         return true
     }
+    
+    
     
     // APNs 토큰 등록 확인 (스위즐링 ON이면 자동 전달되지만, 있으면 더 확실)
     func application(_ application: UIApplication,
@@ -46,15 +53,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         completionHandler([.banner, .sound, .badge])
     }
     
-    // 탭한 뒤 라우팅
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                didReceive response: UNNotificationResponse,
-                                withCompletionHandler completionHandler: @escaping () -> Void) {
-        let userInfo = response.notification.request.content.userInfo
-        print("Tapped notification userInfo:", userInfo)
-        // userInfo["conversation_id"] 활용해 채팅방으로 이동
-        completionHandler()
-    }
+    // 알림 배너 탭(백그라운드/포그라운드) 공통 처리
+       func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                   didReceive response: UNNotificationResponse,
+                                   withCompletionHandler completionHandler: @escaping () -> Void) {
+           let userInfo = response.notification.request.content.userInfo
+           DeepLinkController.shared.handle(userInfo: userInfo)
+           completionHandler()
+       }
     
     // 최신 FCM 토큰 콜백
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
@@ -88,6 +94,8 @@ struct MujeApp: App {
     
     @StateObject private var router: NavigationRouter = .init()
     @StateObject var push = NotificationCoordinator()
+    @StateObject private var deepLink = DeepLinkController.shared
+
     
     @State private var isReady = false
     @State private var bootError: String?
@@ -155,13 +163,18 @@ struct MujeApp: App {
             }
             .environmentObject(router)
             .environmentObject(push)
-            .onReceive(NotificationCenter.default.publisher(for: .openConversation)) { n in
-                guard let uuid = n.object as? UUID else { return }
-                router.push(to: .inboxView(conversationId: uuid))
+            // 앱이 뜨자마자 pending 있으면 처리(종료 상태에서 탭해 런치된 경우)
+            .onAppear {
+                if let cid = deepLink.pendingConversationId {
+                    router.push(to: .inboxView(conversationId: cid))
+                    deepLink.pendingConversationId = nil
+                }
             }
-            // FIXME: - (임시) 수정
-            .onChange(of: scenePhase) { phase, _ in
-                if phase == .active { UNUserNotificationCenter.current().setBadgeCount(0) } // 뱃지 초기화
+            // 런타임 중(백그라운드→포그라운드 포함) 변경 감지
+            .onChange(of: deepLink.pendingConversationId) { cid, _ in
+                guard let cid else { return }
+                router.push(to: .inboxView(conversationId: cid))
+                deepLink.pendingConversationId = nil
             }
         }
     }
@@ -188,5 +201,4 @@ struct MujeApp: App {
     }
 }
 
-final class NotificationCoordinator: ObservableObject {}
-extension Notification.Name { static let openConversation = Notification.Name("openConversation") }
+
