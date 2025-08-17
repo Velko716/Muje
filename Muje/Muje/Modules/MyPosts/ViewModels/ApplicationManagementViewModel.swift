@@ -98,7 +98,7 @@ final class ApplicationManagementViewModel {
       selectedApplicantId = Set(filterApplicants.map { $0.applicationId })
     }
   }
-  
+  // MARK: - 왼쪽 오른쪽 버튼 분기 처리
   func handleRightButtonAction() {
     switch selectedManagementStage {
     case .submitted:
