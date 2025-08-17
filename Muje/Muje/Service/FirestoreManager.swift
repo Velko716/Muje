@@ -185,6 +185,28 @@ extension FirestoreManager {
         let items = snap.documents.compactMap { try? $0.data(as: Message.self) }.reversed()
         return (Array(items), snap.documents.last)
     }
+    
+    /// 나가기: 참가자 배열에서 내 UID 제거 + 감사 로그 기록
+    func leaveConversation(conversationId: UUID, userId: String) async throws {
+        let convoRef = db.collection("conversations").document(conversationId.uuidString)
+
+        let snap = try await convoRef.getDocument()
+        let data = snap.data() ?? [:]
+        let participants = data["participants"] as? [String] ?? []
+
+        if participants == [userId] || participants.isEmpty {
+            try await convoRef.delete() // 내가 마지막 참가자면 방 문서 삭제
+            return
+        }
+
+        // 그 외: 내 UID만 제거
+        try await convoRef.updateData([
+            "participants": FieldValue.arrayRemove([userId]),
+            "left_users": FieldValue.arrayUnion([userId]),
+            "left_at.\(userId)": FieldValue.serverTimestamp(),
+            "updated_at": FieldValue.serverTimestamp()
+        ])
+    }
 }
 
 // MARK: - 쪽지 리스트

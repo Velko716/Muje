@@ -61,8 +61,11 @@ struct InboxView: View {
                         // TODO: 차단 플로우
                     },
                     onLeave: {
+                        Task {
+                            await viewModel.leave()
+                            rotuer.pop()                 // ← 리스트로 복귀
+                        }
                         showActionSheet = false
-                        // TODO: "채팅방 나가기" 처리
                     },
                     onClose: {
                         showActionSheet = false

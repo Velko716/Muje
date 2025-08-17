@@ -26,6 +26,8 @@ final class InboxViewModel {
         self.currentUserId = currentUserId
     }
     
+    // MARK: - 쪽지
+    
     func start() {
         stop()
         listener = FirestoreManager.shared.listenMessages(
@@ -68,4 +70,18 @@ final class InboxViewModel {
             print("send error:", error)
         }
     }
+    
+    
+    // MARK: - 액션 시트
+    func leave() async {
+        do {
+            try await FirestoreManager.shared.leaveConversation(
+                conversationId: conversationId,
+                userId: currentUserId
+            )
+        } catch {
+            print("leave error:", error)
+        }
+    }
+    
 }
