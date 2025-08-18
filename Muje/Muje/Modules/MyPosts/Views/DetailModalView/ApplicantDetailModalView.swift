@@ -134,33 +134,9 @@ struct ApplicantDetailModalView: View {
     }
   }
   
-
+  
 }
 
 #Preview {
-  ApplicantDetailModalView(
-    viewModel: ModalViewModel(
-      managementViewModel: ApplicationManagementViewModel(),
-      applicant: Application(
-        applicationId: UUID(),
-        applicantUserId: "dd",
-        postId: "dd",
-        status: ApplicationStatus.submitted.rawValue,
-        applicantName: "dd",
-        postTitle: "dd",
-        postOrganization: "dd",
-        postAuthorUserId: "dd"
-      ),
-      allApplicants: [Application(
-        applicationId: UUID(),
-        applicantUserId: "dd",
-        postId: "dd",
-        status: ApplicationStatus.submitted.rawValue,
-        applicantName: "dd",
-        postTitle: "dd",
-        postOrganization: "dd",
-        postAuthorUserId: "dd"
-      )]
-    )
-  )
+  ApplicantDetailModalView(viewModel: .preview)
 }

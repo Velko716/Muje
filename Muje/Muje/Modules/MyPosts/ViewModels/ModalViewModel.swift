@@ -157,3 +157,47 @@ extension ModalViewModel {
     }
   }
 }
+// MARK: - 프리뷰 목데이터
+extension ModalViewModel {
+  static var preview: ModalViewModel {
+    let mockApplicant = Application(
+      applicationId: UUID(),
+      applicantUserId: "dd",
+      postId: "dd",
+      status: ApplicationStatus.interviewWaiting.rawValue,
+      applicantName: "조재훈",
+      applicantBirthYear: 1999,
+      applicantGender: "M",
+      applicantDepartment: "스포츠과학과",
+      applicantStudentId: "202046466",
+      postTitle: "동아리 모집",
+      postOrganization: "MUJE",
+      postAuthorUserId: "dd"
+    )
+    
+    let vm = ModalViewModel(
+      managementViewModel: ApplicationManagementViewModel(),
+      applicant: mockApplicant,
+      allApplicants: [mockApplicant]
+    )
+    
+    vm.questionAnswer = [
+      QuestionAnswer(
+        answerId: UUID(),
+        applicationId: "dd",
+        questionId: "dd",
+        questionText: "햄버거 햄버거",
+        answerText: "개마싰어요 우아아아아아아아아아ㅏ아아아아아아앙아 더주세요 우아아아아ㅏ"
+      ),
+      QuestionAnswer(
+        answerId: UUID(),
+        applicationId: "dd",
+        questionId: "dd",
+        questionText: "햄버거 햄버거",
+        answerText: "개마싰어요 우아아아아아아아아아ㅏ아아아아아아앙아 더주세요 우아아아아ㅏ"
+      )
+    ]
+    
+    return vm
+  }
+}
