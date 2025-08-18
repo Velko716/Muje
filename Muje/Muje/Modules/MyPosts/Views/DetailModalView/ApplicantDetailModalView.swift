@@ -9,36 +9,13 @@ import SwiftUI
 
 struct ApplicantDetailModalView: View {
   
+  @State var viewModel: ModalViewModel
+  
   @EnvironmentObject private var router: NavigationRouter
-  @Bindable var viewModel: ApplicationManagementViewModel
-  
-  let applicant: Application
-  let allApplicants: [Application]
-  
-  private var currentApplicant: Application {
-    allApplicants[currentIndex]
-  }
-  
-  private var currentApplicationStatus: ApplicationStatus {
-    ApplicationStatus(rawValue: currentApplicant.status) ?? .submitted
-  }
   
   @State private var isLoading: Bool = false
-  @State private var currentIndex: Int
   @State private var questionAnswer: [QuestionAnswer] = []
-  
   @State private var confirmationType: ConfirmationModalType?
-  
-  init(
-    viewModel: ApplicationManagementViewModel,
-    applicant: Application,
-    allApplicants: [Application]
-  ) {
-    self.viewModel = viewModel
-    self.applicant = applicant
-    self.allApplicants = allApplicants
-    self._currentIndex = State(initialValue: allApplicants.firstIndex(where: { $0.applicationId == applicant.applicationId}) ?? 0)
-  }
   
   var body: some View {
     VStack(spacing: 0) {
@@ -60,11 +37,7 @@ struct ApplicantDetailModalView: View {
       
       VStack {
         BottomNavigationSection(
-          viewModel: viewModel,
-          currentIndex: $currentIndex,
-          confirmationType: $confirmationType, allApplicant: allApplicants,
-          currentApplicant: currentApplicant,
-          currentApplicationStatus: currentApplicationStatus
+          viewModel: viewModel
         )
       }
     }
@@ -73,64 +46,11 @@ struct ApplicantDetailModalView: View {
     }
     .sheet(item: $confirmationType) { type in
       ConfirmationModalView(type: type) {
-        Action(for: type)
+        viewModel.Action(for: type)
         confirmationType = nil
       }
       .presentationDetents([.fraction(0.3)])
     }
-  }
-  
-  private func Action(for type: ConfirmationModalType) {
-    switch type {
-    case .reject:
-      handleLeftAction()
-    case .promote, .pass, .completeInterview:
-      handleRightAction()
-    case .cancelInterview:
-      handleLeftAction()
-    case .notify:
-      handleNotifyAction()
-    }
-  }
-  
-  private func handleLeftAction() {
-    let currentApplicant = self.currentApplicant
-    let status = currentApplicationStatus
-    
-    viewModel.selectedApplicantId.insert(currentApplicant.applicationId)
-    
-    switch status {
-    case .submitted, .reviewWaiting:
-      viewModel.rejectApplicant()
-    case .interviewWaiting:
-      viewModel.updateApplicationStatus(
-        applicantIds: [currentApplicant.applicationId],
-        newStatus: ApplicationStatus.submitted.rawValue
-      )
-      viewModel.selectedApplicantId.removeAll()
-    case .reviewCompleted:
-      break
-    }
-  }
-  
-  private func handleRightAction() {
-    let currentApplicant = self.currentApplicant
-    let status = currentApplicationStatus
-    
-    viewModel.selectedApplicantId.insert(currentApplicant.applicationId)
-    
-    switch status {
-    case .submitted, .interviewWaiting:
-      viewModel.promoteApplicant()
-    case .reviewWaiting:
-      viewModel.passApplicant()
-    case .reviewCompleted:
-      break
-    }
-  }
-  
-  private func handleNotifyAction() {
-    print("\(currentApplicant.applicantName)에게 알림 발송")
   }
   
   private var navigationHeader: some View {
@@ -150,14 +70,14 @@ struct ApplicantDetailModalView: View {
   
   private var applicantInfoSection: some View {
     VStack(alignment: .leading) {
-      Text(currentApplicant.applicantName)
+      Text(viewModel.currentApplicant.applicantName)
       
       HStack {
-        if (currentApplicant.applicantGender != nil) {
-          Text(currentApplicant.genderDisplay)
+        if (viewModel.currentApplicant.applicantGender != nil) {
+          Text(viewModel.currentApplicant.genderDisplay)
         }
-        if (currentApplicant.applicantBirthYear != nil) {
-          Text(currentApplicant.ageString)
+        if (viewModel.currentApplicant.applicantBirthYear != nil) {
+          Text(viewModel.currentApplicant.ageString)
         }
       }
     }
@@ -172,10 +92,10 @@ struct ApplicantDetailModalView: View {
       //      if requirementFlags.requiresPhone {
       //        InfoRow(title: "연락처", value: viewModel.userInfo?.phone ?? "")
       //      }
-      if let studentId = currentApplicant.applicantStudentId {
+      if let studentId = viewModel.currentApplicant.applicantStudentId {
         InfoRow(title: "학번", value: studentId)
       }
-      if let department = currentApplicant.applicantDepartment {
+      if let department = viewModel.currentApplicant.applicantDepartment {
         InfoRow(title: "학과", value: department)
       }
     }
@@ -204,7 +124,7 @@ struct ApplicantDetailModalView: View {
       let answers: [QuestionAnswer] = try await FirestoreManager.shared.fetchWithCondition(
         from: .questionAnswers,
         whereField: "application_id",
-        equalTo: currentApplicant.applicationId.uuidString,
+        equalTo: viewModel.currentApplicant.applicationId.uuidString,
         sortedBy: { $0.createdAt?.dateValue() ?? Date() < $1.createdAt?.dateValue() ?? Date() }
       )
       
@@ -219,87 +139,30 @@ struct ApplicantDetailModalView: View {
   }
 }
 
-struct ConfirmationModalItem: Identifiable {
-  let id = UUID()
-  let type: ConfirmationModalType
-}
-
 #Preview {
   ApplicantDetailModalView(
-    viewModel: ApplicationManagementViewModel(),
-    applicant: Application(
-      applicationId: UUID(),
-      applicantUserId: "user1",
-      postId: "post1",
-      status: ApplicationStatus.submitted.rawValue,
-      applicantName: "김철수",
-      applicantBirthYear: 2000,
-      applicantGender: "M",
-      applicantDepartment: "컴퓨터공학과",
-      applicantStudentId: "202012345",
-      applicantPhone: "010-1234-5678",
-      postTitle: "프로그래밍 동아리 모집",
-      postOrganization: "코딩클럽",
-      postAuthorUserId: "author1"),
-    allApplicants: [Application(
-      applicationId: UUID(),
-      applicantUserId: "user1",
-      postId: "post1",
-      status: ApplicationStatus.submitted.rawValue,
-      applicantName: "김철수",
-      applicantBirthYear: 2000,
-      applicantGender: "M",
-      applicantDepartment: "컴퓨터공학과",
-      applicantStudentId: "202012345",
-      applicantPhone: "010-1234-5678",
-      postTitle: "프로그래밍 동아리 모집",
-      postOrganization: "코딩클럽",
-      postAuthorUserId: "author1"
-    ),
-                    Application(
-                      applicationId: UUID(),
-                      applicantUserId: "user1",
-                      postId: "post1",
-                      status: ApplicationStatus.submitted.rawValue,
-                      applicantName: "김철수",
-                      applicantBirthYear: 2000,
-                      applicantGender: "M",
-                      applicantDepartment: "컴퓨터공학과",
-                      applicantStudentId: "202012345",
-                      applicantPhone: "010-1234-5678",
-                      postTitle: "프로그래밍 동아리 모집",
-                      postOrganization: "코딩클럽",
-                      postAuthorUserId: "author1"
-                    ),
-                    Application(
-                      applicationId: UUID(),
-                      applicantUserId: "user1",
-                      postId: "post1",
-                      status: ApplicationStatus.submitted.rawValue,
-                      applicantName: "김철수",
-                      applicantBirthYear: 2000,
-                      applicantGender: "M",
-                      applicantDepartment: "컴퓨터공학과",
-                      applicantStudentId: "202012345",
-                      applicantPhone: "010-1234-5678",
-                      postTitle: "프로그래밍 동아리 모집",
-                      postOrganization: "코딩클럽",
-                      postAuthorUserId: "author1"
-                    ),
-                    Application(
-  applicationId: UUID(),
-  applicantUserId: "user1",
-  postId: "post1",
-  status: ApplicationStatus.submitted.rawValue,
-  applicantName: "김철수",
-  applicantBirthYear: 2000,
-  applicantGender: "M",
-  applicantDepartment: "컴퓨터공학과",
-  applicantStudentId: "202012345",
-  applicantPhone: "010-1234-5678",
-  postTitle: "프로그래밍 동아리 모집",
-  postOrganization: "코딩클럽",
-  postAuthorUserId: "author1"
-)]
+    viewModel: ModalViewModel(
+      managementViewModel: ApplicationManagementViewModel(),
+      applicant: Application(
+        applicationId: UUID(),
+        applicantUserId: "dd",
+        postId: "dd",
+        status: ApplicationStatus.submitted.rawValue,
+        applicantName: "dd",
+        postTitle: "dd",
+        postOrganization: "dd",
+        postAuthorUserId: "dd"
+      ),
+      allApplicants: [Application(
+        applicationId: UUID(),
+        applicantUserId: "dd",
+        postId: "dd",
+        status: ApplicationStatus.submitted.rawValue,
+        applicantName: "dd",
+        postTitle: "dd",
+        postOrganization: "dd",
+        postAuthorUserId: "dd"
+      )]
+    )
   )
 }
