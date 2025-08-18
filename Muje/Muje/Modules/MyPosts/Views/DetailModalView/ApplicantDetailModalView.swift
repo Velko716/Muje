@@ -13,10 +13,6 @@ struct ApplicantDetailModalView: View {
   
   @EnvironmentObject private var router: NavigationRouter
   
-  @State private var isLoading: Bool = false
-  @State private var questionAnswer: [QuestionAnswer] = []
-  @State private var confirmationType: ConfirmationModalType?
-  
   var body: some View {
     VStack(spacing: 0) {
       navigationHeader
@@ -42,12 +38,12 @@ struct ApplicantDetailModalView: View {
       }
     }
     .task {
-      await loadQuestionAnswer()
+      await viewModel.loadQuestionAnswer()
     }
-    .sheet(item: $confirmationType) { type in
+    .sheet(item: $viewModel.confirmationType) { type in
       ConfirmationModalView(type: type) {
         viewModel.Action(for: type)
-        confirmationType = nil
+        viewModel.confirmationType = nil
       }
       .presentationDetents([.fraction(0.3)])
     }
@@ -106,7 +102,7 @@ struct ApplicantDetailModalView: View {
   private var customQuestionSection: some View {
     VStack {
       ForEach(
-        questionAnswer.sorted(by: { $0.questionText < $1.questionText}),
+        viewModel.questionAnswer.sorted(by: { $0.questionText < $1.questionText}),
         id: \.answerId
       ) { answer in
         QuestionAnswerToggle(
@@ -117,26 +113,7 @@ struct ApplicantDetailModalView: View {
     }
   }
   
-  private func loadQuestionAnswer() async {
-    do {
-      isLoading = true
-      
-      let answers: [QuestionAnswer] = try await FirestoreManager.shared.fetchWithCondition(
-        from: .questionAnswers,
-        whereField: "application_id",
-        equalTo: viewModel.currentApplicant.applicationId.uuidString,
-        sortedBy: { $0.createdAt?.dateValue() ?? Date() < $1.createdAt?.dateValue() ?? Date() }
-      )
-      
-      await MainActor.run {
-        self.questionAnswer = answers
-        self.isLoading = false
-        
-      }
-    } catch {
-      print("지원자의 질문 답변 로드 실패")
-    }
-  }
+
 }
 
 #Preview {
