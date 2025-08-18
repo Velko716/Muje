@@ -11,7 +11,6 @@ struct ConfirmationModalView: View {
   
   @Environment(\.dismiss) private var dismiss
   
-//  let title: String
   let type: ConfirmationModalType
   let onConfirm: () -> Void
   

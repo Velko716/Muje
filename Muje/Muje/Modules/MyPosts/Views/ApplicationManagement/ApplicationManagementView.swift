@@ -43,11 +43,11 @@ struct ApplicationManagementView: View {
         }
         .animation(.none, value: viewModel.selectedTab)
         .animation(.none, value: viewModel.selectedManagementStage)
-        .onChange(of: viewModel.selectedManagementStage) {
-          withAnimation(.easeInOut(duration: 0.5)) {
-            proxy.scrollTo("contentTop", anchor: .top)
-          }
-        }
+//        .onChange(of: viewModel.selectedManagementStage) {
+//          withAnimation(.easeInOut(duration: 0.5)) {
+//            proxy.scrollTo("contentTop", anchor: .top)
+//          }
+//        }
         .onChange(of: viewModel.selectedTab) {
           withAnimation(.easeInOut(duration: 0.5)) {
             proxy.scrollTo("contentTop", anchor: .top)
@@ -66,13 +66,15 @@ struct ApplicationManagementView: View {
     //      loadData()
     //    }
     .task {
-      await viewModel.loadApplicationData(for: postId)
+      await viewModel.loadApplicationData(for: "11F8945A-041D-418E-9A57-0B13855AC324")
     }
     .sheet(item: $selectedApplicant) { applicant in
       ApplicantDetailModalView(
-        viewModel: viewModel,
-        applicant: applicant,
-        allApplicants: viewModel.getCurrentApplicant()
+        viewModel: ModalViewModel(
+          managementViewModel: viewModel,
+          applicant: applicant,
+          allApplicants: viewModel.getCurrentApplicant()
+        )
       )
     }
   }
