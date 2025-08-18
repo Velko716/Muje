@@ -18,6 +18,10 @@ struct ApplicationManagementRow: View {
   let application: Application
   let onTap: () -> Void
   
+  private var interviewSlot: InterviewSlot? {
+    viewModel.getInterviewSlot(for: application)
+  }
+  
   var body: some View {
     HStack {
       infoSection
@@ -66,6 +70,7 @@ struct ApplicationManagementRow: View {
     } message: {
       Text("\(application.applicantName)님을 이전 단계로 되돌리시겠습니까?")
     }
+    // TODO:
   }
   
   private var infoSection: some View {
@@ -95,8 +100,19 @@ struct ApplicationManagementRow: View {
     HStack {
       Image(systemName: application.statusIcon)
         .foregroundStyle(application.statusColor)
-      Text(application.detailedStatusText)
-        .foregroundStyle(application.statusColor)
+      
+      if application.interviewSlotId != nil {
+        if application.status == ApplicationStatus.interviewWaiting.rawValue {
+          Text(application.getInterviewDisplayText(with: interviewSlot))
+            .foregroundStyle(application.statusColor)
+        } else {
+          Text(application.detailedStatusText)
+            .foregroundStyle(application.statusColor)
+        }
+      } else {
+        Text(application.detailedStatusText)
+          .foregroundStyle(application.statusColor)
+      }
       Spacer()
     }
   }
