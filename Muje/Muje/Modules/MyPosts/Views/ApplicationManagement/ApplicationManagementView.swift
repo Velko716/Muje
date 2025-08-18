@@ -66,7 +66,7 @@ struct ApplicationManagementView: View {
     //      loadData()
     //    }
     .task {
-      await viewModel.loadApplicationData(for: "11F8945A-041D-418E-9A57-0B13855AC324")
+      await viewModel.loadApplicationData(for: postId)
     }
     .sheet(item: $selectedApplicant) { applicant in
       ApplicantDetailModalView(
