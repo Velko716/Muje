@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct ApplicantDetailModalView: View {
   
   @State var viewModel: ModalViewModel
   
   @EnvironmentObject private var router: NavigationRouter
+  
+  private var interviewSlot: InterviewSlot? {
+    return viewModel.getInterviewSlot()
+  }
   
   var body: some View {
     VStack(spacing: 0) {
@@ -37,9 +42,9 @@ struct ApplicantDetailModalView: View {
         )
       }
     }
-    .task {
-      await viewModel.loadQuestionAnswer()
-    }
+//    .task {
+//      await viewModel.loadQuestionAnswer()
+//    }
     .sheet(item: $viewModel.confirmationType) { type in
       ConfirmationModalView(type: type) {
         viewModel.Action(for: type)
@@ -74,6 +79,22 @@ struct ApplicantDetailModalView: View {
         }
         if (viewModel.currentApplicant.applicantBirthYear != nil) {
           Text(viewModel.currentApplicant.ageString)
+        }
+        // MARK: 지원자 상태 아이콘 분기
+        Image(systemName: viewModel.currentApplicant.statusIcon)
+          .foregroundStyle(viewModel.currentApplicant.statusColor)
+        // MARK: 지원자 상태 텍스트 분기
+        if viewModel.currentApplicant.interviewSlotId != nil {
+          if viewModel.currentApplicant.status == ApplicationStatus.interviewWaiting.rawValue {
+            Text(viewModel.currentApplicant.getInterviewDisplayText(with: interviewSlot))
+              .foregroundStyle(viewModel.currentApplicant.statusColor)
+          } else {
+            Text(viewModel.currentApplicant.detailedStatusText)
+              .foregroundStyle(viewModel.currentApplicant.statusColor)
+          }
+        } else {
+          Text(viewModel.currentApplicant.detailedStatusText)
+            .foregroundStyle(viewModel.currentApplicant.statusColor)
         }
       }
     }

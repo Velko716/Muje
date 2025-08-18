@@ -36,6 +36,11 @@ final class ModalViewModel {
     self.currentIndex = allApplicants.firstIndex(where: { $0.applicationId == applicant.applicationId}) ?? 0
   }
   
+  // MARK: 지원자의 면접 슬롯 정보 가져오기
+  func getInterviewSlot() -> InterviewSlot? {
+    return managementViewModel.getInterviewSlot(for: currentApplicant)
+  }
+  
   func Action(for type: ConfirmationModalType) {
     switch type {
     case .reject:
