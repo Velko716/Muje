@@ -26,6 +26,9 @@ final class ModalViewModel {
   }
   var confirmationType: ConfirmationModalType?
   
+  var isLoading: Bool = false
+  var questionAnswer: [QuestionAnswer] = []
+  
   init(managementViewModel: ApplicationManagementViewModel, applicant: Application, allApplicants: [Application]) {
     self.managementViewModel = managementViewModel
     self.allApplicants = allApplicants
@@ -123,6 +126,29 @@ final class ModalViewModel {
   func moveToNext() {
     if currentIndex < allApplicants.count - 1 {
       currentIndex += 1
+    }
+  }
+}
+
+extension ModalViewModel {
+  func loadQuestionAnswer() async {
+    do {
+      isLoading = true
+      
+      let answers: [QuestionAnswer] = try await FirestoreManager.shared.fetchWithCondition(
+        from: .questionAnswers,
+        whereField: "application_id",
+        equalTo: currentApplicant.applicationId.uuidString,
+        sortedBy: { $0.createdAt?.dateValue() ?? Date() < $1.createdAt?.dateValue() ?? Date() }
+      )
+      
+      await MainActor.run {
+        self.questionAnswer = answers
+        self.isLoading = false
+        
+      }
+    } catch {
+      print("지원자의 질문 답변 로드 실패")
     }
   }
 }
