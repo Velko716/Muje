@@ -50,8 +50,6 @@ struct InboxView: View {
         .toolbar {
             navigationToolbarItems
         }
-        .onAppear { viewModel.start() } // FIXME: - 코드 수정
-        .onDisappear { viewModel.stop() }
         .overlay {
             if showActionSheet {
                 InboxActionSheetView(
@@ -149,8 +147,10 @@ struct InboxView: View {
                 }
                 .padding(.vertical, 12)
             }
+            .onAppear { viewModel.start() } // FIXME: - 코드 수정
+            .onDisappear { viewModel.stop() }
+            .defaultScrollAnchor(.bottom) // (채팅 진입 시) 기본 스크롤 앵커를 하단으로
             .scrollIndicators(.hidden)
-            // 새 메시지 오면 하단으로 스크롤
             .onChange(of: viewModel.messages.last?.stableId) { id, _ in
                 guard let id else { return }
                 withAnimation(.easeOut(duration: 0.2)) {
