@@ -95,6 +95,7 @@ struct InboxView: View {
                 rotuer.pop()
             } label: {
                 Image(systemName: "chevron.left")
+                    .foregroundStyle(Color.black)
             }
         }
         
