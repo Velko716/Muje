@@ -74,7 +74,7 @@ struct InboxView: View {
                 .animation(.easeInOut(duration: 0.22), value: showActionSheet)
             }
         }
-        .background(InteractivePopGesture())
+        .background(InteractivePopGesture()) // 오른쪽 뒤로가기 제스처
         .alert("채팅방 나가기", isPresented: $showLeaveAlert) {
             Button("나가기", role: .destructive) {
                 Task {

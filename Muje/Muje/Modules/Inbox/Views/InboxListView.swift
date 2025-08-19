@@ -19,7 +19,11 @@ struct InboxListView: View {
     
     var body: some View {
         ZStack {
-            VStack {
+            VStack(alignment: .leading) {
+                Text("나의 쪽지함")
+                    .font(Font.system(size: 20, weight: .semibold)) // FIXME: - 폰트 수정
+                    .foregroundStyle(Color.black) // FIXME: - 컬러수정
+                    .paddingH16()
                 Group {
                     if viewModel.isLoading { middleLoadingView }
                     else if viewModel.conversations.isEmpty { middleContentUnavailableView }
@@ -30,8 +34,6 @@ struct InboxListView: View {
                 .refreshable { await viewModel.load() } // 당겨서 새로고침
                 testBUttonView
             }
-            .navigationTitle("나의 쪽지함")
-            .navigationBarTitleDisplayMode(.automatic)
         }
     }
     
@@ -100,8 +102,6 @@ struct InboxListView: View {
 }
 
 #Preview {
-    NavigationStack {
-        InboxListView()
-            .environmentObject(NavigationRouter())
-    }
+    InboxListView()
+        .environmentObject(NavigationRouter())
 }
