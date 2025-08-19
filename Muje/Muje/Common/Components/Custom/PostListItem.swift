@@ -50,7 +50,7 @@ struct PostListItem: View {
                     RoundedRectangle(cornerRadius: 10)
                 }
         } //: HSTACK
-        
+        //.padding(.horizontal, 16)
         .ignoresSafeArea()
         .frame(maxWidth: .infinity)
     }

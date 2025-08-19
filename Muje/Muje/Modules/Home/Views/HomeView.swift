@@ -13,7 +13,7 @@ struct HomeView: View {
     
     
     var body: some View {
-        VStack {
+        VStack(alignment: .center) {
             HStack {
                 Text("oo대학교 구인공고")
                     .font(.system(size: 22))
@@ -43,21 +43,26 @@ struct HomeView: View {
             .padding(.horizontal, 16)
             
             ZStack(alignment: .bottom) {
-                List(viewModel.postList, id: \.postId) { post in
-                    PostListItem(post: post)
+                if viewModel.postList.count == 0 {
+                    Text("공고가 아직 올라오지 않았어요.")
+                        .frame(maxHeight: .infinity)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .listStyle(.plain)
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets())
-                
+                else {
+                    List(viewModel.postList, id: \.postId) { post in
+                        PostListItem(post: post)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .padding(.horizontal, 16)
+                    } 
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .listStyle(.plain)
+                }
                 
                 PostCreateButton()
                     .padding(.bottom, 24)
             }
             
+            
         } //: VSTACK
-        
     }
 }
