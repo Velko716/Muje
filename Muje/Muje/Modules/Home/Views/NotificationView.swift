@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct NotificationView: View {
-//    @EnvironmentObject var router: NavigationRouter
+    @EnvironmentObject var router: NavigationRouter
 //    @State var viewModel: HomeViewModel
     
     var body: some View {
-        Text("알림 화면 임시 뷰 입니다.")
+        VStack {
+            CustomNavigationBar(title: "", onBackTap: {router.pop()})
+            Text("알림 화면 임시 뷰 입니다.")
+            Spacer()
+        }
     }
 }
 

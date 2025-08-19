@@ -113,17 +113,17 @@ extension FirestoreManager {
     // collectionType: 해당 데이터가 어떤 유형인지
     // order: 정렬 방식
     // count: 가져오는 개수(0이면 전부 가져옴)
-    func fetch<T: Decodable>(
+    func fetchPosts<T: Decodable>(
         as type: T.Type,
         _ collectionType: CollectionType,
-        order: String? = nil,
+        order: String = "createdAt",
+        descending: Bool = true,
         count: Int = 0
     ) async throws -> [T] {
         var query: Query = db.collection(collectionType.rawValue)
         
-        print("🔍 컬렉션 이름: \(collectionType.rawValue)") // 디버그용
-        
-        if count > 0 { query = query.limit(to: count) }
+        if count > 0 {
+            query = query.limit(to: count) }
         
         let snapshot = try await query.getDocuments()
         print("📄 문서 개수: \(snapshot.documents.count)") // 디버그용
@@ -131,14 +131,13 @@ extension FirestoreManager {
         let items = snapshot.documents.compactMap { document in
             do {
                 let decoded = try document.data(as: T.self)
-                print("✅ 디코딩 성공: \(document.documentID)")
+
                 return decoded
             } catch {
-                print("❌ 디코딩 실패: \(document.documentID), 에러: \(error)")
                 return nil
             }
         }
-        if let order = order { query = query.order(by: order, descending: true) }
+        
         
         print("✅ 최종 아이템 개수: \(items.count)")
         return items

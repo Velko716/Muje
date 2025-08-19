@@ -52,6 +52,7 @@ struct HomeView: View {
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets())
                 
+                
                 PostCreateButton()
                     .padding(.bottom, 24)
             }

@@ -25,9 +25,8 @@ final class SearchViewModel {
         searchText = ""
         self.allPosts = posts
     }
-    
+    //FIXME: 지금 단계에서는 post 전체를 불러와서 swift의 filter 메서드 사용하고, 출시 후에는 token 사용 또는 외부 검색 기능 사용(algolia 등)으로 수정
     func filterPosts() {
-        print("🔫 filterPosts 작동\n검색어 : \(searchText)")
         if searchText.isEmpty {
             searchResults = []
         } else {

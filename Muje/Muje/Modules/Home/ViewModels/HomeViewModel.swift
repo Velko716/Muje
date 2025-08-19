@@ -11,11 +11,7 @@ import Firebase
 
 @Observable
 final class HomeViewModel {
-    var postList: [Post] = [] {
-        didSet {
-            print("📝 postList 변경: \(oldValue.count) → \(postList.count)")
-        }
-    }
+    var postList: [Post] = []
     var errorMessage: String? = nil
     var isLoading: Bool = false
     
@@ -30,30 +26,29 @@ final class HomeViewModel {
                 errorMessage = nil
                 
                 let fetchPosts = try await
-                FirestoreManager.shared.fetch(
+                FirestoreManager.shared.fetchPosts(
                     as: Post.self,
                     .posts,
                     order: "createdAt",
+                    descending: true, //최신순 정렬
                     count: 0 //count가 0이면 모든 데이터를 가져옴
                 )
-                postList = fetchPosts
-                
-                print("✅ 데이터 로드 성공: \(fetchPosts.count)개")
-                print("🔍 첫 번째 게시글 제목: \(postList.first?.title ?? "없음")")
-                
+                postList = sortPostsByLatest(fetchPosts)
+
                 isLoading = false
                 
             }  catch {
-                print("❌ HomeViewModel - postListFetch() error: \(error)")
-                print("❌ 에러 타입: \(type(of: error))")
-                print("❌ 에러 상세: \(error.localizedDescription)")
-                
                 await MainActor.run {
                     errorMessage = error.localizedDescription
                     isLoading = false
                 }
             }
         }
+    }
+    
+    // FirestoreManager의 fetchPosts()에서 데이터 가져올 때 정렬을 먹이니까 자꾸 오류가 나서 그냥 다 갖고오고 클라이언트 측에서 정렬하도록 함수를 추가했습니다
+    private func sortPostsByLatest(_ posts: [Post]) -> [Post] {
+        return posts.sorted { $0.createdAt!.seconds > $1.createdAt!.seconds }
     }
     
 }
