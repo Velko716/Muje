@@ -94,7 +94,7 @@
       "size" : "83.5x83.5"
     },
     {
-      "filename" : "Logo 임시 1.png",
+      "filename" : "AppIcon.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -286,7 +286,6 @@
           "value" : "dark"
         }
       ],
-      "filename" : "Logo 임시.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
