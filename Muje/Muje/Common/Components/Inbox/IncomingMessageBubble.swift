@@ -16,8 +16,8 @@ struct IncomingMessageBubble: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(text)
                     .font(.body)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 18)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 12)
                     .background(Color(uiColor: .secondarySystemBackground)) // FIXME: - 컬러 수정
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .overlay(
