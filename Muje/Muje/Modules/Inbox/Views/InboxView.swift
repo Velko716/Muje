@@ -36,10 +36,11 @@ struct InboxView: View {
     
     var body: some View {
         ZStack {
-            VStack(spacing: 24) {
+            VStack() {
                 topCurrentPostView
+                Spacer().frame(height: 20)
                 Divider()
-                Spacer()
+                //Spacer()
                 middleInboxContentView
             }
             .paddingH16()
@@ -118,7 +119,6 @@ struct InboxView: View {
     private var topCurrentPostView: some View {
         VStack(spacing: .zero) {
             InboxCurrentPostView(title: "댄스월드 연합 댄스 동아리💃 춤도 추고 친목도 다질 사람 모여라🙌") // FIXME: - 공고 타이틀로 수정
-                .padding(.vertical, 20)
         }
     }
     
