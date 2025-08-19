@@ -29,7 +29,6 @@ final class InboxViewModel {
     }
     
     // MARK: - 쪽지
-    
     func start() {
         stop()
         listener = FirestoreManager.shared.listenMessages(
@@ -94,4 +93,9 @@ final class InboxViewModel {
         }
     }
     
+    func resetCount() async {
+        Task { try? await FirestoreManager.shared
+                .markConversationRead(conversationId: self.conversationId, userId: self.currentUserId)
+        }
+    }
 }

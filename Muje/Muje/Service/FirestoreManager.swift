@@ -123,7 +123,14 @@ extension FirestoreManager {
         let convoRef = db.collection("conversations").document(conversationId.uuidString)
         let msgRef = convoRef.collection("messages").document()
         
+        // 대화 참여자 가져오기
+        let convoSnap = try await convoRef.getDocument()
+        let p1 = convoSnap.get("participant1_user_id") as? String ?? ""
+        let p2 = convoSnap.get("participant2_user_id") as? String ?? ""
+        let recipients = [p1, p2].filter { $0 != senderUserId }   // 보낸 사람 제외
+        
         let batch = db.batch()
+        
         // 메시지 생성
         batch.setData([
             "sender_user_id": senderUserId,
@@ -132,15 +139,30 @@ extension FirestoreManager {
             "updated_at": FieldValue.serverTimestamp()
         ], forDocument: msgRef)
         
-        // 대화 문서 메타 갱신(목록 정렬/미리보기용)
-        batch.setData([
+        // 대화 메타 갱신 + 상대방 미읽음 +1
+        var convoUpdate: [String: Any] = [
             "last_message": body,
             "last_sender_user_id": senderUserId,
             "last_message_at": FieldValue.serverTimestamp(),
             "updated_at": FieldValue.serverTimestamp()
-        ], forDocument: convoRef, merge: true)
+        ]
+        // 여러 명일 수 있으니 루프 가능
+        recipients.forEach { rid in
+            convoUpdate["unread.\(rid)"] = FieldValue.increment(Int64(1))
+        }
+        
+        batch.setData(convoUpdate, forDocument: convoRef, merge: true)
         
         try await batch.commit()
+    }
+    
+    /// 읽음 수를 0으로 초기화하는 메서드 입니다.
+    func markConversationRead(conversationId: UUID, userId: String) async throws {
+        let convoRef = db.collection("conversations").document(conversationId.uuidString)
+        try await convoRef.setData([
+            "unread.\(userId)": 0,
+            "read_states.\(userId).last_read_at": FieldValue.serverTimestamp()
+        ], merge: true)
     }
     
     // 실시간 구독: 최신 n개를 받아서 UI는 정방향으로 사용

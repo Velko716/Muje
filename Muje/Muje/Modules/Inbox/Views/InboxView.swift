@@ -172,6 +172,9 @@ struct InboxView: View {
                 withAnimation(.easeOut(duration: 0.2)) {
                     proxy.scrollTo(id, anchor: .bottom)
                 }
+                Task {
+                    await viewModel.resetCount()
+                }
             }
             .rotationEffect(.degrees(180)).scaleEffect(x: -1, y: 1, anchor: .center) // 키보드 올라갈 때, 채팅 기록들이 위쪽으로 자연스럽게 스크롤
         }
