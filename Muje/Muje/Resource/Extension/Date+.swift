@@ -28,6 +28,13 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    func fullDateWeekday(_ d: Date) -> String {
+        let f = DateFormatter()
+        f.locale = .init(identifier: "ko_KR")
+        f.dateFormat = "yyyy년 M월 d일 (E)"
+        return f.string(from: d)
+    }
+    
     // MARK: - 1분 미만=방금 전, 1주 이내=상대시간, 그 외 = 날짜
     func listTimeLabel(now: Date = .now) -> String {
         let diff = now.timeIntervalSince(self)
