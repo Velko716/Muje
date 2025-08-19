@@ -129,12 +129,24 @@ struct InboxView: View {
             ScrollView {
                 LazyVStack(spacing: 12) {
                     
-                    // 위로 스크롤 시 과거 로드 트리거
+                    // 위로 스크롤 시 과거 히스토리 로드
                     if viewModel.messages.count >= 20 {
                         ProgressView().onAppear { Task { await viewModel.loadMore() } }
                     }
                     
-                    ForEach(viewModel.messages, id: \.stableId) { msg in
+                    ForEach(Array(viewModel.messages.enumerated()), id: \.element.stableId) { idx, msg in
+                        let currDate = msg.createdDate
+                        let needHeader: Bool = {
+                            if idx == 0 { return true }
+                            let prevDate = viewModel.messages[idx - 1].createdDate
+                            return !Calendar.current.isDate(prevDate, inSameDayAs: currDate)
+                        }()
+                        
+                        // 날짜 넘어가면 날짜선 표시
+                        if needHeader {
+                            DateSeparator(date: currDate)
+                        }
+                        
                         let isMine = (msg.senderUserId == viewModel.currentUserId)
                         Group {
                             if isMine {
