@@ -145,11 +145,12 @@ struct InboxView: View {
                         .id(msg.stableId)
                     }
                 }
+                .onAppear { viewModel.start() } // FIXME: - 코드 수정
+                .onDisappear { viewModel.stop() }
+                .defaultScrollAnchor(.bottom) // (채팅 진입 시) 기본 스크롤 앵커를 하단으로
+                .rotationEffect(.degrees(180)).scaleEffect(x: -1, y: 1, anchor: .center) // 키보드 올라갈 때, 채팅 기록들이 위쪽으로 자연스럽게 스크롤
                 .padding(.vertical, 12)
             }
-            .onAppear { viewModel.start() } // FIXME: - 코드 수정
-            .onDisappear { viewModel.stop() }
-            .defaultScrollAnchor(.bottom) // (채팅 진입 시) 기본 스크롤 앵커를 하단으로
             .scrollIndicators(.hidden)
             .onChange(of: viewModel.messages.last?.stableId) { id, _ in
                 guard let id else { return }
@@ -157,6 +158,7 @@ struct InboxView: View {
                     proxy.scrollTo(id, anchor: .bottom)
                 }
             }
+            .rotationEffect(.degrees(180)).scaleEffect(x: -1, y: 1, anchor: .center) // 키보드 올라갈 때, 채팅 기록들이 위쪽으로 자연스럽게 스크롤
         }
     }
     
