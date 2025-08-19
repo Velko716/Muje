@@ -21,6 +21,8 @@ final class InboxViewModel {
     
     private var listener: ListenerRegistration?
     
+    private var isLoadingMore = false
+    
     init(conversationId: UUID, currentUserId: String) {
         self.conversationId = conversationId
         self.currentUserId = currentUserId
@@ -46,7 +48,10 @@ final class InboxViewModel {
     }
     
     func loadMore() async {
-        guard let cursor = oldestCursor else { return }
+        guard !isLoadingMore, let cursor = oldestCursor else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+
         do {
             let (more, newCursor) = try await FirestoreManager.shared.fetchMoreMessages(
                 conversationId: conversationId,
@@ -54,6 +59,11 @@ final class InboxViewModel {
             )
             messages.insert(contentsOf: more, at: 0)
             oldestCursor = newCursor
+
+            // 더 불러올 페이지가 없으면 트리거 비활성화
+            if more.isEmpty || newCursor == nil {
+                oldestCursor = nil
+            }
         } catch {
             print("loadMore error:", error)
         }

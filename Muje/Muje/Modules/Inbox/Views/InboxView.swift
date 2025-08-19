@@ -128,10 +128,11 @@ struct InboxView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 12) {
-                    
-                    // 위로 스크롤 시 과거 히스토리 로드
-                    if viewModel.messages.count >= 20 {
-                        ProgressView().onAppear { Task { await viewModel.loadMore() } }
+                
+                    if viewModel.messages.count >= 20, viewModel.oldestCursor != nil {
+                        Color.clear
+                            .frame(height: 1)
+                            .onAppear { Task { await viewModel.loadMore() } }
                     }
                     
                     ForEach(Array(viewModel.messages.enumerated()), id: \.element.stableId) { idx, msg in
