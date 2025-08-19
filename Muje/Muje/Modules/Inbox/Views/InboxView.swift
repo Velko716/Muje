@@ -74,6 +74,7 @@ struct InboxView: View {
                 .animation(.easeInOut(duration: 0.22), value: showActionSheet)
             }
         }
+        .background(InteractivePopGesture())
         .alert("채팅방 나가기", isPresented: $showLeaveAlert) {
             Button("나가기", role: .destructive) {
                 Task {
@@ -174,7 +175,6 @@ struct InboxView: View {
             }
             .rotationEffect(.degrees(180)).scaleEffect(x: -1, y: 1, anchor: .center) // 키보드 올라갈 때, 채팅 기록들이 위쪽으로 자연스럽게 스크롤
         }
-        .rightSwipeToPop { rotuer.pop() } // 오른쪽 스와이프 시, 화면 뒤로가기 전환
     }
     
     // MARK: - 바텀 쪽지 텍스트 필드 입력창
