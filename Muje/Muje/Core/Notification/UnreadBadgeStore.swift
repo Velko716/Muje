@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UserNotifications
+import FirebaseFirestore
 
 final class UnreadBadgeStore: ObservableObject {
     @Published var total: Int = 0
