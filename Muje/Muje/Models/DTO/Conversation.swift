@@ -26,7 +26,7 @@ struct Conversation: Codable {
     var lastMessageAt: Timestamp? = nil
     
     // 사용자별 미읽음 수 (키: userId)
-    var unread: [String: Int]? = nil
+    var unread: [String: Int64]? = nil
     
     @ServerTimestamp var createdAt: Timestamp?
     @ServerTimestamp var updatedAt: Timestamp?
@@ -88,7 +88,7 @@ struct Conversation: Codable {
     
     /// 편의: 특정 사용자 미읽음 수
     func unreadCount(for userId: String) -> Int {
-        unread?[userId] ?? 0
+        Int(unread?[userId] ?? 0)
     }
 }
 

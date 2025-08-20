@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import FirebaseAuth
 import FirebaseFirestore
 
 @Observable
@@ -14,20 +13,29 @@ final class InboxListViewModel {
     var conversations: [Conversation] = []
     let currentUserId: String
     var isLoading: Bool = false
-    
+
+    private var listener: ListenerRegistration?
+
     init(currentUserId: String) { self.currentUserId = currentUserId }
-    
-    func load() async {
+
+    // 실시간 시작
+    func start() {
+        stop()
         isLoading = true
-        defer { isLoading = false }
-        
-        do {
-            conversations = try await FirestoreManager.shared.fetchConversationsForUser(currentUserId)
-        } catch {
-            conversations = []
+        listener = FirestoreManager.shared.listenConversationsForUser(currentUserId) { [weak self] list in
+            guard let self else { return }
+            self.conversations = list
+            self.isLoading = false
         }
     }
-    
+
+    // 해제
+    func stop() {
+        listener?.remove()
+        listener = nil
+    }
+
+    // 기존 생성 로직은 그대로
     func createConversation(
         postId: String,
         postTitle: String,
@@ -50,10 +58,8 @@ final class InboxListViewModel {
         let saved = try await FirestoreManager.shared.create(convo)
         return saved
     }
-    
-    // 셀에서 표시할 상대방 이름 구하기
+
     func otherName(for convo: Conversation) -> String {
-        if convo.participant1UserId == currentUserId { return convo.participant2Name }
-        else { return convo.participant1Name }
+        convo.participant1UserId == currentUserId ? convo.participant2Name : convo.participant1Name
     }
 }

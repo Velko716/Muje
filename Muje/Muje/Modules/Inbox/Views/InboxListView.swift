@@ -30,8 +30,8 @@ struct InboxListView: View {
                     else { middleListView }
                 }
                 .animation(.easeInOut, value: viewModel.isLoading)
-                .task { await viewModel.load() } // 화면 뜰 때 로드
-                .refreshable { await viewModel.load() } // 당겨서 새로고침
+                .onAppear { viewModel.start() } // FIXME: - 코드 수정
+                .onDisappear { viewModel.stop() }
                 testBUttonView
             }
         }

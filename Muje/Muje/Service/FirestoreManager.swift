@@ -231,40 +231,57 @@ extension FirestoreManager {
     }
 }
 
-// MARK: - 쪽지 리스트
+// MARK: - 쪽지 리스트(실시간)
 extension FirestoreManager {
-    func fetchConversationsForUser(_ userId: String) async throws -> [Conversation] {
-        
-        print("DEBUG uid:", userId, "len:", userId.count)
-        print("DEBUG project:", db.app.options.projectID ?? "nil")
-        
+    /// 현재 유저가 포함된 대화 목록을 실시간으로 구독
+    /// - Returns: ListenerRegistration (해제는 remove() 호출)
+    func listenConversationsForUser(
+        _ userId: String,
+        onChange: @escaping ([Conversation]) -> Void
+    ) -> ListenerRegistration {
+
         let q = db.collection("conversations")
             .whereField("participants", arrayContains: userId)
             .order(by: "updated_at", descending: true)
-        
-        do {
-            let snap = try await q.getDocuments()
-            print("DEBUG count:", snap.documents.count, "isFromCache:", snap.metadata.isFromCache)
-            snap.documents.forEach { print("DEBUG docId:", $0.documentID, "participants:", $0["participants"] ?? "nil") }
-            
-            var list = snap.documents.compactMap { doc in
-                do { return try doc.data(as: Conversation.self) }
-                catch {
+
+        return q.addSnapshotListener { snap, err in
+            guard let snap else {
+                onChange([])
+                return
+            }
+
+            // 디코드
+            var list: [Conversation] = snap.documents.compactMap { doc in
+                do {
+                    var convo = try doc.data(as: Conversation.self)
+
+                    // (선택) unread가 디코드 안 될 때 수동 파싱 — 타입 불일치 방지
+                    if convo.unread == nil, let raw = doc.data()["unread"] as? [String: Any] {
+                        var parsed: [String: Int64] = [:]
+                        for (k, v) in raw {
+                            if let n = v as? NSNumber { parsed[k] = n.int64Value }
+                            else if let i = v as? Int { parsed[k] = Int64(i) }
+                            else if let i64 = v as? Int64 { parsed[k] = i64 }
+                            else if let d = v as? Double { parsed[k] = Int64(d) }
+                        }
+                        if !parsed.isEmpty { convo.unread = parsed }
+                    }
+
+                    return convo
+                } catch {
                     print("DECODE FAIL \(doc.documentID):", error)
                     return nil
                 }
             }
-            
+
+            // 쿼리에서 이미 정렬하지만, 안전하게 한 번 더
             list.sort {
                 let l = $0.updatedAt?.dateValue() ?? $0.createdAt?.dateValue() ?? .distantPast
                 let r = $1.updatedAt?.dateValue() ?? $1.createdAt?.dateValue() ?? .distantPast
                 return l > r
             }
-            return list
-            
-        } catch {
-            print("DEBUG query error:", error)   // 인덱스/권한 오류 확인
-            throw error
+
+            onChange(list)
         }
     }
 }
