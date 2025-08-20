@@ -26,7 +26,7 @@ struct Conversation: Codable {
     var lastMessageAt: Timestamp? = nil
     
     // 사용자별 미읽음 수 (키: userId)
-    var unread: [String: Int64]? = nil
+    var unread: [String: Int]? = nil
     
     @ServerTimestamp var createdAt: Timestamp?
     @ServerTimestamp var updatedAt: Timestamp?
@@ -81,14 +81,9 @@ struct Conversation: Codable {
         case participant2Role   = "participant2_role"
         case lastMessageText    = "last_message"
         case lastSenderUserId   = "last_sender_user_id"
-        case lastMessageAt      = "last_message_at"    // ← 이제 Optional Timestamp?로 안전
+        case lastMessageAt      = "last_message_at"
         case createdAt          = "created_at"
         case updatedAt          = "updated_at"
-    }
-    
-    /// 편의: 특정 사용자 미읽음 수
-    func unreadCount(for userId: String) -> Int {
-        Int(unread?[userId] ?? 0)
     }
 }
 

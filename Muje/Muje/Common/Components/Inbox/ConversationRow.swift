@@ -28,6 +28,8 @@ struct ConversationRow: View {
         return prefix + body
     }
     
+    let unreadCount: Int
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             
@@ -62,13 +64,24 @@ struct ConversationRow: View {
                 
                 Spacer()
                 
-                Text("10")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.white)
-                    .padding(.vertical, 0.73)
-                    .padding(.horizontal, 6.56)
-                    .background(Capsule().fill(Color.blue))
-                
+                // FIXME: - 로직 수정
+                if unreadCount > 0 {
+                    if unreadCount > 99 {
+                        Text("+99")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .padding(.vertical, 0.73)
+                            .padding(.horizontal, 6.56)
+                            .background(Capsule().fill(Color.blue))
+                    } else {
+                        Text("\(unreadCount)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .padding(.vertical, 0.73)
+                            .padding(.horizontal, 6.56)
+                            .background(Capsule().fill(Color.blue))
+                    }
+                }
             }
         }
     }
@@ -88,6 +101,7 @@ struct ConversationRow: View {
             participant2Name: "",
             participant2Role: .recruiter
         ),
-        currentUserId: ""
+        currentUserId: "",
+        unreadCount: 300
     )
 }

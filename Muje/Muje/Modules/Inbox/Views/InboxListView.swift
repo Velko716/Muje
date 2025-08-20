@@ -65,8 +65,12 @@ struct InboxListView: View {
                 } label: {
                     ConversationRow(
                         conversation: convo,
-                        currentUserId: viewModel.currentUserId
+                        currentUserId: viewModel.currentUserId,
+                        unreadCount: convo.unread?[viewModel.currentUserId] ?? 0
                     )
+                }
+                .task {
+                    await viewModel.resetCount(conversationId: convo.conversationId)
                 }
             }
         }

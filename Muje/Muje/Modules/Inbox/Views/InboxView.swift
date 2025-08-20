@@ -54,7 +54,11 @@ struct InboxView: View {
             
             ToolbarLeadingBackButton()
             ToolbarCenterTitle(text: postTitle ?? "")
-            ToolbarTrailingButton(toolbarType: .image(.named(toolbarTrailingImage)))
+            ToolbarTrailingButton(
+                toolbarType: .image(.named(toolbarTrailingImage))
+            ) {
+                self.showActionSheet = true
+            }
         }
         .overlay {
             if showActionSheet {

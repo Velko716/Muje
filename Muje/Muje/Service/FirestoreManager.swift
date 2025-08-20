@@ -148,7 +148,7 @@ extension FirestoreManager {
         ]
         // 여러 명일 수 있으니 루프 가능
         recipients.forEach { rid in
-            convoUpdate["unread.\(rid)"] = FieldValue.increment(Int64(1))
+            convoUpdate["unread_\(rid)"] = FieldValue.increment(Int64(1))
         }
         
         batch.setData(convoUpdate, forDocument: convoRef, merge: true)
@@ -160,8 +160,8 @@ extension FirestoreManager {
     func markConversationRead(conversationId: UUID, userId: String) async throws {
         let convoRef = db.collection("conversations").document(conversationId.uuidString)
         try await convoRef.setData([
-            "unread.\(userId)": 0,
-            "read_states.\(userId).last_read_at": FieldValue.serverTimestamp()
+            "unread_\(userId)": 0,
+            "read_states_\(userId)_last_read_at": FieldValue.serverTimestamp()
         ], merge: true)
     }
     
@@ -225,7 +225,7 @@ extension FirestoreManager {
         try await convoRef.updateData([
             "participants": FieldValue.arrayRemove([userId]),
             "left_users": FieldValue.arrayUnion([userId]),
-            "left_at.\(userId)": FieldValue.serverTimestamp(),
+            "left_at_\(userId)": FieldValue.serverTimestamp(),
             "updated_at": FieldValue.serverTimestamp()
         ])
     }
@@ -233,8 +233,7 @@ extension FirestoreManager {
 
 // MARK: - 쪽지 리스트(실시간)
 extension FirestoreManager {
-    /// 현재 유저가 포함된 대화 목록을 실시간으로 구독
-    /// - Returns: ListenerRegistration (해제는 remove() 호출)
+    /// 대화 목록 실시간 리스너
     func listenConversationsForUser(
         _ userId: String,
         onChange: @escaping ([Conversation]) -> Void
@@ -250,31 +249,28 @@ extension FirestoreManager {
                 return
             }
 
-            // 디코드
-            var list: [Conversation] = snap.documents.compactMap { doc in
+            var list: [Conversation] = []
+
+            for doc in snap.documents {
                 do {
                     var convo = try doc.data(as: Conversation.self)
-
-                    // (선택) unread가 디코드 안 될 때 수동 파싱 — 타입 불일치 방지
-                    if convo.unread == nil, let raw = doc.data()["unread"] as? [String: Any] {
-                        var parsed: [String: Int64] = [:]
-                        for (k, v) in raw {
-                            if let n = v as? NSNumber { parsed[k] = n.int64Value }
-                            else if let i = v as? Int { parsed[k] = Int64(i) }
-                            else if let i64 = v as? Int64 { parsed[k] = i64 }
-                            else if let d = v as? Double { parsed[k] = Int64(d) }
+                    var unreadDict: [String: Int] = [:]
+                    let rawData = doc.data()
+                    for (key, value) in rawData {
+                        if key.hasPrefix("unread_"),
+                           let id = key.components(separatedBy: "unread_").last,
+                           let count = value as? Int {
+                            unreadDict[id] = count
                         }
-                        if !parsed.isEmpty { convo.unread = parsed }
                     }
-
-                    return convo
+                    convo.unread = unreadDict
+                    list.append(convo)
                 } catch {
-                    print("DECODE FAIL \(doc.documentID):", error)
-                    return nil
+                    print("decode error \(doc.documentID):", error)
                 }
             }
 
-            // 쿼리에서 이미 정렬하지만, 안전하게 한 번 더
+            // 최신순 정렬
             list.sort {
                 let l = $0.updatedAt?.dateValue() ?? $0.createdAt?.dateValue() ?? .distantPast
                 let r = $1.updatedAt?.dateValue() ?? $1.createdAt?.dateValue() ?? .distantPast
@@ -285,3 +281,4 @@ extension FirestoreManager {
         }
     }
 }
+

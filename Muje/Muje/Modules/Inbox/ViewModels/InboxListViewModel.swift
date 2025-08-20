@@ -13,11 +13,11 @@ final class InboxListViewModel {
     var conversations: [Conversation] = []
     let currentUserId: String
     var isLoading: Bool = false
-
+    
     private var listener: ListenerRegistration?
-
+    
     init(currentUserId: String) { self.currentUserId = currentUserId }
-
+    
     // 실시간 시작
     func start() {
         stop()
@@ -28,13 +28,13 @@ final class InboxListViewModel {
             self.isLoading = false
         }
     }
-
+    
     // 해제
     func stop() {
         listener?.remove()
         listener = nil
     }
-
+    
     // 기존 생성 로직은 그대로
     func createConversation(
         postId: String,
@@ -61,5 +61,12 @@ final class InboxListViewModel {
 
     func otherName(for convo: Conversation) -> String {
         convo.participant1UserId == currentUserId ? convo.participant2Name : convo.participant1Name
+    }
+    
+    // FIXME: - 더 좋은 방법으로 수정하기 (초기 파이어베이스 리셋 설정으로 값을 초기화 == 0)
+    func resetCount(conversationId: UUID) async {
+        Task { try? await FirestoreManager.shared
+                .markConversationRead(conversationId: conversationId, userId: self.currentUserId)
+        }
     }
 }
