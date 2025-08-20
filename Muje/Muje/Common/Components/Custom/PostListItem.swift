@@ -10,10 +10,11 @@ import Firebase
 
 struct PostListItem: View {
     let post: Post
+    let thumbnailImage: UIImage?
     
     var body: some View {
         HStack {
-
+            
             // MARK: 상단 - 동아리명
             VStack(alignment: .leading){
                 //FIXME: 에셋 추가되면 폰트 수정
@@ -42,15 +43,22 @@ struct PostListItem: View {
             .frame(height: 152)
             
             Spacer()
+            
             // MARK: 우측 - 사진 (미리보기)
-            Image(.temp)
-                .resizable()
-                .frame(width: 78, height: 78)
-                .mask {
-                    RoundedRectangle(cornerRadius: 10)
-                }
+            if let thumbnailImage = thumbnailImage {
+                Image(uiImage: thumbnailImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 78, height: 78)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            } else {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 78, height: 78)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            
         } //: HSTACK
-        //.padding(.horizontal, 16)
         .ignoresSafeArea()
         .frame(maxWidth: .infinity)
     }

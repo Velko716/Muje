@@ -7,6 +7,7 @@
 
 import Foundation
 import Firebase
+import FirebaseStorage
 
 
 @Observable
@@ -14,7 +15,8 @@ final class HomeViewModel {
     var postList: [Post] = []
     var errorMessage: String? = nil
     var isLoading: Bool = false
-    
+    var thumbnailImages: [UUID: UIImage] = [:] //postId를 키로 하는 딕셔너리
+    var postIds: [UUID] = []
     init() {
         postListFetch()
     }
@@ -25,17 +27,22 @@ final class HomeViewModel {
                 isLoading = true
                 errorMessage = nil
                 
-                let fetchPosts = try await
+                postList = try await
                 FirestoreManager.shared.fetchPosts(
                     as: Post.self,
                     .posts,
-                    order: "createdAt",
+                    order: "created_at",
                     descending: true, //최신순 정렬
                     count: 0 //count가 0이면 모든 데이터를 가져옴
                 )
-                postList = sortPostsByLatest(fetchPosts)
-
+                
+                postIds = postList.map { $0.postId } //모든 post들의 postID 추출해서 썸네일 이미지 가져올 때 뽑아서 가져옴
+                let postImages = try await FirestoreManager.shared.fetchThumbnailImages(for: postIds)
+                
+                thumbnailImages = await FirestoreManager.shared.fetchThumbnailUIImages(from: postImages)
+                
                 isLoading = false
+
                 
             }  catch {
                 await MainActor.run {
@@ -45,10 +52,6 @@ final class HomeViewModel {
             }
         }
     }
-    
-    // FirestoreManager의 fetchPosts()에서 데이터 가져올 때 정렬을 먹이니까 자꾸 오류가 나서 그냥 다 갖고오고 클라이언트 측에서 정렬하도록 함수를 추가했습니다
-    private func sortPostsByLatest(_ posts: [Post]) -> [Post] {
-        return posts.sorted { $0.createdAt!.seconds > $1.createdAt!.seconds }
-    }
+
     
 }

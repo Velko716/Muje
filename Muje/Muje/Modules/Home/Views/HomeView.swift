@@ -11,7 +11,6 @@ struct HomeView: View {
     @EnvironmentObject var router: NavigationRouter
     @State var viewModel = HomeViewModel()
     
-    
     var body: some View {
         VStack(alignment: .center) {
             HStack {
@@ -49,11 +48,18 @@ struct HomeView: View {
                 }
                 else {
                     List(viewModel.postList, id: \.postId) { post in
-                        PostListItem(post: post)
+                        PostListItem(
+                            post: post,
+                            thumbnailImage: viewModel.thumbnailImages[post.postId]
+                        )
                             .listRowInsets(EdgeInsets())
                             .listRowBackground(Color.clear)
                             .padding(.horizontal, 16)
-                    } 
+//                            .onTapGesture {
+//                                print("포스트 아이디 : \(post.postId)")
+//                                print("썸네일 url : \(viewModel.)")
+//                            }
+                    }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .listStyle(.plain)
                 }
