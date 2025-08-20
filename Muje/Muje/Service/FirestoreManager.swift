@@ -277,6 +277,10 @@ extension FirestoreManager {
                 return l > r
             }
 
+            let totalUnread = list.reduce(0) { sum, convo in
+                sum + (convo.unread?[userId] ?? 0)
+            }
+            
             onChange(list)
         }
     }

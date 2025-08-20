@@ -95,7 +95,7 @@ struct MujeApp: App {
     @StateObject private var router: NavigationRouter = .init()
     @StateObject var push = NotificationCoordinator()
     @StateObject private var deepLink = DeepLinkController.shared
-
+    @StateObject private var unreadBadge = UnreadBadgeStore()
     
     @State private var isReady = false
     @State private var bootError: String?
@@ -163,6 +163,7 @@ struct MujeApp: App {
             }
             .environmentObject(router)
             .environmentObject(push)
+            .environmentObject(unreadBadge)
             // 앱이 뜨자마자 pending 있으면 처리(종료 상태에서 탭해 런치된 경우)
             .onAppear {
                 if let cid = deepLink.pendingConversationId {
@@ -187,8 +188,10 @@ struct MujeApp: App {
                 print("현재 접속자 UID: \(uid)")
                 let user: User = try await FirestoreManager.shared.get(uid, from: .user)
                 FirebaseAuthManager.shared.currentUser = user
+                unreadBadge.start(for: uid)
                 print("FirebaseAuthManager \(String(describing: FirebaseAuthManager.shared.currentUser))")
             } else {
+                unreadBadge.stop()
                 print("비로그인 상태")
             }
             isReady = true

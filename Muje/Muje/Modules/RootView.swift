@@ -10,6 +10,7 @@ import SwiftUI
 struct RootView: View {
     
     @EnvironmentObject private var router: NavigationRouter
+    @EnvironmentObject private var unreadBadge: UnreadBadgeStore
     @State private var tabcase: TabCase = .home
 
     
@@ -26,6 +27,8 @@ struct RootView: View {
                         label: {
                             tabLabel(tab)
                         })
+                    .badge((tab == .inbox ? (unreadBadge.total > 0 ? unreadBadge.total : nil)
+                            : nil) ?? 0)
                 }
             })
             .navigationDestination(for: NavigationDestination.self) { destination in
@@ -66,4 +69,5 @@ struct RootView: View {
 #Preview {
     RootView()
         .environmentObject(NavigationRouter())
+        .environmentObject(UnreadBadgeStore())
 }
