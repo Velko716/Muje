@@ -13,7 +13,7 @@ import FirebaseAuth
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        configureFirebaseSafely()
+        FirebaseApp.configure()
         
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in
             
@@ -37,37 +37,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // 다른 알림 처리 (예: FCM 등)
         completionHandler(.noData)
     }
-  
-  private func configureFirebaseSafely() {
-       // 1. 이미 초기화되었는지 확인
-       if FirebaseApp.app() != nil {
-           print("✅ Firebase 이미 초기화됨")
-           return
-       }
-       
-       // 2. GoogleService-Info.plist 파일 존재 확인
-       guard let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") else {
-           print("❌ GoogleService-Info.plist 파일 없음 - Firebase 건너뜀")
-           return
-       }
-            
-       // 5. Firebase 초기화 시도 (try-catch로 안전하게)
-       do {
-           // FirebaseOptions로 수동 초기화 (더 안전)
-           if let options = FirebaseOptions(contentsOfFile: path) {
-               FirebaseApp.configure(options: options)
-               print("✅ Firebase 초기화 성공! (수동 설정)")
-           } else {
-               // 기본 방법으로 재시도
-               FirebaseApp.configure()
-               print("✅ Firebase 초기화 성공! (기본 설정)")
-           }
-       } catch {
-           print("❌ Firebase 초기화 실패: \(error)")
-           print("❌ 앱은 Firebase 없이 계속 실행")
-           // Firebase 없이도 앱이 동작하도록
-       }
-   }
 }
 
 
