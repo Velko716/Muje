@@ -17,17 +17,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         FirebaseApp.configure()
-        
-        // 알림 권한 요청 + 델리게이트 설정
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
-            print("Notification permission granted:", granted)
-            DispatchQueue.main.async {
-                UIApplication.shared.registerForRemoteNotifications() // ← 반드시 호출
-            }
+            DispatchQueue.main.async { UIApplication.shared.registerForRemoteNotifications() }
         }
         
-        // 종료 상태에서 알림 탭해 런치된 경우 처리
+        // 🔴 콜드 스타트로 알림 탭해 들어온 경우
         if let remote = launchOptions?[.remoteNotification] as? [AnyHashable: Any] {
             DeepLinkController.shared.handle(userInfo: remote)
         }
@@ -46,34 +41,29 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // Messaging.messaging().apnsToken = deviceToken
     }
     
-    // 포그라운드 표시
+    // 포그라운드 표시 제어 (이미 구현해 둔 그대로 OK)
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        
-        // 푸시 데이터에 conversation_id 담겨 있음 (Cloud Function에서 넣어둔 값)
         let userInfo = notification.request.content.userInfo
         let cidString = userInfo["conversation_id"] as? String
-        
         if UIApplication.shared.applicationState == .active,
            let active = CurrentChatContext.shared.activeConversationId,
-           active.uuidString == cidString { // 보고 있는 방과 동일하면
-            completionHandler([])
+           active.uuidString == cidString {
+            completionHandler([])            // 현재 보고 있는 방이면 무음/무배너
             return
         }
-        
-        // 그 외에는 정상 표시
-        completionHandler([.banner, .sound, .badge])
+        completionHandler([.banner, .sound, .badge]) // 그 외에는 정상 표시
     }
     
-    // 알림 배너 탭(백그라운드/포그라운드) 공통 처리
-       func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                   didReceive response: UNNotificationResponse,
-                                   withCompletionHandler completionHandler: @escaping () -> Void) {
-           let userInfo = response.notification.request.content.userInfo
-           DeepLinkController.shared.handle(userInfo: userInfo)
-           completionHandler()
-       }
+    // 🔴 알림 배너/알림센터 탭 시
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        DeepLinkController.shared.handle(userInfo: userInfo) // ← 여기서 값만 저장
+        completionHandler()
+    }
     
     // 최신 FCM 토큰 콜백
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
@@ -177,19 +167,7 @@ struct MujeApp: App {
             .environmentObject(router)
             .environmentObject(push)
             .environmentObject(unreadBadge)
-            // 앱이 뜨자마자 pending 있으면 처리(종료 상태에서 탭해 런치된 경우)
-            .onAppear {
-                if let cid = deepLink.pendingConversationId {
-                    router.push(to: .inboxView(conversationId: cid))
-                    deepLink.pendingConversationId = nil
-                }
-            }
-            // 런타임 중(백그라운드→포그라운드 포함) 변경 감지
-            .onChange(of: deepLink.pendingConversationId) { cid, _ in
-                guard let cid else { return }
-                router.push(to: .inboxView(conversationId: cid))
-                deepLink.pendingConversationId = nil
-            }
+            .environmentObject(deepLink)
         }
     }
     

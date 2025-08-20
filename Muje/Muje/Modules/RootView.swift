@@ -11,8 +11,9 @@ struct RootView: View {
     
     @EnvironmentObject private var router: NavigationRouter
     @EnvironmentObject private var unreadBadge: UnreadBadgeStore
+    @EnvironmentObject private var deepLink: DeepLinkController
     @State private var tabcase: TabCase = .home
-
+    
     
     var body: some View {
         NavigationStack(path: $router.destination) {
@@ -35,14 +36,26 @@ struct RootView: View {
                 NavigationRoutingView(destination: destination)
                     .environmentObject(router)
             }
+            .onAppear {
+                pushIfNeeded()
+            }
+            .onChange(of: deepLink.pendingConversationId) { _, _ in
+                pushIfNeeded()
+            }
         }
     }
     
+    @MainActor
+    private func pushIfNeeded() {
+        guard let cid = deepLink.pendingConversationId else { return }
+        router.push(to: .inboxView(conversationId: cid))
+        deepLink.pendingConversationId = nil // 재진입 방지
+    }
     
     private func tabLabel(_ tab: TabCase) -> some View {
         VStack(spacing: 12) {
             Image(systemName: tab.icon)
-                
+            
             Text(tab.rawValue)
                 .font(.caption)
                 .foregroundStyle(Color.black)
@@ -66,8 +79,13 @@ struct RootView: View {
     }
 }
 
+
+
+
+
 #Preview {
     RootView()
         .environmentObject(NavigationRouter())
         .environmentObject(UnreadBadgeStore())
+        .environmentObject(DeepLinkController())
 }
