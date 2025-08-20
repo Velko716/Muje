@@ -62,11 +62,4 @@ final class InboxListViewModel {
     func otherName(for convo: Conversation) -> String {
         convo.participant1UserId == currentUserId ? convo.participant2Name : convo.participant1Name
     }
-    
-    // FIXME: - 더 좋은 방법으로 수정하기 (초기 파이어베이스 리셋 설정으로 값을 초기화 == 0)
-    func resetCount(conversationId: UUID) async {
-        Task { try? await FirestoreManager.shared
-                .markConversationRead(conversationId: conversationId, userId: self.currentUserId)
-        }
-    }
 }

@@ -69,9 +69,6 @@ struct InboxListView: View {
                         unreadCount: convo.unread?[viewModel.currentUserId] ?? 0
                     )
                 }
-                .task {
-                    await viewModel.resetCount(conversationId: convo.conversationId)
-                }
             }
         }
         .listStyle(.plain)
