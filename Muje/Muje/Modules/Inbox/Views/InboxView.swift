@@ -45,6 +45,14 @@ struct InboxView: View {
             }
             .paddingH16()
         }
+        .onAppear {
+            CurrentChatContext.shared.activeConversationId = viewModel.conversationId
+        }
+        .onDisappear {
+            if CurrentChatContext.shared.activeConversationId == viewModel.conversationId {
+                CurrentChatContext.shared.activeConversationId = nil
+            }
+        }
         .safeAreaInset(edge: .bottom) {
             bottomInboxInputBar
         }

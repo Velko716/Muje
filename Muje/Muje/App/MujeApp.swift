@@ -50,6 +50,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        // 푸시 데이터에 conversation_id 담겨 있음 (Cloud Function에서 넣어둔 값)
+        let userInfo = notification.request.content.userInfo
+        let cidString = userInfo["conversation_id"] as? String
+        
+        if UIApplication.shared.applicationState == .active,
+           let active = CurrentChatContext.shared.activeConversationId,
+           active.uuidString == cidString { // 보고 있는 방과 동일하면
+            completionHandler([])
+            return
+        }
+        
+        // 그 외에는 정상 표시
         completionHandler([.banner, .sound, .badge])
     }
     
