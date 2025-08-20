@@ -15,15 +15,7 @@ struct IncomingMessageBubble: View {
         HStack(alignment: .bottom, spacing: 4) {
             VStack(alignment: .leading, spacing: 8) {
                 Text(text)
-                    .font(.body)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 12)
-                    .background(Color(uiColor: .secondarySystemBackground)) // FIXME: - 컬러 수정
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .strokeBorder(.secondary.opacity(0.15), lineWidth: 1)
-                    )
+                    .bubble(color: Color(uiColor: .secondarySystemBackground), isBorder: true) // FIXME: - 컬러 수정
             }
             if let time {
                 Text(time.hourMinute24)

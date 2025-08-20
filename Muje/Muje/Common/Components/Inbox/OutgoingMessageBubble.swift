@@ -21,11 +21,7 @@ struct OutgoingMessageBubble: View {
             }
             HStack {
                 Text(text)
-                    .font(.body) // FIXME: - 폰트 수정
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 12)
-                    .background(Color.blue.opacity(0.12)) // FIXME: - 컬러 수정
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .bubble(color: Color.blue.opacity(0.12), isBorder: false) // FIXME: - 컬러 수정
             }
         }
         .frame(maxWidth: .infinity, alignment: .trailing)
