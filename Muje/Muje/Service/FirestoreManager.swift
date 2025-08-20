@@ -232,7 +232,6 @@ extension FirestoreManager {
 }
 
 // MARK: - 쪽지 리스트
-
 extension FirestoreManager {
     func fetchConversationsForUser(_ userId: String) async throws -> [Conversation] {
         

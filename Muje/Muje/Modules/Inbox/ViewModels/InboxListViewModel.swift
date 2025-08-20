@@ -24,7 +24,6 @@ final class InboxListViewModel {
         do {
             conversations = try await FirestoreManager.shared.fetchConversationsForUser(currentUserId)
         } catch {
-           // errorMessage = error.localizedDescription
             conversations = []
         }
     }
@@ -36,7 +35,6 @@ final class InboxListViewModel {
         participant1: (id: String, name: String, role: ParticipantRole),
         participant2: (id: String, name: String, role: ParticipantRole)
     ) async throws -> Conversation {
-        // 🔹 Conversation.asDictionary 안에서 participants 배열이 자동으로 포함됩니다.
         let convo = Conversation(
             conversationId: UUID(),
             participant1UserId: participant1.id,

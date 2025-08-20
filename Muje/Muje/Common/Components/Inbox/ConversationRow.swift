@@ -10,11 +10,11 @@ import SwiftUI
 struct ConversationRow: View {
     let conversation: Conversation
     let currentUserId: String
-
+    
     var otherName: String {
         conversation.participant1UserId == currentUserId
-            ? conversation.participant2Name
-            : conversation.participant1Name
+        ? conversation.participant2Name
+        : conversation.participant1Name
     }
     
     private var lastLine: String {
@@ -24,19 +24,20 @@ struct ConversationRow: View {
         
         guard !body.isEmpty else { return "대화를 시작해보세요" }
         
-        let prefix = (conversation.lastSenderUserId == currentUserId) ? "나: " : ""
+        let prefix = (conversation.lastSenderUserId == currentUserId) ? "나: " : "\(otherName): "
         return prefix + body
     }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
+            
             HStack(spacing: 8) {
                 
                 Text(otherName)
                     .font(Font.system(size: 18))
                     .foregroundStyle(Color.black)
                 
-                Text(conversation.postTitle) 
+                Text(conversation.postTitle)
                     .font(Font.system(size: 14))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -52,11 +53,23 @@ struct ConversationRow: View {
                 }
             }
             
-            Text(lastLine)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-                .truncationMode(.tail)
+            HStack {
+                Text(lastLine)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                
+                Spacer()
+                
+                Text("10")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 0.73)
+                    .padding(.horizontal, 6.56)
+                    .background(Capsule().fill(Color.blue))
+                
+            }
         }
     }
 }
