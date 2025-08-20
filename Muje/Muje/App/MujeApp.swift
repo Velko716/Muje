@@ -153,10 +153,35 @@ struct MujeApp: App {
                             }
                             print("이메일 새유저")
                         } else {
-                            // 기존 유저 로그인 완료
+                            if let uid = Auth.auth().currentUser?.uid {
+                                do {
+                                    let user: User = try await FirestoreManager.shared.get(uid, from: .user)
+                                    await MainActor.run {
+                                        FirebaseAuthManager.shared.currentUser = user
+                                        unreadBadge.start(for: uid) // 뱃지 초기화
+                                        self.isReady = true
+                                        FirebaseAuthManager.shared.email = ""
+                                        router.popToRootView() // FIXME: - 팝 루트가 되니까 쪽지 리스트쪽이 안채워짐. 풀 스크린 스택 교체 필요
+                                    }
+                                } catch {
+                                    // 문서가 없거나 에러여도 앱은 열 수 있게 처리
+                                    print("Existing user load error:", error)
+                                    await MainActor.run {
+                                        self.isReady = true
+                                        FirebaseAuthManager.shared.email = ""
+                                        router.popToRootView()
+                                    }
+                                }
+                            } else {
+                                await MainActor.run {
+                                    self.isReady = true
+                                    FirebaseAuthManager.shared.email = ""
+                                    router.popToRootView()
+                                }
+                            }
                             FirebaseAuthManager.shared.email = ""
                             isReady = true
-                            // 필요 시 여기서 라우팅 추가
+                            
                         }
                     } catch {
                         print("error: \(error.localizedDescription)")
