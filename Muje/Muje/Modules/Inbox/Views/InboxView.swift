@@ -49,7 +49,12 @@ struct InboxView: View {
             bottomInboxInputBar
         }
         .toolbar {
-            navigationToolbarItems
+            let postTitle = FirebaseAuthManager.shared.currentUser?.name // FIXME: - 공고명으로 수정해야함
+            let toolbarTrailingImage = "ellipsisVertical"
+            
+            ToolbarLeadingBackButton()
+            ToolbarCenterTitle(text: postTitle ?? "")
+            ToolbarTrailingButton(toolbarType: .image(.named(toolbarTrailingImage)))
         }
         .overlay {
             if showActionSheet {
@@ -87,36 +92,6 @@ struct InboxView: View {
             Text("채팅방을 나가면 대화내용이 삭제됩니다.")
         }
     }
-    
-    // MARK: - 네비게이션 툴 바 아이템
-    @ToolbarContentBuilder
-    private var navigationToolbarItems: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button {
-                rotuer.pop()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .foregroundStyle(Color.black)
-            }
-        }
-        
-        ToolbarItem(placement: .principal) {
-            HStack(spacing: 8) {
-                Text("\(FirebaseAuthManager.shared.currentUser?.name ?? "")")
-                InboxNavigationChip(type: .applicant) // FIXME: - 쪽지 타입을 Post Firebase에서 불러오게끔 변경해야함. (임시뷰)
-                    .frame(width: 61)
-            }
-        }
-        
-        ToolbarItem(placement: .topBarTrailing) {
-            Button {
-                self.showActionSheet = true
-            } label: {
-                Image(.ellipsisVertical)
-            }
-        }
-    }
-    
     // MARK: - 탑 현재 공고 뷰
     private var topCurrentPostView: some View {
         VStack(spacing: .zero) {
