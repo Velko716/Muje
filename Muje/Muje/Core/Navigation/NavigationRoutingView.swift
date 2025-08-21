@@ -43,7 +43,7 @@ struct NavigationRoutingView: View {
             case .userInfoInputView(let uuid, let email):
                 UserInfoInputView(uuid: uuid, email: email)
             case .makeRecruitmentView:
-                RecruitmentSelectionItemView(IsBasicInfo: true, text: "지원자 정보", IsChecked: false)
+                RecruitmentPostView()
             }
         }
         .hideBackButton()

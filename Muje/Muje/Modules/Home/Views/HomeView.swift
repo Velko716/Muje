@@ -11,7 +11,12 @@ struct HomeView: View {
     @EnvironmentObject var router: NavigationRouter
     
     var body: some View {
-        Text("HomeView")
+        Button {
+            router.push(to: .makeRecruitmentView)
+        } label: {
+            Text("공고 만들기 탭으로 이동")
+        }
+
     }
 }
 
