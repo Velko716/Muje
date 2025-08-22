@@ -11,7 +11,7 @@ import FirebaseFirestore
 final class FirestoreManager {
     
     static let shared = FirestoreManager()
-    let db = Firestore.firestore()
+    private let db = Firestore.firestore()
     private let storage = Storage.storage() //이미지를 불러오기 위함인데 잠시 대기
     
     private init() {}
@@ -108,7 +108,7 @@ extension FirestoreManager {
             }
         }
         return items.sorted(by: sortComparator)
-    }    
+    }
     // collectionType: 해당 데이터가 어떤 유형인지
     // order: 정렬 방식
     // count: 가져오는 개수(0이면 전부 가져옴)
@@ -176,33 +176,34 @@ extension FirestoreManager {
         var result: [UUID: UIImage] = [:]
         
         await withTaskGroup(of: (UUID, UIImage?)?.self) { group in
-              for postImage in postImages {
-                  group.addTask {
-                      guard let uuid = UUID(uuidString: postImage.postId) else { return nil }
-                      let path = "post_images/\(postImage.postId)/\(postImage.imageId).jpg"
-                      
-                      do {
-                          let ref = Storage.storage().reference(withPath: path)
-                          let url = try await ref.downloadURL()
-                          let (data, _) = try await URLSession.shared.data(from: url)
-                          if let image = UIImage(data: data) {
-                              return (uuid, image)
-                          }
-                      } catch {
-                          print("❌ Failed to load image for \(postImage.postId):", error)
-                      }
-                      return nil
-                  }
-              }
-              
-              for await item in group {
-                  if let (uuid, image) = item {
-                      result[uuid] = image
-                  }
-              }
-          }
-          
-          return result
+            for postImage in postImages {
+                group.addTask {
+                    guard let uuid = UUID(uuidString: postImage.postId) else { return nil }
+                    let path = "post_images/\(postImage.postId)/\(postImage.imageId).jpg"
+                    
+                    do {
+                        let ref = Storage.storage().reference(withPath: path)
+                        let url = try await ref.downloadURL()
+                        let (data, _) = try await URLSession.shared.data(from: url)
+                        if let image = UIImage(data: data) {
+                            return (uuid, image)
+                        }
+                    } catch {
+                        print("❌ Failed to load image for \(postImage.postId):", error)
+                    }
+                    return nil
+                }
+            }
+            
+            for await item in group {
+                if let (uuid, image) = item {
+                    result[uuid] = image
+                }
+            }
+        }
+        
+        return result
+    }
 }
 
 // MARK: - 쪽지 내용 관련
@@ -308,16 +309,16 @@ extension FirestoreManager {
     /// 나가기: 참가자 배열에서 내 UID 제거 + 감사 로그 기록
     func leaveConversation(conversationId: UUID, userId: String) async throws {
         let convoRef = db.collection("conversations").document(conversationId.uuidString)
-
+        
         let snap = try await convoRef.getDocument()
         let data = snap.data() ?? [:]
         let participants = data["participants"] as? [String] ?? []
-
+        
         if participants == [userId] || participants.isEmpty {
             try await convoRef.delete() // 내가 마지막 참가자면 방 문서 삭제
             return
         }
-
+        
         // 그 외: 내 UID만 제거
         try await convoRef.updateData([
             "participants": FieldValue.arrayRemove([userId]),
@@ -335,19 +336,19 @@ extension FirestoreManager {
         _ userId: String,
         onChange: @escaping ([Conversation]) -> Void
     ) -> ListenerRegistration {
-
+        
         let q = db.collection("conversations")
             .whereField("participants", arrayContains: userId)
             .order(by: "updated_at", descending: true)
-
+        
         return q.addSnapshotListener { snap, err in
             guard let snap else {
                 onChange([])
                 return
             }
-
+            
             var list: [Conversation] = []
-
+            
             for doc in snap.documents {
                 do {
                     var convo = try doc.data(as: Conversation.self)
@@ -366,7 +367,7 @@ extension FirestoreManager {
                     print("decode error \(doc.documentID):", error)
                 }
             }
-
+            
             // 최신순 정렬
             list.sort {
                 let l = $0.updatedAt?.dateValue() ?? $0.createdAt?.dateValue() ?? .distantPast
