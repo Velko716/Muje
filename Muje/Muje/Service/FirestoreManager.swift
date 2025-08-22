@@ -5,12 +5,15 @@
 //  Created by 김진혁 on 8/1/25.
 //
 
+import FirebaseStorage
 import FirebaseFirestore
 
 final class FirestoreManager {
     
     static let shared = FirestoreManager()
     let db = Firestore.firestore()
+    private let storage = Storage.storage() //이미지를 불러오기 위함인데 잠시 대기
+    
     private init() {}
     
     private func save<T: EntityRepresentable>(
@@ -105,7 +108,101 @@ extension FirestoreManager {
             }
         }
         return items.sorted(by: sortComparator)
+    }    
+    // collectionType: 해당 데이터가 어떤 유형인지
+    // order: 정렬 방식
+    // count: 가져오는 개수(0이면 전부 가져옴)
+    func fetchPosts<T: Decodable>(
+        as type: T.Type,
+        _ collectionType: CollectionType,
+        order: String = "created_at",
+        descending: Bool = true,
+        count: Int = 0
+    ) async throws -> [T] {
+        var query: Query = db.collection(collectionType.rawValue)
+        query = query.order(by: order, descending: true)
+        if count > 0 {
+            query = query.limit(to: count) }
+        
+        let snapshot = try await query.getDocuments()
+        
+        let items = snapshot.documents.compactMap { document in
+            do {
+                let decoded = try document.data(as: T.self)
+                
+                return decoded
+            } catch {
+                return nil
+            }
+        }
+        return items
     }
+    
+    func getDownloadURL(for storagePath: String) async throws -> URL {
+        let storageRef = Storage.storage().reference(withPath: "images/\(storagePath)")
+        let url = try await storageRef.downloadURL()
+        return url
+    }
+    
+    //썸네일 PostImage 목록 가져오기
+    func fetchThumbnailImages(for postIds: [UUID]) async throws -> [PostImage] {
+        guard !postIds.isEmpty else { return [] }
+        
+        // UUID를 String으로 변환
+        let postIdStrings = postIds.map { $0.uuidString }
+        
+        //post_image 콜렉션의 문서를 모두 가져옴
+        let query = db.collection("post_images")
+            .whereField("postId", in: postIdStrings)
+            .whereField("image_order", isEqualTo: 0)
+        
+        let snapshot = try await query.getDocuments()
+        
+        var thumbnails: [PostImage] = []
+        
+        for document in snapshot.documents {
+            do {
+                let postImage = try document.data(as: PostImage.self)
+                thumbnails.append(postImage)
+            } catch {
+                print("Error decoding PostImage : \(error)")
+            }
+        }
+        return thumbnails
+    }
+    
+    // 실제 이미지를 storage에서 병렬 처리로 가져오는 함수, UUID(post_id)와 PostImage를 딕셔너리 형태로 묶어서 관리
+    func fetchThumbnailUIImages(from postImages: [PostImage]) async -> [UUID: UIImage] {
+        var result: [UUID: UIImage] = [:]
+        
+        await withTaskGroup(of: (UUID, UIImage?)?.self) { group in
+              for postImage in postImages {
+                  group.addTask {
+                      guard let uuid = UUID(uuidString: postImage.postId) else { return nil }
+                      let path = "post_images/\(postImage.postId)/\(postImage.imageId).jpg"
+                      
+                      do {
+                          let ref = Storage.storage().reference(withPath: path)
+                          let url = try await ref.downloadURL()
+                          let (data, _) = try await URLSession.shared.data(from: url)
+                          if let image = UIImage(data: data) {
+                              return (uuid, image)
+                          }
+                      } catch {
+                          print("❌ Failed to load image for \(postImage.postId):", error)
+                      }
+                      return nil
+                  }
+              }
+              
+              for await item in group {
+                  if let (uuid, image) = item {
+                      result[uuid] = image
+                  }
+              }
+          }
+          
+          return result
 }
 
 // MARK: - 쪽지 내용 관련

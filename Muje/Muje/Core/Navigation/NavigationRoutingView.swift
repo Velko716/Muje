@@ -4,7 +4,6 @@
 //
 //  Created by 김진혁 on 7/19/25.
 //
-
 import SwiftUI
 
 struct NavigationRoutingView: View {
@@ -16,20 +15,24 @@ struct NavigationRoutingView: View {
             switch destination {
             case .contentView: // 임시
                 RootView() // 임시
+            case .searchView(let posts):
+                SearchView(allPosts: posts)
+            case .notificationView:
+                NotificationView()
             case .RecruitmentDetailView(let postId):
                 RecruitmentDetailView(postId: postId)
             case .ApplicationFormView(let postId, let requirementFlags, let postBasicInfo):
-              ApplicationFormView(
-                postId: postId,
-                requirementFlags: requirementFlags,
-                postBasicInfo: postBasicInfo
-              )
+                ApplicationFormView(
+                    postId: postId,
+                    requirementFlags: requirementFlags,
+                    postBasicInfo: postBasicInfo
+                )
             case .ApplicationPreview(
-              let postId,
-              let requirementFlags,
-              let postBasicInfo,
-              let customQuestion,
-              let questionAnswer
+                let postId,
+                let requirementFlags,
+                let postBasicInfo,
+                let customQuestion,
+                let questionAnswer
             ):
               ApplicationPreview(
                 postId: postId,

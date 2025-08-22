@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Post: Codable {
+struct Post: Codable, Hashable {
     let postId: UUID
     let authorUserId: String
     let title: String

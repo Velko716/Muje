@@ -9,6 +9,8 @@ import Foundation
 
 enum NavigationDestination: Equatable, Hashable {
     case contentView // 임시
+    case searchView(posts: [Post])
+    case notificationView // 임시
     case RecruitmentDetailView(postId: String)
     case ApplicationFormView(
       postId: String,
