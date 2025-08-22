@@ -13,6 +13,21 @@ extension View {
         self.navigationBarBackButtonHidden(true)
     }
     
+    /// 아무 곳 터치 시, 키보드 창 내립니다.
+    func dismissKeyboardOnTap() -> some View {
+        self
+            .contentShape(Rectangle())
+            .onTapGesture {
+            #if canImport(UIKit)
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.resignFirstResponder),
+                    to: nil, from: nil, for: nil
+                )
+            #endif
+            }
+    }
+    
+    /// 기본 여백 좌우 16입니다.
     func paddingH16() -> some View {
         self.padding(.horizontal, 16)
     }

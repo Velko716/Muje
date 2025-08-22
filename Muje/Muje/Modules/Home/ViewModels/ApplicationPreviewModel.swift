@@ -113,7 +113,6 @@ final class ApplicationPreviewModel {
       applicantGender: requirement.requiresGender ? userInfo.gender : nil,
       applicantDepartment: requirement.requiresDepartment ? userInfo.department : nil,
       applicantStudentId: requirement.requiresStudentId ? userInfo.studentId : nil,
-//      applicantPhone: requirement.requiresPhone ? userInfo.phone : nil,
       postTitle: post.title,
       postOrganization: post.organization,
       postAuthorUserId: post.authorUserId

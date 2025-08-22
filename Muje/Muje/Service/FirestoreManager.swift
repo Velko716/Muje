@@ -76,34 +76,209 @@ extension FirestoreManager {
             .collection("blocks")
             .order(by: "created_at", descending: true)
             .getDocuments()
-
+        
         let blocks = try snapshot.documents.compactMap { document in
             try document.data(as: Block.self)
         }
-
+        
         return blocks
     }
     
-  func fetchWithCondition<T: Decodable>(
-    from collectionType: CollectionType,
-    whereField field: String,
-    equalTo value: Any,
-    sortedBy sortComparator: @escaping (T, T) -> Bool
-  ) async throws -> [T] {
-    
-    let snapshot = try await db
-      .collection(collectionType.rawValue)
-      .whereField(field, isEqualTo: value)
-      .getDocuments()
-    
-    let items = snapshot.documents.compactMap { document in
-      do {
-        return try document.data(as: T.self)
-      } catch {
-        print("fetch 디코딩 실패 \(error)")
-        return nil
-      }
+    func fetchWithCondition<T: Decodable>(
+        from collectionType: CollectionType,
+        whereField field: String,
+        equalTo value: Any,
+        sortedBy sortComparator: @escaping (T, T) -> Bool
+    ) async throws -> [T] {
+        
+        let snapshot = try await db
+            .collection(collectionType.rawValue)
+            .whereField(field, isEqualTo: value)
+            .getDocuments()
+        
+        let items = snapshot.documents.compactMap { document in
+            do {
+                return try document.data(as: T.self)
+            } catch {
+                print("fetch 디코딩 실패 \(error)")
+                return nil
+            }
+        }
+        return items.sorted(by: sortComparator)
     }
-    return items.sorted(by: sortComparator)
-  }
 }
+
+// MARK: - 쪽지 내용 관련
+extension FirestoreManager {
+    
+    // 메시지 전송 + 대화 메타 동시 업데이트
+    func sendMessage(
+        conversationId: UUID,
+        senderUserId: String,
+        text: String
+    ) async throws {
+        let body = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !body.isEmpty else { return }
+        
+        let convoRef = db.collection("conversations").document(conversationId.uuidString)
+        let msgRef = convoRef.collection("messages").document()
+        
+        // 대화 참여자 가져오기
+        let convoSnap = try await convoRef.getDocument()
+        let p1 = convoSnap.get("participant1_user_id") as? String ?? ""
+        let p2 = convoSnap.get("participant2_user_id") as? String ?? ""
+        let recipients = [p1, p2].filter { $0 != senderUserId }   // 보낸 사람 제외
+        
+        let batch = db.batch()
+        
+        // 메시지 생성
+        batch.setData([
+            "sender_user_id": senderUserId,
+            "text": body,
+            "created_at": FieldValue.serverTimestamp(),
+            "updated_at": FieldValue.serverTimestamp()
+        ], forDocument: msgRef)
+        
+        // 대화 메타 갱신 + 상대방 미읽음 +1
+        var convoUpdate: [String: Any] = [
+            "last_message": body,
+            "last_sender_user_id": senderUserId,
+            "last_message_at": FieldValue.serverTimestamp(),
+            "updated_at": FieldValue.serverTimestamp()
+        ]
+        // 여러 명일 수 있으니 루프 가능
+        recipients.forEach { rid in
+            convoUpdate["unread_\(rid)"] = FieldValue.increment(Int64(1))
+        }
+        
+        batch.setData(convoUpdate, forDocument: convoRef, merge: true)
+        
+        try await batch.commit()
+    }
+    
+    /// 읽음 수를 0으로 초기화하는 메서드 입니다.
+    func markConversationRead(conversationId: UUID, userId: String) async throws {
+        let convoRef = db.collection("conversations").document(conversationId.uuidString)
+        try await convoRef.setData([
+            "unread_\(userId)": 0,
+            "read_states_\(userId)_last_read_at": FieldValue.serverTimestamp()
+        ], merge: true)
+    }
+    
+    // 실시간 구독: 최신 n개를 받아서 UI는 정방향으로 사용
+    // onChange로 역순을 뒤집어 전달하고, 가장 오래된 문서 스냅샷(페이징 커서)도 함께 전달
+    func listenMessages(
+        conversationId: UUID,
+        pageSize: Int = 30,
+        onChange: @escaping ([Message], DocumentSnapshot?) -> Void
+    ) -> ListenerRegistration {
+        let ref = db.collection("conversations")
+            .document(conversationId.uuidString)
+            .collection("messages")
+        
+        let q = ref.order(by: "created_at", descending: true).limit(to: pageSize)
+        
+        return q.addSnapshotListener { snapshot, _ in
+            guard let docs = snapshot?.documents else {
+                onChange([], nil)
+                return
+            }
+            let page = docs.compactMap { try? $0.data(as: Message.self) }.reversed()
+            onChange(Array(page), docs.last) // docs.last = 이 페이지에서 가장 오래된 문서
+        }
+    }
+    
+    // 과거 페이지 더 불러오기(페이징)
+    func fetchMoreMessages(
+        conversationId: UUID,
+        after oldestCursor: DocumentSnapshot,
+        pageSize: Int = 30
+    ) async throws -> ([Message], DocumentSnapshot?) {
+        let ref = db.collection("conversations")
+            .document(conversationId.uuidString)
+            .collection("messages")
+        
+        let snap = try await ref
+            .order(by: "created_at", descending: true)
+            .start(afterDocument: oldestCursor)
+            .limit(to: pageSize)
+            .getDocuments()
+        
+        let items = snap.documents.compactMap { try? $0.data(as: Message.self) }.reversed()
+        return (Array(items), snap.documents.last)
+    }
+    
+    /// 나가기: 참가자 배열에서 내 UID 제거 + 감사 로그 기록
+    func leaveConversation(conversationId: UUID, userId: String) async throws {
+        let convoRef = db.collection("conversations").document(conversationId.uuidString)
+
+        let snap = try await convoRef.getDocument()
+        let data = snap.data() ?? [:]
+        let participants = data["participants"] as? [String] ?? []
+
+        if participants == [userId] || participants.isEmpty {
+            try await convoRef.delete() // 내가 마지막 참가자면 방 문서 삭제
+            return
+        }
+
+        // 그 외: 내 UID만 제거
+        try await convoRef.updateData([
+            "participants": FieldValue.arrayRemove([userId]),
+            "left_users": FieldValue.arrayUnion([userId]),
+            "left_at_\(userId)": FieldValue.serverTimestamp(),
+            "updated_at": FieldValue.serverTimestamp()
+        ])
+    }
+}
+
+// MARK: - 쪽지 리스트(실시간)
+extension FirestoreManager {
+    /// 대화 목록 실시간 리스너
+    func listenConversationsForUser(
+        _ userId: String,
+        onChange: @escaping ([Conversation]) -> Void
+    ) -> ListenerRegistration {
+
+        let q = db.collection("conversations")
+            .whereField("participants", arrayContains: userId)
+            .order(by: "updated_at", descending: true)
+
+        return q.addSnapshotListener { snap, err in
+            guard let snap else {
+                onChange([])
+                return
+            }
+
+            var list: [Conversation] = []
+
+            for doc in snap.documents {
+                do {
+                    var convo = try doc.data(as: Conversation.self)
+                    var unreadDict: [String: Int] = [:]
+                    let rawData = doc.data()
+                    for (key, value) in rawData {
+                        if key.hasPrefix("unread_"),
+                           let id = key.components(separatedBy: "unread_").last,
+                           let count = value as? Int {
+                            unreadDict[id] = count
+                        }
+                    }
+                    convo.unread = unreadDict
+                    list.append(convo)
+                } catch {
+                    print("decode error \(doc.documentID):", error)
+                }
+            }
+
+            // 최신순 정렬
+            list.sort {
+                let l = $0.updatedAt?.dateValue() ?? $0.createdAt?.dateValue() ?? .distantPast
+                let r = $1.updatedAt?.dateValue() ?? $1.createdAt?.dateValue() ?? .distantPast
+                return l > r
+            }
+            
+            onChange(list)
+        }
+    }
+}
+
