@@ -18,4 +18,5 @@ enum CollectionType: String {
     case questionAnswers = "question_answers"
     case emailVerifications = "email_verifications"
     case phoneVerifications = "phone_verifications"
+    case conversations = "conversations"
 }

@@ -34,21 +34,28 @@ struct NavigationRoutingView: View {
                 let customQuestion,
                 let questionAnswer
             ):
-                ApplicationPreview(
-                    postId: postId,
-                    requirementFlags: requirementFlags,
-                    postBasicInfo: postBasicInfo,
-                    customQuestion: customQuestion,
-                    questionAnswer: .constant(questionAnswer)
-                )
+              ApplicationPreview(
+                postId: postId,
+                requirementFlags: requirementFlags,
+                postBasicInfo: postBasicInfo,
+                customQuestion: customQuestion,
+                questionAnswer: .constant(questionAnswer)
+              )
+            case .ApplicationManagementView(let postId, let postInfo):
+              ApplicationManagementView(
+                postId: postId,
+                postInfo: postInfo
+              )
             case .emailVerificationView:
                 EmailVerificationView()
             case .userInfoInputView(let uuid, let email):
                 UserInfoInputView(uuid: uuid, email: email)
-
+            case .inboxView(let conversationId):
+                InboxView(conversationId: conversationId)   
             }
         }
         .hideBackButton()
+        .dismissKeyboardOnTap()
+        .environmentObject(router)
     }
-    
 }

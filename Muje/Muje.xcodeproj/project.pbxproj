@@ -12,10 +12,12 @@
 		C99815E32E2C35D200AA4975 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C99815E22E2C35D200AA4975 /* FirebaseFirestore */; };
 		C99815E52E2C35D200AA4975 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = C99815E42E2C35D200AA4975 /* FirebaseFunctions */; };
 		C99815E72E2C35D200AA4975 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C99815E62E2C35D200AA4975 /* FirebaseMessaging */; };
+		E9803C052E5502B600B6CD91 /* ci_post_clone.sh in Resources */ = {isa = PBXBuildFile; fileRef = E9803C042E5502B600B6CD91 /* ci_post_clone.sh */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C99813E62E2BB57500AA4975 /* Muje.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Muje.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E9803C042E5502B600B6CD91 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -58,6 +60,7 @@
 		C99813DD2E2BB57500AA4975 = {
 			isa = PBXGroup;
 			children = (
+				E9803C022E55027100B6CD91 /* ci_scripts */,
 				C99813E82E2BB57500AA4975 /* Muje */,
 				C99813E72E2BB57500AA4975 /* Products */,
 			);
@@ -69,6 +72,14 @@
 				C99813E62E2BB57500AA4975 /* Muje.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E9803C022E55027100B6CD91 /* ci_scripts */ = {
+			isa = PBXGroup;
+			children = (
+				E9803C042E5502B600B6CD91 /* ci_post_clone.sh */,
+			);
+			path = ci_scripts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,6 +154,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E9803C052E5502B600B6CD91 /* ci_post_clone.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +286,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
@@ -289,11 +302,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = XAL6YTMQ44;
+				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = XAL6YTMQ44;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Muje/Service/Info.plist;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -328,11 +342,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = XAL6YTMQ44;
+				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = XAL6YTMQ44;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Muje/Service/Info.plist;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
