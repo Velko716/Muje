@@ -11,3 +11,4 @@ enum PostStatus: String, Codable {
     case recruiting = "모집중"
     case completed = "모집완료"
 }
+

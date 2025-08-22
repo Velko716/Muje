@@ -112,6 +112,79 @@ struct ApplicationPreview: View {
   }
 }
 
-//#Preview {
-//  ApplicationPreview(postId: "", customQuestion: "", requirementFlags: RequirementFlags(from: Post(postId: UUID(), authorUserId: "", title: "ddddddd", organization: "ddddd", content: "ddddd", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), status: "PostStatus.recruiting", authorName: "dd", authorOrganization: "dd")))
-//}
+#Preview {
+  @Previewable @State var viewModel = ApplicationPreviewModel()
+    
+  return ApplicationPreview(
+    postId: "",
+    requirementFlags: RequirementFlags(
+      from: Post(
+        postId: UUID(),
+        authorUserId: "",
+        title: "ddddd",
+        organization: "dddddd",
+        content: "ddddddd",
+        recruitmentStart: Timestamp(date: Date()),
+        recruitmentEnd: Timestamp(date: Date()),
+        hasInterview: true,
+        status: PostStatus.recruiting.rawValue,
+        requiresName: true,
+        requiresStudentId: true,
+        requiresDepartment: true,
+        requiresGender: true,
+        requiresAge: true,
+        requiresPhone: true,
+        authorName: "박기연",
+        authorOrganization: "MAD"
+      )
+    ),
+    postBasicInfo: PostBasicInfo(
+      from: Post(
+        postId: UUID(),
+        authorUserId: "",
+        title: "ddddd",
+        organization: "dddddd",
+        content: "ddddddd",
+        recruitmentStart: Timestamp(date: Date()),
+        recruitmentEnd: Timestamp(date: Date()),
+        hasInterview: true,
+        status: PostStatus.recruiting.rawValue,
+        requiresName: true,
+        requiresStudentId: true,
+        requiresDepartment: true,
+        requiresGender: true,
+        requiresAge: true,
+        requiresPhone: true,
+        authorName: "박기연",
+        authorOrganization: "MAD"
+      )
+    ),
+    customQuestion: [CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 1
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 2
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 3
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 4
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 5
+    )],
+    questionAnswer: .constant(["" : "우아아아아ㅏㅇ아ㅏ아"])
+  )
+}
