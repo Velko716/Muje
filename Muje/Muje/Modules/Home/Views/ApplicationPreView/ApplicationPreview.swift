@@ -33,6 +33,11 @@ struct ApplicationPreview: View {
       
       userInfoDetailSection
       
+      Rectangle()
+        .frame(maxWidth: .infinity)
+        .frame(height: 12)
+        .foregroundStyle(Color.gray.opacity(0.2))
+      
       customQuestionSection
       
     }
@@ -60,7 +65,8 @@ struct ApplicationPreview: View {
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, 24)
-    .padding(.vertical, 30)
+    .padding(.top, 16)
+    .padding(.bottom, 24)
   }
   
   private var userInfoDetailSection: some View {
@@ -73,6 +79,7 @@ struct ApplicationPreview: View {
       }
     }
     .padding(.horizontal, 24)
+    .padding(.bottom, 24)
   }
   
   private var customQuestionSection: some View {
@@ -185,6 +192,6 @@ struct ApplicationPreview: View {
       questionText: "햄버거 햄버거",
       questionOrder: 5
     )],
-    questionAnswer: .constant(["" : "우아아아아ㅏㅇ아ㅏ아"])
+    questionAnswer: .constant(["dddddddddd" : "우아아아아ㅏㅇ아ㅏ아"])
   )
 }

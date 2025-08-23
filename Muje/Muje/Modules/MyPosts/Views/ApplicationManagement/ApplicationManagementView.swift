@@ -16,6 +16,9 @@ struct ApplicationManagementView: View {
   let postId: String
   let postInfo: ApplicationManagementPostInfo
   
+  // 모달 상태 관리
+  @State var selectedApplicant: Application?
+  
   var body: some View {
     VStack(spacing: 0) {
       CustomNavigationBar(
@@ -40,11 +43,11 @@ struct ApplicationManagementView: View {
         }
         .animation(.none, value: viewModel.selectedTab)
         .animation(.none, value: viewModel.selectedManagementStage)
-        .onChange(of: viewModel.selectedManagementStage) {
-          withAnimation(.easeInOut(duration: 0.5)) {
-            proxy.scrollTo("contentTop", anchor: .top)
-          }
-        }
+//        .onChange(of: viewModel.selectedManagementStage) {
+//          withAnimation(.easeInOut(duration: 0.5)) {
+//            proxy.scrollTo("contentTop", anchor: .top)
+//          }
+//        }
         .onChange(of: viewModel.selectedTab) {
           withAnimation(.easeInOut(duration: 0.5)) {
             proxy.scrollTo("contentTop", anchor: .top)
@@ -64,6 +67,15 @@ struct ApplicationManagementView: View {
     //    }
     .task {
       await viewModel.loadApplicationData(for: postId)
+    }
+    .sheet(item: $selectedApplicant) { applicant in
+      ApplicantDetailModalView(
+        viewModel: ModalViewModel(
+          managementViewModel: viewModel,
+          applicant: applicant,
+          allApplicants: viewModel.getCurrentApplicant()
+        )
+      )
     }
   }
   

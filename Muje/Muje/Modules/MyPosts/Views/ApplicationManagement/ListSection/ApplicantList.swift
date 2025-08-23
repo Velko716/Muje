@@ -10,6 +10,7 @@ import SwiftUI
 struct ApplicantList: View {
   
   let application: Application
+  let onTap: () -> Void
   
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -28,7 +29,7 @@ struct ApplicantList: View {
     )
     .contentShape(Rectangle())
     .onTapGesture {
-      // TODO: 지원자 상세 모달
+      onTap()
     }
   }
   
@@ -69,6 +70,6 @@ struct ApplicantList: View {
       postTitle: "ㅇㅇㅇㅇㅇㅇㅇ",
       postOrganization: "MAD",
       postAuthorUserId: "ddddd"
-    )
+    ), onTap: {}
   )
 }

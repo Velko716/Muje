@@ -27,7 +27,7 @@ enum ApplicationStatus: String, Codable, CaseIterable {
     }
   }
 }
-
+// MARK: - ManagementView 사용
 extension Application {
   var detailedStatusText: String {
     let status = ApplicationStatus(rawValue: self.status)
@@ -79,4 +79,16 @@ extension Application {
       return .black
     }
   }
+  
+  func getInterviewDisplayText(with slot: InterviewSlot?) -> String {
+    guard let slot = slot else {
+      return "면접일이 확정되지 않음"
+    }
+    
+    let dateString = slot.interviewDate.dateValue().shortDate
+    let timeString = slot.interviewTime
+    
+    return "\(dateString) \(timeString) 면접일 확정"
+  }
+  
 }

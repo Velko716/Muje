@@ -32,8 +32,9 @@ extension ApplicationManagementView {
             ApplicationManagementRow(
               viewModel: viewModel,
               isSelected: viewModel.selectedApplicantId.contains(application.applicationId),
-              application: application
-            )
+              application: application) {
+                handleApplicantTap(application)
+              }
           }
         }
         .padding(.horizontal, 16)
@@ -64,7 +65,9 @@ extension ApplicationManagementView {
       } else {
         LazyVStack(alignment: .leading, spacing: 16) {
           ForEach(applicants, id: \.applicationId) { application in
-            ApplicantList(application: application)
+            ApplicantList(application: application) {
+              handleApplicantTap(application)
+            }
               .padding(.vertical, 4)
           }
         }
@@ -73,5 +76,13 @@ extension ApplicationManagementView {
       }
     }
     .padding(.vertical, 12)
+  }
+  
+  private func handleApplicantTap(_ applicant: Application) {
+    if !viewModel.isSelectionMode {
+      selectedApplicant = applicant
+    } else {
+      viewModel.toggleSelection(applicant.applicationId)
+    }
   }
 }

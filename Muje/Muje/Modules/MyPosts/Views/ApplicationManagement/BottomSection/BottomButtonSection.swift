@@ -34,32 +34,6 @@ extension ApplicationManagementView {
     .background(Color(.systemBackground))
   }
   
-  private var leftButton: String {
-    switch viewModel.selectedManagementStage {
-    case .submitted:
-      return "불합격"
-    case .interviewWaiting:
-      return "면접 취소"
-    case .reviewWaiting:
-      return "불합격"
-    case .reviewCompleted:
-      return "모두에게 심사 결과 알리기"
-    }
-  }
-  
-  private var rightButton: String {
-    switch viewModel.selectedManagementStage {
-    case .submitted:
-      return "면접 제안"
-    case .interviewWaiting:
-      return "면접 완료"
-    case .reviewWaiting:
-      return "합격"
-    case .reviewCompleted:
-      return "모두에게 심사 결과 알리기"
-    }
-  }
-  
   private func notifyButtons(_ type: NotifyButtonType) -> some View {
     Button {
       //

@@ -24,6 +24,9 @@ final class ApplicationManagementViewModel {
   var allApplicants: [Application] = []
   var selectedApplicantId: Set<UUID> = []
   
+  // 면접 슬롯 로드
+  var interviewSlotsById: [String: InterviewSlot] = [:]
+  
   // 탭 선택과 지원 프로세스 상태관리
   var selectedTab: ApplicationTab = .management
   var selectedManagementStage: ApplicationStatus = .submitted
@@ -42,6 +45,11 @@ final class ApplicationManagementViewModel {
         return application.status == ApplicationStatus.reviewCompleted.rawValue
       }
     }
+  }
+  // MARK: - 지원자의 면접 슬롯 정보 가져오기
+  func getInterviewSlot(for application: Application) -> InterviewSlot? {
+    guard let slotId = application.interviewSlotId else { return nil }
+    return interviewSlotsById[slotId]
   }
   // MARK: - 지원자 검색 기능
   private var currentBaseList: [Application] {
@@ -98,7 +106,7 @@ final class ApplicationManagementViewModel {
       selectedApplicantId = Set(filterApplicants.map { $0.applicationId })
     }
   }
-  
+  // MARK: - 왼쪽 오른쪽 버튼 분기 처리
   func handleRightButtonAction() {
     switch selectedManagementStage {
     case .submitted:
@@ -286,18 +294,37 @@ extension ApplicationManagementViewModel {
   
   func loadApplicationData(for postId: String) async {
     do {
-      let applicationData = try await fetchApplicationData(for: postId)
-      self.allApplicants = applicationData
+      async let applicationDataTask = fetchApplicationData(for: postId)
+      async let interviewSlotsTask = fetchInterviewSlots(for: postId)
+      
+      let (applicationData, interviewSlots) = try await (applicationDataTask, interviewSlotsTask)
+      
+      let slotsById = Dictionary(uniqueKeysWithValues: interviewSlots.map { ($0.slotId.uuidString, $0) })
+      
+      await MainActor.run {
+        self.allApplicants = applicationData
+        self.interviewSlotsById = slotsById
+      }
       
     } catch {
       print("지원자 정보 로드 실패")
     }
   }
   
-  func fetchApplicationData(for postId: String) async throws -> [Application] {
+  private func fetchApplicationData(for postId: String) async throws -> [Application] {
     
     return try await firestoreManager.fetchWithCondition(
       from: .applications,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date() }
+    )
+  }
+  
+  private func fetchInterviewSlots(for postId: String) async throws -> [InterviewSlot] {
+    
+    return try await firestoreManager.fetchWithCondition(
+      from: .interviewSlots,
       whereField: "post_id",
       equalTo: postId,
       sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date() }
