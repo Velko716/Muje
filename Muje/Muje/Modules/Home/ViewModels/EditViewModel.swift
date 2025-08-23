@@ -1,5 +1,8 @@
 //
-//  EditViewModel.swift (팀원 스타일로 간단하게!)
+//  EditViewModel.swift
+//  Muje
+//
+//  Created by 조재훈 on 8/6/25.
 //
 
 import SwiftUI
@@ -7,7 +10,7 @@ import PhotosUI
 import FirebaseFirestore
 
 @Observable
-class EditViewModel {
+final class EditViewModel {
   private let firestoreManager = FirestoreManager.shared
   private let fireStorageManager = FireStorageManager.shared
   private let originalImages: [PostImage]
@@ -22,21 +25,14 @@ class EditViewModel {
   var endDateString: String = "마감일 선택"
   var isPicker: Bool = false
   
-  // MARK: - 이미지 관련 (팀원 스타일!)
-  var selectedPhotos: [PhotosPickerItem] = []
-  var existingImages: [PostImage] = []  // 기존 이미지들
-  var newImagesData: [Data] = []        // 새로 선택한 이미지들
+  // MARK: - 이미지 관련
+  var selectedItems: [PhotosPickerItem] = []        // PhotosPicker
+  var selectedImagesData: [Data] = []               // 새 이미지 데이터
+  var existingImages: [PostImage] = []              // 기존 이미지들
   
-  init(post: Post, postImages: [PostImage]) {
-    self.originalPost = post
-    self.originalImages = postImages.sorted { $0.imageOrder < $1.imageOrder }
-    self.existingImages = self.originalImages  // 초기에는 기존 이미지들로 설정
-    
-    self.title = post.title
-    self.organization = post.organization
-    self.content = post.content
-    self.startDate = post.recruitmentStart.dateValue()
-    self.endDate = post.recruitmentEnd.dateValue()
+  // 전체 이미지 개수
+  var totalImageCount: Int {
+    existingImages.count + selectedImagesData.count
   }
   
   var dateRange: ClosedRange<Date> {
@@ -45,56 +41,86 @@ class EditViewModel {
     return min...max
   }
   
+  @MainActor var imageURLCache: [UUID: String] = [:]
+  
+  init(post: Post, postImages: [PostImage]) {
+    self.originalPost = post
+    self.originalImages = postImages.sorted { $0.imageOrder < $1.imageOrder }
+    self.existingImages = self.originalImages  // 기존 이미지들로 초기화
+    
+    self.title = post.title
+    self.organization = post.organization
+    self.content = post.content
+    self.startDate = post.recruitmentStart.dateValue()
+    self.endDate = post.recruitmentEnd.dateValue()
+    
+    Task { await preloadImageURL() }
+  }
+  
+  @MainActor
+  private func preloadImageURL() async {
+    await withTaskGroup(of: (UUID, String?).self) { group in
+      for image in existingImages {
+        group.addTask {
+          do {
+            let url = try await image.getDownloadURL()
+            return (image.imageId, url)
+          } catch {
+            print("이미지 url 로드 실패")
+            return (image.imageId, nil)
+          }
+        }
+      }
+      for await (imageId, url) in group {
+        if let url = url {
+          imageURLCache[imageId] = url
+        }
+      }
+    }
+  }
+  
   func nextCheck() -> Bool {
     return !(title.isEmpty || organization.isEmpty || content.isEmpty)
   }
-  
-  // 전체 이미지 개수 (기존 + 새로운)
-  var totalImageCount: Int {
-    existingImages.count + newImagesData.count
-  }
 }
-
-// MARK: - 이미지 로직 (팀원 스타일!)
+// MARK: - 이미지 관리 EX
 extension EditViewModel {
   
-  /// 기존 이미지 삭제
+  // 기존 이미지 삭제
   func removeExistingImage(at index: Int) {
     guard existingImages.indices.contains(index) else { return }
     existingImages.remove(at: index)
     print("기존 이미지 삭제: \(index)")
   }
   
-  /// 새 이미지 삭제 (팀원과 똑같은 방식!)
+  // 새 이미지 삭제
   func removeNewImage(at index: Int) {
-    guard newImagesData.indices.contains(index),
-          selectedPhotos.indices.contains(index) else { return }
+    guard selectedImagesData.indices.contains(index),
+          selectedItems.indices.contains(index) else { return }
     
-    newImagesData.remove(at: index)
-    selectedPhotos.remove(at: index)
+    selectedImagesData.remove(at: index)
+    selectedItems.remove(at: index)
     print("새 이미지 삭제: \(index)")
   }
   
-  /// 새 이미지 로드 (팀원과 똑같은 방식!)
   @MainActor
-  func loadNewImages(with newItems: [PhotosPickerItem]) async {
-    newImagesData.removeAll()
+  func loadSelectedImages(newItems: [PhotosPickerItem]) async {
+    guard newItems.count != selectedImagesData.count else { return }
     
-    let loadingTasks = newItems.map { item in
+    let loadingTask = newItems.map { item in
       Task {
         try? await item.loadTransferable(type: Data.self)
       }
     }
     
     var imageData: [Data] = []
-    for task in loadingTasks {
+    for task in loadingTask {
       if let data = await task.value {
         imageData.append(data)
       }
     }
     
-    newImagesData = imageData
-    print("새 이미지 로드 완료: \(newImagesData.count)개")
+    selectedImagesData = imageData
   }
 }
 
@@ -143,7 +169,7 @@ extension EditViewModel {
           documentID: originalImage.imageId.uuidString
         )
       } catch {
-        print("이미지 삭제 실패: \(error)")
+        print("기존 이미지 삭제 실패: \(error)")
       }
     }
     
@@ -151,10 +177,11 @@ extension EditViewModel {
     
     // 2. 남은 기존 이미지들 저장
     for existingImage in existingImages {
+      // 기존 이미지는 URL 그대로 사용 (이미 Firebase에 있음)
       let newPostImage = PostImage(
         imageId: UUID(),
         postId: originalPost.postId.uuidString,
-        imageUrl: existingImage.imageUrl,
+        imageUrl: existingImage.imageUrl,  // 원본 URL 사용
         imageOrder: currentOrder,
         createdAt: Timestamp()
       )
@@ -162,14 +189,14 @@ extension EditViewModel {
       do {
         _ = try await firestoreManager.create(newPostImage)
         currentOrder += 1
-        print("기존 이미지 저장: \(currentOrder-1)")
+        print("기존 이미지 저장 완료: \(currentOrder-1)")
       } catch {
         print("기존 이미지 저장 실패")
       }
     }
     
     // 3. 새 이미지들 업로드 후 저장
-    for newImageData in newImagesData {
+    for newImageData in selectedImagesData {
       let imageId = UUID()
       let imageUrl = await fireStorageManager.uploadPostImage(
         data: newImageData,
@@ -188,7 +215,7 @@ extension EditViewModel {
       do {
         _ = try await firestoreManager.create(newPostImage)
         currentOrder += 1
-        print("새 이미지 저장: \(currentOrder-1)")
+        print("새 이미지 저장 완료: \(currentOrder-1)")
       } catch {
         print("새 이미지 저장 실패")
       }
