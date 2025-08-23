@@ -84,14 +84,8 @@ struct RootView: View {
 
 
 #Preview {
-  NavigationStack {
     RootView()
-<<<<<<< Updated upstream
         .environmentObject(NavigationRouter())
         .environmentObject(UnreadBadgeStore())
         .environmentObject(DeepLinkController())
-=======
-      .environmentObject(NavigationRouter())
-  }
->>>>>>> Stashed changes
 }
