@@ -9,9 +9,13 @@ import SwiftUI
 
 struct ReportModalView: View {
   
+  @EnvironmentObject var router: NavigationRouter
+  
   @Binding var showReportModal: Bool
   
   let isAuthor: Bool
+  let fixAction: () -> Void
+  let reportAction: () -> Void
   
   var body: some View {
     VStack {
@@ -28,8 +32,7 @@ struct ReportModalView: View {
   
   private var postFixButton: some View {
     Button {
-      // 수정하기 뷰로 이동 (최초의 공고 작성 Ui)
-      
+      fixAction()
     } label: {
       HStack {
         Image(systemName: "pencil")
@@ -45,7 +48,7 @@ struct ReportModalView: View {
   
   private var reportButton: some View {
     Button {
-      // 신고하기 뷰로 이동
+      reportAction()
     } label: {
       HStack {
         Image(systemName: "light.beacon.min.fill")
@@ -72,5 +75,10 @@ struct ReportModalView: View {
 }
 
 #Preview {
-  ReportModalView(showReportModal: .constant(true), isAuthor: true)
+  ReportModalView(
+    showReportModal: .constant(true),
+    isAuthor: true,
+    fixAction: {},
+    reportAction: {}
+  )
 }
