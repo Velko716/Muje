@@ -7,13 +7,20 @@
 
 import Foundation
 
-enum ImageType {
-  case existing
-  case new
+struct ImageItem: Identifiable {
+  let id = UUID()
+  let type: ItemType
+  
+  enum ItemType {
+    case existing(PostImage)
+    case new(Data)
+  }
+  
+  static func existing(_ postImage: PostImage) -> ImageItem {
+    return ImageItem(type: .existing(postImage))
+  }
+  
+  static func new(_ date: Data) -> ImageItem {
+    return ImageItem(type: .new(date))
+  }
 }
-
-//struct ImageInfo {
-//  let type: ImageType
-//  let url: String?
-//  let data: Data?
-//}
