@@ -31,6 +31,7 @@ extension Date {
     
     return formatter.string(from: self)
   }
+  
   // MARK: - 공고 수정 뷰
   var endDateString: String {
     let formatter = DateFormatter()
