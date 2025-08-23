@@ -21,6 +21,13 @@ extension Date {
         
         return formatter.string(from: self)
     }
+  
+    var shortDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d"
+    
+        return formatter.string(from: self)
+    }
     
     var hourMinute24: String {
         let formatter = DateFormatter()

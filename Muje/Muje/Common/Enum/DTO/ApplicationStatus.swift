@@ -85,11 +85,7 @@ extension Application {
       return "면접일이 확정되지 않음"
     }
     
-    let dateFormatter = DateFormatter()
-    dateFormatter.locale = Locale(identifier: "ko_KR")
-    dateFormatter.dateFormat = "M/d"
-    
-    let dateString = dateFormatter.string(from: slot.interviewDate.dateValue())
+    let dateString = slot.interviewDate.dateValue().shortDate
     let timeString = slot.interviewTime
     
     return "\(dateString) \(timeString) 면접일 확정"
