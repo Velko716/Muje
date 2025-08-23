@@ -21,9 +21,15 @@ struct RecruitmentDetailView: View {
       } else {
         contentView
       }
-      TopButtonView(isAuthor: viewModel.isAuthor) {
-        router.pop()
-      }
+//      TopButtonView(isAuthor: viewModel.isAuthor) {
+//        router.pop()
+//      }
+      TopButtonView(
+        isAuthor: viewModel.isAuthor,
+        action: { router.pop() },
+        fixAction: <#T##() -> Void#>,
+        reportAction: {} // 신고하기 화면 이동
+      )
     }
     .task {
       await viewModel.loadPostDetail(for: postId)
