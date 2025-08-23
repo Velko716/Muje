@@ -12,6 +12,7 @@ import FirebaseFirestore
 final class RecruitmentViewModel {
   
   private let firestoreManager = FirestoreManager.shared
+  private let currentUserId: String = "current_user_id"
   
   var postImages: [PostImage] = []
   var isLoading: Bool = false
@@ -20,6 +21,9 @@ final class RecruitmentViewModel {
   
   var post: Post?
   var interviewSlots: [InterviewSlot] = []
+  
+  var isAuthor: Bool = false // 작성자?
+  var hasApplied: Bool = false // 지원여부?
   
   var interviewperiod: (start: Date, end: Date)? {
     guard !interviewSlots.isEmpty else { return nil }
@@ -30,23 +34,46 @@ final class RecruitmentViewModel {
     
     return (start: minDate, end: maxDate)
   }
+  // MARK: - 지원 여부 확인
+  @MainActor
+  func checkIfApplied() async {
+    
+    do {
+      let application: [Application] = try await firestoreManager.fetchWithCondition(
+        from: .applications,
+        whereField: "applicant_user_id",
+        equalTo: currentUserId,
+        sortedBy: { _, _ in true }
+      )
+      
+      hasApplied = application.contains { $0.postId == post?.postId.uuidString }
+      
+    } catch {
+      print("해당 공고에 대한 지원 여부 확인 실패 \(error)")
+      hasApplied = false
+    }
+  }
   
+  @MainActor
   func loadPostDetail(for postId: String) async {
     isLoading = true
     
+    await loadPost(postId: postId)
+    await checkIfApplied()
+    
     await withTaskGroup(of: Void.self) { group in
-      group.addTask {
-        await self.loadPost(postId: postId)
-      }
       group.addTask {
         await self.loadPostImage(for: postId)
       }
       group.addTask {
         await self.loadInterviewSlots(for: postId)
       }
+      
+      isLoading = false
     }
   }
   
+  @MainActor
   private func loadPost(postId: String) async {
     do {
       let loadPost: Post = try await firestoreManager.get(
@@ -54,6 +81,8 @@ final class RecruitmentViewModel {
         from: .posts
       )
       self.post = loadPost
+      // MARK: 공고 작성자인지 확인까지 로드할때 한번에
+      self.isAuthor = (loadPost.authorUserId == currentUserId)
       
     } catch {
       self.errorMessage = "공고 정보를 불러올 수 없습니다."
@@ -62,6 +91,7 @@ final class RecruitmentViewModel {
     }
   }
   
+  @MainActor
   private func loadPostImage(for postId: String) async {
     do {
       let images = try await fetchPostImage(for: postId)
@@ -72,6 +102,7 @@ final class RecruitmentViewModel {
     }
   }
   
+  @MainActor
   private func loadInterviewSlots(for postId: String) async {
     do {
       let slots = try await fetchInterviewSlots(for: postId)

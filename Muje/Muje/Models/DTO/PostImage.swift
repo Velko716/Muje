@@ -7,8 +7,9 @@
 
 import Foundation
 import FirebaseFirestore
+import FirebaseStorage
 
-struct PostImage: Codable {
+struct PostImage: Codable, Equatable, Hashable {
     var imageId: UUID
     let postId: String
     let imageUrl: String
@@ -52,4 +53,11 @@ extension PostImage: EntityRepresentable {
             //"created_at": createdAt ?? FieldValue.serverTimestamp()
         ]
     }
+}
+
+extension PostImage {
+  func getDownloadURL() async throws -> String {
+    let firestorageManager = FireStorageManager.shared
+    return try await firestorageManager.getDownloadURL(for: imageUrl)
+  }
 }

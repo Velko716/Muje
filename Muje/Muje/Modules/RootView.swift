@@ -67,9 +67,9 @@ struct RootView: View {
         Group {
             switch tab {
             case .home:
-                HomeView()
+                TestHomeView()
             case .myPosts:
-                MyPostsView()
+                TestPostView()
             case .inbox:
                 InboxListView()
             case .myPage:
@@ -84,8 +84,14 @@ struct RootView: View {
 
 
 #Preview {
+  NavigationStack {
     RootView()
+<<<<<<< Updated upstream
         .environmentObject(NavigationRouter())
         .environmentObject(UnreadBadgeStore())
         .environmentObject(DeepLinkController())
+=======
+      .environmentObject(NavigationRouter())
+  }
+>>>>>>> Stashed changes
 }

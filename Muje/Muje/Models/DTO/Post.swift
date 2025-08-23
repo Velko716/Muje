@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct Post: Codable, Hashable {
+struct Post: Codable, Equatable, Hashable {
     let postId: UUID
     let authorUserId: String
     let title: String
@@ -17,6 +17,7 @@ struct Post: Codable, Hashable {
     let recruitmentStart: Timestamp
     let recruitmentEnd: Timestamp
     var hasInterview: Bool
+    var interviewLocation: String?
     var status: String
     var requiresName: Bool
     var requiresStudentId: Bool
@@ -39,6 +40,7 @@ struct Post: Codable, Hashable {
         recruitmentStart: Timestamp,
         recruitmentEnd: Timestamp,
         hasInterview: Bool = false,
+        interviewLocation: String? = nil,
         status: PostStatus.RawValue,
         requiresName: Bool = true,
         requiresStudentId: Bool = false,
@@ -60,6 +62,7 @@ struct Post: Codable, Hashable {
         self.recruitmentEnd = recruitmentEnd
         self.hasInterview = hasInterview
         self.status = status
+        self.interviewLocation = interviewLocation
         self.requiresName = requiresName
         self.requiresStudentId = requiresStudentId
         self.requiresDepartment = requiresDepartment
@@ -82,6 +85,7 @@ struct Post: Codable, Hashable {
         case recruitmentEnd = "recruitment_end"
         case hasInterview = "has_interview"
         case status
+        case interviewLocation = "interview_location"
         case requiresName = "requires_name"
         case requiresStudentId = "requires_student_id"
         case requiresDepartment = "requires_department"

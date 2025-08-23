@@ -11,12 +11,36 @@ struct ReportModalView: View {
   
   @Binding var showReportModal: Bool
   
+  let isAuthor: Bool
+  
   var body: some View {
     VStack {
+      if isAuthor {
+        postFixButton
+      }
       reportButton
       dismissButton
     }
     .padding(.horizontal, 16)
+//    .padding(.vertical, 31)
+//    .padding(.bottom, 30)
+  }
+  
+  private var postFixButton: some View {
+    Button {
+      // 수정하기 뷰로 이동 (최초의 공고 작성 Ui)
+      
+    } label: {
+      HStack {
+        Image(systemName: "pencil")
+        Text("수정하기")
+      }
+      .padding(.vertical, 18)
+      .frame(maxWidth: .infinity)
+      .foregroundStyle(.red)
+      .background(Color.gray.opacity(0.2))
+      .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
   }
   
   private var reportButton: some View {
@@ -47,6 +71,6 @@ struct ReportModalView: View {
   }
 }
 
-//#Preview {
-//  ReportModalView()
-//}
+#Preview {
+  ReportModalView(showReportModal: .constant(true), isAuthor: true)
+}
