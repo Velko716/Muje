@@ -16,11 +16,12 @@ struct RecruitmentDetailView: View {
   
   var body: some View {
     ZStack {
-      ScrollView {
-        ImageView(postImage: viewModel.postImages)
-        RecruitmentDataView(postId: postId, viewModel: viewModel)
+      if viewModel.isLoading {
+        loadingView
+      } else {
+        contentView
       }
-      TopButtonView {
+      TopButtonView(isAuthor: viewModel.isAuthor) {
         router.pop()
       }
     }
@@ -30,7 +31,24 @@ struct RecruitmentDetailView: View {
     .navigationBarBackButtonHidden()
     .ignoresSafeArea(.all, edges: .top)
     
-    BottomButtonView {
+    
+    
+  }
+  
+  private var contentView: some View {
+    VStack {
+      ScrollView {
+        ImageView(postImage: viewModel.postImages)
+        RecruitmentDataView(postId: postId, viewModel: viewModel)
+      }
+      if !viewModel.isAuthor { // 작성자가 아닐때 하단 버튼 표시
+        bottomButtonArea
+      }
+    }
+  }
+  
+  private var bottomButtonArea: some View {
+    BottomButtonView(hasApplied: viewModel.hasApplied) {
       guard let post = viewModel.post else { return }
       router.push(
         to: .ApplicationFormView(
@@ -51,7 +69,7 @@ extension RecruitmentDetailView {
     VStack {
       ProgressView()
         .scaleEffect(1.5)
-      Text("이미지 불러오는 중...")
+      Text("모집글 상세 데이터 불러오는 중...")
         .font(.headline)
         .foregroundStyle(.secondary)
     }

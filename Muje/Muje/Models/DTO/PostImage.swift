@@ -9,7 +9,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseStorage
 
-struct PostImage: Codable {
+struct PostImage: Codable, Equatable, Hashable {
     var imageId: UUID
     let postId: String
     let imageUrl: String

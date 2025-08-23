@@ -29,6 +29,15 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    return formatter.string(from: self)
+  }
+  // MARK: - 공고 수정 뷰
+  var endDateString: String {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "M/d/E"
+    
+    return formatter.string(from: self)
+  }
     var hourMinute24: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
