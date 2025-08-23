@@ -28,6 +28,34 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    var fullDayString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yy/M/d/E"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: self)
+    }
+    
+    var shortDayString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd'일'"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: self)
+    }
+    
+    var dateString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d/E"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: self)
+    }
+    
+    var listDateString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "M/d E요일"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: self)
+    }
+    
     func fullDateWeekday(_ d: Date) -> String {
         let f = DateFormatter()
         f.locale = .init(identifier: "ko_KR")
