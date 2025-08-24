@@ -45,6 +45,12 @@ struct RecruitmentDataView: View {
             Text(interviewScheduleText)
         }
     }
+  }
+  
+  private var interviewScheduleText: String {
+    guard let period = viewModel.interviewperiod else {
+      return "추후 공지 예정"
+    }
     
     private var interviewScheduleText: String {
         guard let period = viewModel.interviewperiod else {

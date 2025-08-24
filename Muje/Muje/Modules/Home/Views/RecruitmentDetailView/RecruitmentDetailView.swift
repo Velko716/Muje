@@ -27,9 +27,17 @@ struct RecruitmentDetailView: View {
       TopButtonView(
         isAuthor: viewModel.isAuthor,
         action: { router.pop() },
-        fixAction: <#T##() -> Void#>,
-        reportAction: {} // 신고하기 화면 이동
+        fixAction: {
+          guard let post = viewModel.post else { return }
+          router.push(to: .EditContentView(post: post, postImages: viewModel.postImages))},
+        reportAction: {}, // 신고하기 화면 이동
+        deleteAction: { Task { await viewModel.deletePostInfo(for: postId) } }
       )
+    }
+    .onChange(of: viewModel.showAlert) {
+      if viewModel.showAlert {
+        router.popToRootView()
+      }
     }
     .task {
       await viewModel.loadPostDetail(for: postId)
@@ -75,12 +83,26 @@ extension RecruitmentDetailView {
     VStack {
       ProgressView()
         .scaleEffect(1.5)
-      Text("모집글 상세 데이터 불러오는 중...")
+      Text(viewModel.loadingMessage.title)
         .font(.headline)
         .foregroundStyle(.secondary)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(.systemBackground))
+  }
+}
+
+enum loadingCase {
+  case loadRecruitment
+  case loadDelete
+  
+  var title: String {
+    switch self {
+    case .loadRecruitment:
+      return "모집글 상세 데이터 불러오는 중..."
+    case .loadDelete:
+      return "삭제 중..."
+    }
   }
 }
 
