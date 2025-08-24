@@ -28,19 +28,13 @@ struct TopButtonView: View {
       .padding(.top, 100)
       Spacer()
     }
-    
-    private var DropButton: some View {
-        Button {
-            showReportModal = true
-        } label: {
-            Image(systemName: "text.append")
-        }
-        .sheet(isPresented: $showReportModal) {
-            ReportModalView(showReportModal: $showReportModal)
-                .presentationDetents([.fraction(0.2)])
-                .presentationCornerRadius(20)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-        }
+  }
+  
+  private var DropButton: some View {
+    Button {
+      showReportModal = true
+    } label: {
+      Image(systemName: "text.append")
     }
     .sheet(isPresented: $showReportModal) {
       ReportModalView(
@@ -50,11 +44,26 @@ struct TopButtonView: View {
         reportAction: reportAction,
         deleteAction: deleteAction
       )
-        .presentationDetents(isAuthor ? [.fraction(0.32)] : [.fraction(0.25)])
-        .presentationCornerRadius(20)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+      .presentationDetents(isAuthor ? [.fraction(0.32)] : [.fraction(0.25)])
+      .presentationCornerRadius(20)
+      .clipShape(RoundedRectangle(cornerRadius: 20))
     }
+  }
+  
+  private var backButton: some View {
+    Button {
+      action()
+    } label: {
+      Image(systemName: "chevron.left")
+        .foregroundStyle(.black)
+        .background(
+          Rectangle()
+            .fill(Color.clear)
+        )
+    }
+  }
 }
+
 
 #Preview {
   TopButtonView(

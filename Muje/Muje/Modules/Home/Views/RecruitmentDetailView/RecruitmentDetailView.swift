@@ -44,9 +44,6 @@ struct RecruitmentDetailView: View {
     }
     .navigationBarBackButtonHidden()
     .ignoresSafeArea(.all, edges: .top)
-    
-    
-    
   }
   
   private var contentView: some View {
