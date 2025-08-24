@@ -55,6 +55,7 @@ struct TopButtonView: View {
       action()
     } label: {
       Image(systemName: "chevron.left")
+        .font(.system(size: 20))
         .foregroundStyle(.black)
         .background(
           Rectangle()
