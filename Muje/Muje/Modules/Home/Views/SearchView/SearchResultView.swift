@@ -20,6 +20,9 @@ struct SearchResultView: View {
                  thumbnailUrl을 homeView에서 주입 받거나 (처리 시간이 훨씬 줄어들 것 같아요.)
                  혹은 post랑 썸네일을 한 번에 묶은 모델(postWithThumbnailImage - 미리보기 할 때 쓰기 좋을 것 같아요.)을 생성할 수도 있을 것 같습니다.*/
                 PostListItem(post: post, thumbnailImage: homeViewModel.thumbnailImages[post.postId])
+                    .onTapGesture {
+                        router.push(to: .RecruitmentDetailView(postId: homeViewModel.postIdToString(post.postId)))
+                    }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .listStyle(.plain)
