@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SearchSuggestionItemView: View {
     @Binding var filteredPosts: [Post]
+    @EnvironmentObject var router: NavigationRouter
+    @State var viewModel: SearchViewModel
     
     var body: some View {
         List(filteredPosts, id: \.self) { post in
@@ -19,9 +21,15 @@ struct SearchSuggestionItemView: View {
                 Text(post.title)
                     .font(.system(size: 16))
             } //:VSTACK
+            .contentShape(Rectangle())
+            .onTapGesture {
+                router.push(to: .RecruitmentDetailView(postId: viewModel.postIdToString(post.postId)))
+            }
         }
+        .listRowSeparator(.hidden)
+        .padding()
         .listStyle(PlainListStyle())
-        .listRowSpacing(18)
+        
     }
 }
 

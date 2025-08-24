@@ -59,6 +59,7 @@ struct PostListItem: View {
             }
             
         } //: HSTACK
+        .contentShape(Rectangle())
         .ignoresSafeArea()
         .frame(maxWidth: .infinity)
     }
