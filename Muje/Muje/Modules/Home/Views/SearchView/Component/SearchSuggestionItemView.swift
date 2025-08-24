@@ -26,9 +26,10 @@ struct SearchSuggestionItemView: View {
                 router.push(to: .RecruitmentDetailView(postId: viewModel.postIdToString(post.postId)))
             }
         }
-        
+        .listRowSeparator(.hidden)
+        .padding()
         .listStyle(PlainListStyle())
-        .listRowSpacing(18)
+        
     }
 }
 
