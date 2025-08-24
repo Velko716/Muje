@@ -11,10 +11,16 @@ import FirebaseFirestore
 @Observable
 final class RecruitmentViewModel {
   
+  private let firebaseAuthManager = FirebaseAuthManager.shared
   private let firestoreManager = FirestoreManager.shared
-  private let currentUserId: String = "current_user_id"
+//  private let currentUserId: String = firebaseAuthManager.currentUser?.userId
   
-  var postImages: [PostImage] = []
+  var currentUserId: String? {
+    guard let currentUser = firebaseAuthManager.currentUser else { return nil }
+    
+    return currentUser.userId
+  }
+  
   var isLoading: Bool = false
   var loadingMessage: loadingCase = .loadRecruitment
   var showAlert: Bool = false
@@ -22,6 +28,7 @@ final class RecruitmentViewModel {
   var showError: Bool = false
   
   var post: Post?
+  var postImages: [PostImage] = []
   var interviewSlots: [InterviewSlot] = []
   
   var isAuthor: Bool = false // 작성자?
@@ -36,6 +43,30 @@ final class RecruitmentViewModel {
     
     return (start: minDate, end: maxDate)
   }
+  
+  @MainActor var imageURLCache: [UUID: String] = [:]
+  
+  @MainActor
+  func preloadImageURL() async {
+    await withTaskGroup(of: (UUID, String?).self) { group in
+      for image in postImages {
+        group.addTask {
+          do {
+            let url = try await image.getDownloadURL()
+            return (image.imageId, url)
+          } catch {
+            print("이미지 url 로드 실패")
+            return (image.imageId, nil)
+          }
+        }
+      }
+      for await (imageId, url) in group {
+        if let url = url {
+          imageURLCache[imageId] = url
+        }
+      }
+    }
+  }
   // MARK: - 지원 여부 확인
   @MainActor
   func checkIfApplied() async {
@@ -44,7 +75,7 @@ final class RecruitmentViewModel {
       let application: [Application] = try await firestoreManager.fetchWithCondition(
         from: .applications,
         whereField: "applicant_user_id",
-        equalTo: currentUserId,
+        equalTo: currentUserId ?? "",
         sortedBy: { _, _ in true }
       )
       
@@ -70,7 +101,6 @@ final class RecruitmentViewModel {
       group.addTask {
         await self.loadInterviewSlots(for: postId)
       }
-      
       isLoading = false
     }
   }

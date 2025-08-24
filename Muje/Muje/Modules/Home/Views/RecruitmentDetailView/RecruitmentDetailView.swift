@@ -41,6 +41,7 @@ struct RecruitmentDetailView: View {
     }
     .task {
       await viewModel.loadPostDetail(for: postId)
+      await viewModel.preloadImageURL()
     }
     .navigationBarBackButtonHidden()
     .ignoresSafeArea(.all, edges: .top)
@@ -49,7 +50,11 @@ struct RecruitmentDetailView: View {
   private var contentView: some View {
     VStack {
       ScrollView {
-        ImageView(postImage: viewModel.postImages)
+        ImageView(
+          selectedImageIndex: 0,
+          postImage: viewModel.postImages,
+          cachedURL: viewModel.imageURLCache
+        )
         RecruitmentDataView(postId: postId, viewModel: viewModel)
       }
       if !viewModel.isAuthor { // 작성자가 아닐때 하단 버튼 표시
