@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchResultView: View {
     @EnvironmentObject var router: NavigationRouter
     let homeViewModel = HomeViewModel() // 가장 빠르게 구현할 수 있는 방법이 뷰모델을 여기에 불러오는 방식이라고 생각해서 썼습니다. 추후 수정 해야함!
+    @State var viewModel: SearchViewModel
     @Binding var searchText: String
     @Binding var filteredPosts: [Post]
     
@@ -21,7 +22,7 @@ struct SearchResultView: View {
                  혹은 post랑 썸네일을 한 번에 묶은 모델(postWithThumbnailImage - 미리보기 할 때 쓰기 좋을 것 같아요.)을 생성할 수도 있을 것 같습니다.*/
                 PostListItem(post: post, thumbnailImage: homeViewModel.thumbnailImages[post.postId])
                     .onTapGesture {
-                        router.push(to: .RecruitmentDetailView(postId: homeViewModel.postIdToString(post.postId)))
+                        router.push(to: .RecruitmentDetailView(postId: viewModel.postIdToString(post.postId)))
                     }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

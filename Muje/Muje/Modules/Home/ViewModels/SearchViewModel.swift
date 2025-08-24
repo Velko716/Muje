@@ -41,4 +41,9 @@ final class SearchViewModel {
         }
     }
     
+    //UUID를 String으로 바꿔주는 함수 (RecruitmentDetailView 인자가 String 타입이라 변환해서 넘겨줘야 함)
+    func postIdToString(_ id: UUID) -> String {
+            return id.uuidString
+        }
+
 }

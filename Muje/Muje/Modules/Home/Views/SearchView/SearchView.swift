@@ -43,9 +43,9 @@ struct SearchView: View {
             
             switch viewModel.searchState {
             case .typing:
-                SearchSuggestionItemView(filteredPosts: $viewModel.searchResults)
+                SearchSuggestionItemView(filteredPosts: $viewModel.searchResults, viewModel: viewModel)
             case .result(_):
-                SearchResultView(searchText: $viewModel.searchText, filteredPosts: $viewModel.searchResults)
+                SearchResultView(viewModel: viewModel, searchText: $viewModel.searchText, filteredPosts: $viewModel.searchResults)
             }
             
         } //: VSTACK
