@@ -34,7 +34,7 @@ struct HomeView: View {
                 
                 //MARK: 설정 아이콘
                 Button(action: {
-                    router.push(to: .notificationView) // 나중에 설정뷰로 수정
+                    router.push(to: .myPageView)
                 }) {
                     Image(systemName: "gearshape")
                 }
@@ -71,4 +71,9 @@ struct HomeView: View {
             
         } //: VSTACK
     }
+}
+
+#Preview {
+    HomeView(viewModel: HomeViewModel())
+        .environmentObject(NavigationRouter())
 }

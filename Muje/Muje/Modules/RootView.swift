@@ -53,13 +53,16 @@ struct RootView: View {
     }
     
     private func tabLabel(_ tab: TabCase) -> some View {
-        VStack(spacing: 12) {
-            Image(systemName: tab.icon)
-            
+        let isSelected = tabcase == tab
+        return VStack(spacing: 12) {
+            Image(tab.icon)
+                .renderingMode(.template)
+                .foregroundStyle(isSelected ? Color.black : Color.gray.opacity(0.55)) // FIXME: - 컬러 수정
             Text(tab.rawValue)
                 .font(.caption)
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Color.black) // FIXME: - 컬러 수정
         }
+        .animation(.snappy, value: tabcase) // 애니메이션 추가
     }
     
     @ViewBuilder
@@ -72,16 +75,10 @@ struct RootView: View {
                 MyPostsView()
             case .inbox:
                 InboxListView()
-            case .myPage:
-                MyPageView()
             }
         }
     }
 }
-
-
-
-
 
 #Preview {
     RootView()
