@@ -68,9 +68,9 @@ struct RootView: View {
         Group {
             switch tab {
             case .home:
-                TestHomeView()
+                HomeView()
             case .myPosts:
-                TestPostView()
+                MyPostsView()
             case .inbox:
                 InboxListView()
             case .myPage:
