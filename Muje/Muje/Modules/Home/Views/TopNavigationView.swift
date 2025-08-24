@@ -35,7 +35,7 @@ struct TopNavigationView: View {
             Spacer().frame(width: 16)
             //MARK: 설정 아이콘
             Button(action: {
-                router.push(to: .notificationView) //FIXME: 설정뷰로 수정
+                router.push(to: .myPageView) //FIXME: 설정뷰로 수정
             }) {
                 Image(systemName: "gearshape")
                     .font(.system(size: 26))
