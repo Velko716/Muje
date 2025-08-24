@@ -16,6 +16,8 @@ final class RecruitmentViewModel {
   
   var postImages: [PostImage] = []
   var isLoading: Bool = false
+  var loadingMessage: loadingCase = .loadRecruitment
+  var showAlert: Bool = false
   var errorMessage: String?
   var showError: Bool = false
   
@@ -112,6 +114,72 @@ final class RecruitmentViewModel {
       print("면접 슬롯 로드 실패")
     }
   }
+  // MARK: - 모집자의 공고 삭제 로직
+  @MainActor
+  func deletePostInfo(for postId: String) async {
+    isLoading = true
+    loadingMessage = .loadDelete
+    
+    do {
+      let images = try await fetchPostImage(for: postId)
+      for _ in images {
+        try await firestoreManager.delete(
+          collectionType: .postImages,
+          documentID: postId
+        )
+        print("\(postId)의 postImage 삭제 완료")
+      }
+      
+      let slots = try await fetchInterviewSlots(for: postId)
+      for _ in slots {
+        try await firestoreManager.delete(
+          collectionType: .interviewSlots,
+          documentID: postId
+        )
+        print("\(postId)의 InterviewSlot 삭제 완료")
+      }
+      
+      let application = try await fetchApplication(for: postId)
+      for app in application {
+        try await firestoreManager.delete(
+          collectionType: .applications,
+          documentID: postId
+        )
+        let ques = try await fetchQuestionAnswer(for: app.applicationId.uuidString)
+        for que in ques {
+          try await firestoreManager.delete(
+            collectionType: .questionAnswers,
+            documentID: que.applicationId
+          )
+          print("\(postId)의 QuestionAnswer 삭제 완료")
+        }
+        print("\(postId)의 Application 삭제 완료")
+      }
+      
+      let customQuestion = try await fetchCustomQuestion(for: postId)
+      for _ in customQuestion {
+        try await firestoreManager.delete(
+          collectionType: .customQuestions,
+          documentID: postId
+        )
+        print("\(postId)의 CustomQuestion 삭제 완료")
+      }
+      
+      try await firestoreManager.delete(
+        collectionType: .posts,
+        documentID: postId
+      )
+      print("공고 삭제 성공")
+      
+      isLoading = false
+      loadingMessage = .loadRecruitment
+      showAlert = true
+    } catch {
+      print("공고 삭제 실패")
+      isLoading = false
+      loadingMessage = .loadRecruitment
+    }
+  }
 }
 
 // MARK: - 조건 쿼리문
@@ -131,6 +199,33 @@ private extension RecruitmentViewModel {
       whereField: "post_id",
       equalTo: postId,
       sortedBy: { $0.interviewDate.dateValue() < $1.interviewDate.dateValue() }
+    )
+  }
+  
+  func fetchApplication(for postId: String) async throws -> [Application] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .applications,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date() }
+    )
+  }
+  
+  func fetchCustomQuestion(for postId: String) async throws -> [CustomQuestion] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .customQuestions,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: { $0.questionOrder < $1.questionOrder }
+    )
+  }
+  
+  func fetchQuestionAnswer(for applicationId: String) async throws -> [QuestionAnswer] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .questionAnswers,
+      whereField: "application_id",
+      equalTo: applicationId,
+      sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date() }
     )
   }
 }
