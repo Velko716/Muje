@@ -10,7 +10,7 @@ import PhotosUI
 import FirebaseFirestore
 
 @Observable
-final class EditViewModel {
+final class EditPostViewModel {
   private let firestoreManager = FirestoreManager.shared
   private let fireStorageManager = FireStorageManager.shared
   private let originalImages: [PostImage]
@@ -22,7 +22,7 @@ final class EditViewModel {
   var content: String = ""
   var startDate = Date()
   var endDate: Date = Date()
-  var endDateString: String = "마감일 선택"
+  var endDateString: String
   var isPicker: Bool = false
   
   // MARK: - 이미지 관련
@@ -53,6 +53,7 @@ final class EditViewModel {
     self.content = post.content
     self.startDate = post.recruitmentStart.dateValue()
     self.endDate = post.recruitmentEnd.dateValue()
+    self.endDateString = post.recruitmentEnd.dateValue().dateString
     
     Task { await preloadImageURL() }
   }
@@ -84,7 +85,7 @@ final class EditViewModel {
   }
 }
 // MARK: - 이미지 관리 EX
-extension EditViewModel {
+extension EditPostViewModel {
   
   // 기존 이미지 삭제
   func removeExistingImage(at index: Int) {
@@ -125,7 +126,7 @@ extension EditViewModel {
 }
 
 // MARK: - 업데이트 로직
-extension EditViewModel {
+extension EditPostViewModel {
   @MainActor
   func updatedPost() async {
     do {
@@ -133,7 +134,7 @@ extension EditViewModel {
       _ = try await firestoreManager.update(updatedPost)
       
       await updateImages()
-      print("공고 업데이트 성공")
+      print("공고 + 이미지 업데이트 성공")
     } catch {
       print("공고 수정 실패: \(error)")
     }
