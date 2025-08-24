@@ -10,15 +10,10 @@ import PhotosUI
 import FirebaseFirestore
 
 struct EditPostView: View {
-  @State private var viewModel: EditViewModel
-  
-  init(post: Post, postImages: [PostImage]) {
-    self._viewModel = State(initialValue: EditViewModel(post: post, postImages: postImages))
-  }
+  @Bindable var viewModel: EditPostViewModel
   
   var body: some View {
     ZStack {
-      ScrollView {
         VStack(spacing: 32) {
           CustomTextField(
             title: "공고제목",
@@ -32,20 +27,14 @@ struct EditPostView: View {
           )
           PickerView(
             title: "모집 마감일",
-            content: viewModel.endDate.endDateString,
+            content: viewModel.endDateString,
             function: {
               viewModel.isPicker = true
             })
           imageView
           contentView
         }
-        .padding(.horizontal, 16)
         .padding(.bottom, 100)
-      }
-      bottomButton
-      if viewModel.isPicker {
-        dateView
-      }
     }
   }
   
@@ -154,51 +143,9 @@ struct EditPostView: View {
     }
   }
   
-  private var dateView: some View {
-    ZStack {
-      Rectangle()
-        .fill(Color.black.opacity(0.4))
-        .ignoresSafeArea()
-        .onTapGesture {
-          viewModel.isPicker = false
-        }
-      
-      DatePicker("", selection: $viewModel.endDate, in: viewModel.dateRange, displayedComponents: .date)
-        .background(content: {
-          RoundedRectangle(cornerRadius: 20)
-            .fill(Color.white)
-            .offset(y: 12)
-        })
-        .datePickerStyle(.graphical)
-        .onChange(of: viewModel.endDate, {
-          viewModel.isPicker = false
-          viewModel.endDateString = viewModel.endDate.shortDateString
-        })
-        .padding(.horizontal, 24)
-    }
-    .ignoresSafeArea()
-  }
+
   
-  private var bottomButton: some View {
-    VStack {
-      Spacer()
-      Button {
-        Task {
-          await viewModel.updatedPost()
-        }
-      } label: {
-        Text("수정 저장하기")
-          .font(.system(size: 18))
-          .foregroundStyle(.white)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 20)
-          .background(Color.black)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
-      }
-    }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 20)
-  }
+
 }
 
 // MARK: - 기존 이미지 카드 (getDownloadURL 사용)
