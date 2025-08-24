@@ -55,10 +55,11 @@ struct HomeView: View {
                             .listRowInsets(EdgeInsets())
                             .listRowBackground(Color.clear)
                             .padding(.horizontal, 16)
-//                            .onTapGesture {
-//                                print("포스트 아이디 : \(post.postId)")
-//                                print("썸네일 url : \(viewModel.)")
-//                            }
+                            .onTapGesture {
+                                router.push(to: .RecruitmentDetailView(postId: viewModel.postIdToString(post.postId)))
+                                print("✅ 클릭한 포스트 아이디 : \(post.postId)")
+                                
+                            }
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .listStyle(.plain)
