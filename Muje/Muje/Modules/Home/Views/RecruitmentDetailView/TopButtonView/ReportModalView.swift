@@ -12,22 +12,31 @@ struct ReportModalView: View {
   @EnvironmentObject var router: NavigationRouter
   
   @Binding var showReportModal: Bool
+  @State private var showDeleteModal: Bool = false
   
   let isAuthor: Bool
   let fixAction: () -> Void
   let reportAction: () -> Void
+  let deleteAction: () -> Void
   
   var body: some View {
     VStack {
       if isAuthor {
         postFixButton
+        deleteButton
+        dismissButton
+      } else {
+        reportButton
+        dismissButton
       }
-      reportButton
-      dismissButton
     }
     .padding(.horizontal, 16)
-//    .padding(.vertical, 31)
-//    .padding(.bottom, 30)
+    .sheet(isPresented: $showDeleteModal) {
+      DeleteConfirmModal(showReportModal: $showReportModal, deleteAciton: deleteAction)
+        .presentationDetents([.fraction(0.4)])
+        .presentationCornerRadius(20)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+    }
   }
   
   private var postFixButton: some View {
@@ -37,6 +46,22 @@ struct ReportModalView: View {
       HStack {
         Image(systemName: "pencil")
         Text("수정하기")
+      }
+      .padding(.vertical, 18)
+      .frame(maxWidth: .infinity)
+      .foregroundStyle(.red)
+      .background(Color.gray.opacity(0.2))
+      .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+  }
+  
+  private var deleteButton: some View {
+    Button {
+      showDeleteModal = true
+    } label: {
+      HStack {
+        Image(systemName: "light.beacon.min.fill")
+        Text("삭제하기")
       }
       .padding(.vertical, 18)
       .frame(maxWidth: .infinity)
@@ -79,6 +104,7 @@ struct ReportModalView: View {
     showReportModal: .constant(true),
     isAuthor: true,
     fixAction: {},
-    reportAction: {}
+    reportAction: {},
+    deleteAction: {}
   )
 }
