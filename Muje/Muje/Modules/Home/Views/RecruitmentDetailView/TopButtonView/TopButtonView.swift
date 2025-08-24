@@ -15,6 +15,7 @@ struct TopButtonView: View {
   
   let fixAction: () -> Void
   let reportAction: () -> Void
+  let deleteAction: () -> Void
   
   var body: some View {
     VStack {
@@ -46,7 +47,8 @@ struct TopButtonView: View {
         showReportModal: $showReportModal,
         isAuthor: isAuthor,
         fixAction: fixAction,
-        reportAction: reportAction
+        reportAction: reportAction,
+        deleteAction: deleteAction
       )
         .presentationDetents(isAuthor ? [.fraction(0.32)] : [.fraction(0.25)])
         .presentationCornerRadius(20)
@@ -59,6 +61,7 @@ struct TopButtonView: View {
     isAuthor: true,
     action: {},
     fixAction: {},
-    reportAction: {}
+    reportAction: {},
+    deleteAction: {}
   )
 }
