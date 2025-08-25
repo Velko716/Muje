@@ -37,8 +37,10 @@ struct EditContentView: View {
       Rectangle()
         .fill(Color.black.opacity(0.4))
         .ignoresSafeArea()
-        .allowsHitTesting(false)
         .zIndex(0)
+        .onTapGesture {
+          viewModel.isPicker = false
+        }
       
       DatePicker("", selection: $viewModel.endDate, in: viewModel.dateRange, displayedComponents: .date)
         .zIndex(1)
