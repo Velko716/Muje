@@ -15,6 +15,13 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    var fullDateSlashString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/M/dd"
+        
+        return formatter.string(from: self)
+    }
+    
     var fullDateString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy년 M월 d일"
