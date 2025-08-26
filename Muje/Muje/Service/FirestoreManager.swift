@@ -61,6 +61,30 @@ final class FirestoreManager {
         return data
     }
     
+    
+    /// 컬렉션의 모든 데이터를 가져옵니다.
+    /// 파이어베이스 색인으로 정렬합니다.
+    /// - id: userID
+    /// - type: 컬렉션 타입
+    /// - key: 컬렉션 안의 문서의 대한 조건절
+    /// - orderKey: 어느 기준으로 정렬
+    /// - descending: 정렬 방향
+    func fetchAll<T: Decodable>(
+        _ id: String,
+        from type: CollectionType,
+        where key: String,
+        orderBy orderKey: String? = nil,
+        descending: Bool = true
+    ) async throws -> [T] {
+        var query: Query = db.collection(type.rawValue).whereField(key, isEqualTo: id)
+        if let orderKey { query = query.order(by: orderKey, descending: descending) }
+        let snap = try await query.getDocuments()
+        return snap.documents.compactMap { try? $0.data(as: T.self) }
+    }
+    
+    
+    
+    
     func delete(collectionType: CollectionType, documentID: String) async throws {
         try await db
             .collection(collectionType.rawValue)

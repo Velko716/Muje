@@ -14,9 +14,26 @@ struct ReportsHistoryView: View {
     var body: some View {
         ZStack {
             VStack {
-                
+                List {
+                    ForEach(viewModel.reports, id: \.reportId) { row in
+                        ReportHistoryListItem(
+                            title: row.reportType.description,
+                            content: row.reason ?? "",
+                            date: row.createdAt?.dateValue() ?? Date()
+                        )
+                    }
+                }
                 createReportTestButtonView
             }
+        }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
+        .task {
+            await viewModel.loadReportData()
+            print("reports :\(viewModel.reports)")
         }
         .toolbar {
             ToolbarLeadingBackButton() // FIXME: - 버튼 이미지?
@@ -35,8 +52,6 @@ struct ReportsHistoryView: View {
             } label: {
                 Text("테스트 버튼")
             }
-            .padding()
-            .foregroundColor(.white)
             .background(Color.blue)
         }
     }
