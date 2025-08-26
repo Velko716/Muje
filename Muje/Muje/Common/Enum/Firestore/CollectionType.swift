@@ -8,6 +8,7 @@
 import Foundation
 
 enum CollectionType: String {
+    // MARK: - 메인 컬렉션
     case user = "users"
     case posts = "posts"
     case applications = "applications"
@@ -19,4 +20,7 @@ enum CollectionType: String {
     case emailVerifications = "email_verifications"
     case phoneVerifications = "phone_verifications"
     case conversations = "conversations"
+    
+    // MARK: - 서브 컬렉션
+    case blocks = "blocks"
 }
