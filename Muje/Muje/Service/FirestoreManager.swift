@@ -105,6 +105,33 @@ final class FirestoreManager {
         return snap.documents.compactMap { try? $0.data(as: T.self) }
     }
     
+    /// 특정 부모 문서 하위의 서브컬렉션을 가져옵니다.
+    /// - Parameters:
+    ///   - parentType: 부모 컬렉션(.user 등)
+    ///   - parentId: 부모 문서 ID(userId 등)
+    ///   - subType: 서브컬렉션(.blocks 등)
+    ///   - orderKey: 정렬 기준(옵션)
+    ///   - descending: 정렬 방향
+    func fetchAllFromSubcollection<T: Decodable>(
+        under parentType: CollectionType,
+        parentId: String,
+        subCollection subType: CollectionType,
+        orderBy orderKey: String? = nil,
+        descending: Bool = true
+    ) async throws -> [T] {
+        var q: Query = db
+            .collection(parentType.rawValue)
+            .document(parentId)
+            .collection(subType.rawValue)
+        
+        if let orderKey {
+            q = q.order(by: orderKey, descending: descending)
+        }
+        
+        let snap = try await q.getDocuments()
+        return snap.documents.compactMap { try? $0.data(as: T.self) }
+    }
+    
     
     
     
@@ -114,6 +141,28 @@ final class FirestoreManager {
             .document(documentID)
             .delete()
     }
+    
+    
+    /// 특정 부모 문서 하위의 서브컬렉션을 가져옵니다.
+    /// - Parameters:
+    ///   - parentType: 부모 컬렉션(.user 등)
+    ///   - parentId: 부모 문서 ID(userId 등)
+    ///   - subType: 서브컬렉션(.blocks 등)
+    ///   - documentID: 삭제 문서(삭제 하려는 user_id)
+    func deleteFromSubcollection(
+        under parentType: CollectionType,
+        parentId: String,
+        subCollection subType: CollectionType,
+        target documentID: String
+    ) async throws {
+        try await db
+            .collection(parentType.rawValue)
+            .document(parentId)
+            .collection(subType.rawValue)
+            .document(documentID)
+            .delete()
+    }
+    
     
 }
 

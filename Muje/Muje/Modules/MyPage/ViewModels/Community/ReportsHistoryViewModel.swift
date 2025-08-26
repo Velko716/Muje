@@ -14,9 +14,11 @@ final class ReportsHistoryViewModel {
     var isLoading: Bool = false
         
     // MARK: - report 데이터 불러오기
+    @MainActor
     func loadReportData() async {
         print("currentUser: \(FirebaseAuthManager.shared.currentUser?.userId ?? "없음")")
         isLoading = true
+        defer { isLoading = false }
         do {
             print("rawValue: \(Report.CodingKeys.reporterUserId.rawValue)")
             let reports: [Report] = try await FirestoreManager.shared.fetchAll(
@@ -26,10 +28,8 @@ final class ReportsHistoryViewModel {
                 orderBy: Report.CodingKeys.createdAt.rawValue,
             )
             self.reports = reports
-            self.isLoading = false
         } catch {
             print("error: \(error.localizedDescription)")
-            self.isLoading = false
         }
     }
     

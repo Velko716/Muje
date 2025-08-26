@@ -10,26 +10,60 @@ import Foundation
 @Observable
 final class BlockHistoryViewModel {
     var blocks: [Block] = []
+    var blockedUserNames: [String: String] = [:]
     var isLoading: Bool = false
     
     
-   //MARK: - Block 데이터 불러오기
+    //MARK: - Block 데이터 불러오기
+    @MainActor
     func loadBlockData() async {
         print("currentUser: \(FirebaseAuthManager.shared.currentUser?.userId ?? "없음")")
         isLoading = true
+        defer { isLoading = false }
+        
+        guard let uid = FirebaseAuthManager.shared.currentUser?.userId, !uid.isEmpty else {
+            print("currentUser 없음")
+            return
+        }
+        
         do {
-            print("rawValue: \(Report.CodingKeys.reporterUserId.rawValue)")
-            let block: [Report] = try await FirestoreManager.shared.fetchAll(
-                FirebaseAuthManager.shared.currentUser?.userId ?? "",
-                from: .reports,
-                where: Report.CodingKeys.reporterUserId.rawValue,
-                orderBy: Report.CodingKeys.createdAt.rawValue,
+            print("rawValue: \(Block.CodingKeys.blockedUserId)")
+            
+            // 1) 내 blocks 불러오기 (최신순 정렬 원하면 orderBy 추가)
+            let blocks: [Block] = try await FirestoreManager.shared.fetchAllFromSubcollection(
+                under: .user,
+                parentId: uid,
+                subCollection: .blocks,
+                orderBy: Block.CodingKeys.createdAt.rawValue,
+                descending: true
             )
-            //self.blocks = block
-            self.isLoading = false
+            
+            // 2) block 문서의 documentID == blockedUserId 들만 추출
+            let ids = Array(Set(blocks.map { $0.blockedUserId }))
+            
+            
+            // 3) 병렬로 user 문서 조회 -> (id, User?)를 모아 딕셔너리로
+            let usersMap: [String: User] = await withTaskGroup(of: (String, User?).self) { group in
+                for id in ids {
+                    group.addTask {
+                        let user: User? = try? await FirestoreManager.shared.get(id, from: .user)
+                        return (id, user)
+                    }
+                }
+                var acc: [String: User] = [:]
+                for await (id, user) in group {
+                    if let user { acc[id] = user }
+                }
+                return acc
+            }
+            
+            // 4) 상태 반영
+            self.blocks = blocks
+            self.blockedUserNames = usersMap.reduce(into: [:]) { dict, pair in
+                dict[pair.key] = pair.value.name
+            }
         } catch {
             print("error: \(error.localizedDescription)")
-            self.isLoading = false
         }
     }
     
@@ -44,57 +78,29 @@ final class BlockHistoryViewModel {
             fromSub: .blocks
         )
     }
+    
+    // MARK: - 차단 해제 (blocks에서 차단 유저 제거)
+    func unblockUser(to blockedUserId: String) async {
+        guard let uid = FirebaseAuthManager.shared.currentUser?.userId, !uid.isEmpty else {
+            print("currentUser 없음")
+            return
+        }
+        
+        do {
+            try await FirestoreManager.shared.deleteFromSubcollection(
+                under: .user,
+                parentId: uid,
+                subCollection: .blocks,
+                target: blockedUserId
+            )
+            
+            if let idx = blocks.firstIndex(where: { $0.blockedUserId == blockedUserId }) {
+                blocks.remove(at: idx)
+            }
+            blockedUserNames.removeValue(forKey: blockedUserId)
+        } catch {
+            print("error: \(error.localizedDescription)")
+        }
+    }
+    
 }
-
-//
-//  ReportsHistoryViewModel.swift
-//  Muje
-//
-//  Created by 김진혁 on 8/26/25.
-//
-
-//import Foundation
-
-//@Observable
-//final class ReportsHistoryViewModel {
-//    
-//    var reports: [Report] = []
-//    var isLoading: Bool = false
-//        
-//    // MARK: - report 데이터 불러오기
-//    func loadReportData() async {
-//        print("currentUser: \(FirebaseAuthManager.shared.currentUser?.userId ?? "없음")")
-//        isLoading = true
-//        do {
-//            print("rawValue: \(Report.CodingKeys.reporterUserId.rawValue)")
-//            let reports: [Report] = try await FirestoreManager.shared.fetchAll(
-//                FirebaseAuthManager.shared.currentUser?.userId ?? "",
-//                from: .reports,
-//                where: Report.CodingKeys.reporterUserId.rawValue,
-//                orderBy: Report.CodingKeys.createdAt.rawValue,
-//            )
-//            self.reports = reports
-//            self.isLoading = false
-//        } catch {
-//            print("error: \(error.localizedDescription)")
-//            self.isLoading = false
-//        }
-//    }
-//    
-//    // MARK: - 신고 생성 테스트 버튼 로직 (삭제 예정)
-//    func createReportTestButtonTapped() async {
-//        // 공고 신고 Model postId: "00DD1837-4416-46BD-8246-50CE26567717"
-//        let report = Report(
-//            reportId: UUID(),
-//            reporterUserId: FirebaseAuthManager.shared.currentUser?.userId ?? "",
-//            reportedUserId: "FTMIffTVLdb8GuhHweHJEgAwFqB2",
-//            postId: "00DD1837-4416-46BD-8246-50CE26567717",
-//            reportType: ReportType.spam.rawValue,
-//            reason: "저한테 욕설을 빈번하게 사용했어요",
-//            status: ReportStatus.pending.rawValue
-//        )
-//        
-//        let _ = try? await FirestoreManager.shared.create(report)
-//    }
-//    
-//}
