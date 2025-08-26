@@ -69,7 +69,9 @@ struct ReportsHistoryView: View {
                     date: row.createdAt?.dateValue() ?? Date()
                 )
             }
+            .listRowInsets(.init(top: 20, leading: 14, bottom: 20, trailing: 14))
         }
+        .listStyle(.plain)
     }
     
     
