@@ -40,8 +40,31 @@ final class FirestoreManager {
         return data
     }
     
+    
     func create<T: EntityRepresentable>(_ data: T) async throws -> T {
         try await save(data, isCreate: true)
+    }
+    
+    
+    func createSubCollection<T: EntityRepresentable>(
+        _ data: T,
+        id: String,
+        from type: CollectionType,
+        fromSub subType: CollectionType
+    ) async throws {
+        // 2) 저장할 데이터 구성
+        guard var dict = data.asDictionary else {
+            throw FirestoreError.encodingFailed
+        }
+        dict["created_at"] = FieldValue.serverTimestamp()
+
+        // 3) 부모문서/{subType}/{data.documentID} 경로에 저장
+        try await db
+            .collection(type.rawValue)
+            .document(id)
+            .collection(subType.rawValue)
+            .document(data.documentID)
+            .setData(dict)
     }
     
     func update<T: EntityRepresentable>(_ data: T) async throws -> T {
@@ -617,3 +640,32 @@ extension FirestoreManager {
 }
 
 
+
+// MARK: - 차단 관련
+extension FirestoreManager {
+    /// user/{userId}/blocks/{blockedUserId}에 차단 문서 생성
+    func addBlock(for userId: String, blockedUserId: String) async throws {
+        let block = Block(blockedUserId: blockedUserId)
+        try await createSubCollection(block, id: userId, from: .user, fromSub: .blocks)
+    }
+
+    /// user/{userId}/blocks 를 최신순으로 조회
+    func fetchBlocks(for userId: String, limit: Int? = nil) async throws -> [Block] {
+        var q = db.collection(CollectionType.user.rawValue)
+            .document(userId)
+            .collection(CollectionType.blocks.rawValue)
+            .order(by: "created_at", descending: true)
+        if let limit { q = q.limit(to: limit) }
+        let snap = try await q.getDocuments()
+        return snap.documents.compactMap { try? $0.data(as: Block.self) }
+    }
+
+    /// 차단 해제
+    func removeBlock(for userId: String, blockedUserId: String) async throws {
+        try await db.collection(CollectionType.user.rawValue)
+            .document(userId)
+            .collection(CollectionType.blocks.rawValue)
+            .document(blockedUserId)                 // documentID 전략과 일치해야 함
+            .delete()
+    }
+}
