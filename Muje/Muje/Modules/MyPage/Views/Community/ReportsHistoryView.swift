@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ReportsHistory: View {
+struct ReportsHistoryView: View {
     var body: some View {
         ZStack {
             VStack {
@@ -23,6 +23,6 @@ struct ReportsHistory: View {
 
 #Preview {
     NavigationStack {
-        ReportsHistory()
+        ReportsHistoryView()
     }
 }

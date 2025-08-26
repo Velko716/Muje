@@ -33,5 +33,5 @@ enum NavigationDestination: Equatable, Hashable {
     case userInfoInputView(uuid: String, email: String) // 유저 정보 입력 뷰
     case inboxView(conversationId: UUID)
     case myPageView // 설정 화면 (기존 탭 바에 있던 뷰가 홈 화면 툴 바 오른쪽 버튼으로 이동)
-    case reportsHistory // 신고 내역
+    case reportsHistoryView // 신고 내역
 }
