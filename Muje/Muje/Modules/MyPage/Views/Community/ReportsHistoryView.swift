@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ReportsHistoryView: View {
+    @State private var viewModel: ReportsHistoryViewModel = .init()
+    
+    
     var body: some View {
         ZStack {
             VStack {
@@ -26,8 +29,9 @@ struct ReportsHistoryView: View {
     private var createReportTestButtonView: some View {
         VStack {
             Button {
-                // Action
-                
+                Task {
+                    await viewModel.createReportTestButtonTapped()
+                }
             } label: {
                 Text("테스트 버튼")
             }
