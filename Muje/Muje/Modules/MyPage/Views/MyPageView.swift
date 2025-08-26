@@ -17,7 +17,7 @@ struct MyPageView: View {
                 .init(kind: .action(title: "알림 설정", action: { router.push(to: .contentView )})), // FIXME: - 라우터 변경
             ]),
             .init(header: "커뮤니티", rows: [
-                .init(kind: .action(title: "신고 내역", action: { router.push(to: .reportsHistory )})),
+                .init(kind: .action(title: "신고 내역", action: { router.push(to: .reportsHistoryView )})),
                 .init(kind: .action(title: "차단 내역", action: { router.push(to: .contentView )})), // FIXME: - 라우터 변경
                 .init(kind: .action(title: "커뮤니티 이용 규칙", action: { router.push(to: .contentView )})) // FIXME: - 라우터 변경
             ]),

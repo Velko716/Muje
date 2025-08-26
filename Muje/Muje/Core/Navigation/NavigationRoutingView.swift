@@ -54,7 +54,7 @@ struct NavigationRoutingView: View {
                 InboxView(conversationId: conversationId)   
             case .myPageView:
                 MyPageView()
-            case .reportsHistory:
+            case .reportsHistoryView:
                 ReportsHistoryView()
             }
         }
