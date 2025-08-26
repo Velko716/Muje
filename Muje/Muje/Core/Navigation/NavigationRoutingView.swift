@@ -55,7 +55,7 @@ struct NavigationRoutingView: View {
             case .myPageView:
                 MyPageView()
             case .reportsHistory:
-                ReportsHistory()
+                ReportsHistoryView()
             }
         }
         .hideBackButton()
