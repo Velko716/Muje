@@ -56,6 +56,8 @@ struct NavigationRoutingView: View {
                 InboxView(conversationId: conversationId)   
             case .myPageView:
                 MyPageView()
+            case .reportsHistory:
+                ReportsHistory()
             }
         }
         .hideBackButton()
