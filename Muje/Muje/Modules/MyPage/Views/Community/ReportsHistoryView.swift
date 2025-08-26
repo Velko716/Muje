@@ -12,6 +12,7 @@ struct ReportsHistoryView: View {
         ZStack {
             VStack {
                 
+                createReportTestButtonView
             }
         }
         .toolbar {
@@ -19,6 +20,24 @@ struct ReportsHistoryView: View {
             ToolbarCenterTitle(text: "신고 내역")
         }
     }
+    
+    
+    // MARK: - 바텀) 신고 생성 테스트 버튼 (삭제 예정)
+    private var createReportTestButtonView: some View {
+        VStack {
+            Button {
+                // Action
+                
+            } label: {
+                Text("테스트 버튼")
+            }
+            .padding()
+            .foregroundColor(.white)
+            .background(Color.blue)
+        }
+    }
+    
+    
 }
 
 #Preview {
