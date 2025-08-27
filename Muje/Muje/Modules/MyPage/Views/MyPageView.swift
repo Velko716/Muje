@@ -18,16 +18,16 @@ struct MyPageView: View {
             ]),
             .init(header: "커뮤니티", rows: [
                 .init(kind: .action(title: "신고 내역", action: { router.push(to: .reportsHistoryView )})),
-                .init(kind: .action(title: "차단 내역", action: { router.push(to: .blockHistoryView )})), // FIXME: - 라우터 변경
-                .init(kind: .action(title: "커뮤니티 이용 규칙", action: { router.push(to: .contentView )})) // FIXME: - 라우터 변경
+                .init(kind: .action(title: "차단 내역", action: { router.push(to: .blockHistoryView )})),
+                .init(kind: .action(title: "커뮤니티 이용 규칙", action: { router.push(to: .textView(type: .communityRule) )}))
             ]),
             .init(header: "이용 안내", rows: [
                 .init(kind: .value(title: "앱 버전", value: appVersion)), // FIXME: - 라우터 변경
                 .init(kind: .action(title: "문의하기", action: { print("문의하기"); router.push(to: .contentView )})), // FIXME: - 라우터 변경
-                .init(kind: .action(title: "서비스 이용약관", action: { router.push(to: .contentView )})), // FIXME: - 라우터 변경
-                .init(kind: .action(title: "개인정보 처리 방침", action: { router.push(to: .contentView )})), // FIXME: - 라우터 변경
-                .init(kind: .action(title: "청소년 보호 정책", action: { router.push(to: .contentView )})), // FIXME: - 라우터 변경
-                .init(kind: .action(title: "오픈 소스 라이선스", action: { router.push(to: .contentView )})) // FIXME: - 라우터 변경
+                .init(kind: .action(title: "서비스 이용약관", action: { router.push(to: .textView(type: .termsOfService) )})),
+                .init(kind: .action(title: "개인정보 처리 방침", action: { router.push(to: .textView(type: .privacyPolicy) )})),
+                .init(kind: .action(title: "청소년 보호 정책", action: { router.push(to: .textView(type: .youthProtectionPolicy) )})),
+                .init(kind: .action(title: "오픈 소스 라이선스", action: { router.push(to: .textView(type: .openSourceLicenses) )}))
             ]),
             .init(header: "기타", rows: [
                 .init(kind: .action(title: "정보 동의 설정", action: { router.push(to: .contentView )})), // FIXME: - 라우터 변경
