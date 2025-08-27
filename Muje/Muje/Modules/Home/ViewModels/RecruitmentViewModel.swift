@@ -50,13 +50,15 @@ final class RecruitmentViewModel {
   func preloadImageURL() async {
     await withTaskGroup(of: (UUID, String?).self) { group in
       for image in postImages {
-        group.addTask {
-          do {
-            let url = try await image.getDownloadURL()
-            return (image.imageId, url)
-          } catch {
-            print("이미지 url 로드 실패")
-            return (image.imageId, nil)
+        if imageURLCache[image.imageId] == nil {
+          group.addTask {
+            do {
+              let url = try await image.getDownloadURL()
+              return (image.imageId, url)
+            } catch {
+              print("이미지 url 로드 실패")
+              return (image.imageId, nil)
+            }
           }
         }
       }
