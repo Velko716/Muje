@@ -9,12 +9,14 @@ import SwiftUI
 
 struct MyPageView: View {
     @EnvironmentObject private var router: NavigationRouter
+    @State private var viewModel: MyPageViewModel = .init()
+    @Environment(\.openURL) private var openURL
     
     private var sections: [MyPageSection] {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
         return [
             .init(header: "", rows: [
-                .init(kind: .action(title: "알림 설정", action: { router.push(to: .contentView )})), // FIXME: - 라우터 변경
+                .init(kind: .action(title: "알림 설정", action: { viewModel.openAppNotificationSettings(using: openURL) })),
             ]),
             .init(header: "커뮤니티", rows: [
                 .init(kind: .action(title: "신고 내역", action: { router.push(to: .reportsHistoryView )})),
@@ -22,7 +24,7 @@ struct MyPageView: View {
                 .init(kind: .action(title: "커뮤니티 이용 규칙", action: { router.push(to: .textView(type: .communityRule) )}))
             ]),
             .init(header: "이용 안내", rows: [
-                .init(kind: .value(title: "앱 버전", value: appVersion)), // FIXME: - 라우터 변경
+                .init(kind: .value(title: "앱 버전", value: appVersion)),
                 .init(kind: .action(title: "문의하기", action: { print("문의하기"); router.push(to: .contentView )})), // FIXME: - 라우터 변경
                 .init(kind: .action(title: "서비스 이용약관", action: { router.push(to: .textView(type: .termsOfService) )})),
                 .init(kind: .action(title: "개인정보 처리 방침", action: { router.push(to: .textView(type: .privacyPolicy) )})),
@@ -75,7 +77,7 @@ struct MyPageView: View {
         VStack(alignment: .leading) {
             if let user = FirebaseAuthManager.shared.currentUser {
                 Button {
-
+                    
                 } label: {
                     VStack(alignment: .leading) {
                         // FIXME: - 디자인 수정 (폰트, 컬러)
