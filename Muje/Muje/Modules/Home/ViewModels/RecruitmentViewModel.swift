@@ -13,7 +13,7 @@ final class RecruitmentViewModel {
   
   private let firebaseAuthManager = FirebaseAuthManager.shared
   private let firestoreManager = FirestoreManager.shared
-//  private let currentUserId: String = firebaseAuthManager.currentUser?.userId
+  //  private let currentUserId: String = firebaseAuthManager.currentUser?.userId
   
   var currentUserId: String? {
     guard let currentUser = firebaseAuthManager.currentUser else { return nil }
@@ -153,48 +153,53 @@ final class RecruitmentViewModel {
     loadingMessage = .loadDelete
     
     do {
-      let images = try await fetchPostImage(for: postId)
-      for _ in images {
-        try await firestoreManager.delete(
-          collectionType: .postImages,
-          documentID: postId
-        )
-        print("\(postId)의 postImage 삭제 완료")
-      }
-      
-      let slots = try await fetchInterviewSlots(for: postId)
-      for _ in slots {
-        try await firestoreManager.delete(
-          collectionType: .interviewSlots,
-          documentID: postId
-        )
-        print("\(postId)의 InterviewSlot 삭제 완료")
-      }
-      
-      let application = try await fetchApplication(for: postId)
-      for app in application {
-        try await firestoreManager.delete(
-          collectionType: .applications,
-          documentID: postId
-        )
-        let ques = try await fetchQuestionAnswer(for: app.applicationId.uuidString)
-        for que in ques {
+      try await withThrowingTaskGroup(of: Void.self) { group in
+        
+        let images = try await fetchPostImage(for: postId)
+        for image in images {
           try await firestoreManager.delete(
-            collectionType: .questionAnswers,
-            documentID: que.applicationId
+            collectionType: .postImages,
+            documentID: image.imageId.uuidString
           )
-          print("\(postId)의 QuestionAnswer 삭제 완료")
+          print("\(postId)의 postImage 삭제 완료")
         }
-        print("\(postId)의 Application 삭제 완료")
-      }
-      
-      let customQuestion = try await fetchCustomQuestion(for: postId)
-      for _ in customQuestion {
-        try await firestoreManager.delete(
-          collectionType: .customQuestions,
-          documentID: postId
-        )
-        print("\(postId)의 CustomQuestion 삭제 완료")
+        
+        let slots = try await fetchInterviewSlots(for: postId)
+        for slot in slots {
+          try await firestoreManager.delete(
+            collectionType: .interviewSlots,
+            documentID: slot.slotId.uuidString
+          )
+          print("\(postId)의 InterviewSlot 삭제 완료")
+        }
+        
+        let application = try await fetchApplication(for: postId)
+        for app in application {
+          try await firestoreManager.delete(
+            collectionType: .applications,
+            documentID: app.applicationId.uuidString
+          )
+          let ques = try await fetchQuestionAnswer(for: app.applicationId.uuidString)
+          for que in ques {
+            try await firestoreManager.delete(
+              collectionType: .questionAnswers,
+              documentID: que.answerId.uuidString
+            )
+            print("\(postId)의 QuestionAnswer 삭제 완료")
+          }
+          print("\(postId)의 Application 삭제 완료")
+        }
+        
+        let customQuestion = try await fetchCustomQuestion(for: postId)
+        for custom in customQuestion {
+          try await firestoreManager.delete(
+            collectionType: .customQuestions,
+            documentID: custom.questionId.uuidString
+          )
+          print("\(postId)의 CustomQuestion 삭제 완료")
+        }
+        
+        try await group.waitForAll()
       }
       
       try await firestoreManager.delete(
@@ -207,7 +212,7 @@ final class RecruitmentViewModel {
       loadingMessage = .loadRecruitment
       showAlert = true
     } catch {
-      print("공고 삭제 실패")
+      print("공고 삭제 실패: \(error)")
       isLoading = false
       loadingMessage = .loadRecruitment
     }
