@@ -9,8 +9,12 @@ import SwiftUI
 
 struct MyPageView: View {
     @EnvironmentObject private var router: NavigationRouter
-    @State private var viewModel: MyPageViewModel = .init()
+    @EnvironmentObject private var auth: FirebaseAuthManager
     @Environment(\.openURL) private var openURL
+    @State private var viewModel: MyPageViewModel = .init()
+    
+    @State private var showLogoutAlert: Bool = false
+    @State private var withdrawSheet: Bool = false
     
     private var sections: [MyPageSection] {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
@@ -31,11 +35,15 @@ struct MyPageView: View {
                 .init(kind: .action(title: "청소년 보호 정책", action: { router.push(to: .textView(type: .youthProtectionPolicy) )})),
                 .init(kind: .action(title: "오픈 소스 라이선스", action: { router.push(to: .textView(type: .openSourceLicenses) )}))
             ]),
-            .init(header: "기타", rows: [
-                .init(kind: .action(title: "정보 동의 설정", action: { router.push(to: .contentView )})), // FIXME: - 라우터 변경
-                .init(kind: .action(title: "로그아웃", action: { /* logout */ })), // FIXME: - 라우터 변경
-                .init(kind: .action(title: "회원 탈퇴", action: { /* withdraw */ })) // FIXME: - 라우터 변경
-            ])
+            .init(
+                header: "기타",
+                rows: [
+                    .init(kind: .action(title: "정보 동의 설정", action: { router.push(to: .contentView )})),
+                    // FIXME: - 라우터 변경
+                    .init(kind: .action(title: "로그아웃", action: { showLogoutAlert = true })),
+                    .init(kind: .action(title: "회원 탈퇴", action: { /* withdraw */ })) // FIXME: - 라우터 변경
+                ]
+            )
         ]
     }
     
@@ -67,6 +75,14 @@ struct MyPageView: View {
             .toolbar {
                 ToolbarLeadingBackButton()
                 ToolbarCenterTitle(text: "설정")
+            }
+            .alert("로그아웃 하시겠어요?", isPresented: $showLogoutAlert) {
+                Button("취소", role: .cancel) { }
+                Button("로그아웃", role: .destructive) {
+                    Task {
+                        await viewModel.currentUserSignOut()
+                    }
+                }
             }
         }
     }
