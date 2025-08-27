@@ -193,6 +193,7 @@ struct MujeApp: App {
             .environmentObject(push)
             .environmentObject(unreadBadge)
             .environmentObject(deepLink)
+            .environmentObject(FirebaseAuthManager.shared) // 파이어베이스 Auth 의존성 주입
         }
     }
     

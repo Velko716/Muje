@@ -11,6 +11,17 @@ import SwiftUI
 final class MyPageViewModel {
     
     
+    // MARK: - 로그아웃 기능
+    func currentUserSignOut() async {
+        Task {
+            do {
+                try await FirebaseAuthManager.shared.currentUserSignOut()
+            } catch {
+                print("로그아웃 실패:\(error.localizedDescription)")
+            }
+        }
+    }
+    
     // MARK: - iOS앱 알림 설정 화면으로 이동
     func openAppNotificationSettings(using openURL: OpenURLAction, onComplete: ((Bool) -> Void)? = nil) {
         let urlString: String

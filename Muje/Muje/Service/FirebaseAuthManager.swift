@@ -9,7 +9,7 @@ import Foundation
 import FirebaseAuth
 
 /// Firebase Auth 호출을 한 곳에 모아두는 싱글톤 매니저
-final class FirebaseAuthManager {
+final class FirebaseAuthManager: ObservableObject {
     static let shared = FirebaseAuthManager()
     private init() {}
     
@@ -23,14 +23,23 @@ final class FirebaseAuthManager {
     }
     
     /// 현재 로그인 유저 입니다.
-    var currentUser: User? 
+    @Published var currentUser: User?
     
     
-    /// 현재 로그인 유저 로그아웃
-    func currentUserSignOut() async throws {
-        try Auth.auth().signOut()
+    /// 현재 사용자를 업데이트 해주는 함수입니다.
+    func setCurrentUser(_ user: User?) {
+        DispatchQueue.main.async {
+            self.currentUser = user
+        }
     }
     
+    /// 현재 파이어베이스에 로그인된 사용자를 로그아웃 기능을 수행하는 메서드입니다.
+    func currentUserSignOut() async throws {
+        try Auth.auth().signOut()
+        await MainActor.run {
+            self.currentUser = nil
+        }
+    }
     
     /// 이메일로 인증메일을 전송하는 메서드입니다.
     func sendSignInLink(to email: String) async throws {
