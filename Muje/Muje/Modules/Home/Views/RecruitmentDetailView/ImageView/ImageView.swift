@@ -9,8 +9,9 @@ import SwiftUI
 
 struct ImageView: View {
   @State var currentPage: Int = 0
-  @State var selectedImageIndex: Int
-  @State var showImageViewer: Bool = false
+//  @State var selectedImageIndex: Int
+//  @State var showImageViewer: Bool = false
+  @State private var selectedImageForViewr: SelectedImageIndex? = nil
   
   let postImage: [PostImage]
   let cachedURL: [UUID: String]
@@ -32,8 +33,7 @@ struct ImageView: View {
           .frame(width: screenWidth)
           .clipped()
           .onTapGesture {
-            selectedImageIndex = index
-            showImageViewer = true
+            selectedImageForViewr = SelectedImageIndex(index: index)
           }
           .tag(index)
         }
@@ -52,14 +52,23 @@ struct ImageView: View {
       
     }
     .frame(height: UIScreen.main.bounds.width)
-    .fullScreenCover(isPresented: $showImageViewer) {
+//    .fullScreenCover(isPresented: $showImageViewer) {
+//      ImageDetail(
+//        selectedIndex: $selectedImageIndex,
+//        showImageViewer: $showImageViewer,
+//        postImage: sortedImageUrls,
+//        cachedURL: cachedURL
+//      )
+//    }
+    .fullScreenCover(item: $selectedImageForViewr) { selectedImage in
       ImageDetail(
-        selectedIndex: $selectedImageIndex,
-        showImageViewer: $showImageViewer,
+        selectedIndex: selectedImage.index,
+        onDismiss: { selectedImageForViewr = nil },
         postImage: sortedImageUrls,
         cachedURL: cachedURL
       )
     }
+    
   }
 }
 
@@ -99,14 +108,19 @@ struct DownloadImage: View {
   }
 }
 
+struct SelectedImageIndex: Identifiable {
+  let id = UUID()
+  let index: Int
+}
+
 #Preview {
   ImageView(
-    selectedImageIndex: 0, postImage: [PostImage(
+    postImage: [PostImage(
       imageId: UUID(),
-      postId: "post_Id",
-      imageUrl: "https://picsum.photos/280/200?random=1",
+      postId: "",
+      imageUrl: "",
       imageOrder: 0
-    )
-    ], cachedURL: [:]
+    )],
+    cachedURL: [:]
   )
 }

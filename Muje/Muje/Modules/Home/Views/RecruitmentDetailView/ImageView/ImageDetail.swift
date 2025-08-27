@@ -8,10 +8,19 @@
 import SwiftUI
 
 struct ImageDetail: View {
-  @Binding var selectedIndex: Int
-  @Binding var showImageViewer: Bool
+//  @Binding var selectedIndex: Int
+  @State private var selectedIndex: Int
+//  @Binding var showImageViewer: Bool
+  let onDismiss: () -> Void
   let postImage: [PostImage]
   let cachedURL: [UUID: String]
+  
+  init(selectedIndex: Int, onDismiss: @escaping () -> Void, postImage: [PostImage], cachedURL: [UUID: String]) {
+    self._selectedIndex = State(initialValue: selectedIndex)
+    self.onDismiss = onDismiss
+    self.postImage = postImage
+    self.cachedURL = cachedURL
+  }
   
   var body: some View {
     ZStack {
@@ -46,7 +55,7 @@ struct ImageDetail: View {
       DragGesture()
         .onEnded { value in
           if value.translation.height > 100 && abs(value.translation.width) < abs(value.translation.height) {
-            showImageViewer = false
+            onDismiss()
           }
         }
     )
@@ -69,7 +78,7 @@ struct ImageDetail: View {
     VStack {
       HStack {
         Button {
-          showImageViewer = false
+          onDismiss()
         } label: {
           Image(systemName: "xmark")
         }
@@ -84,12 +93,15 @@ struct ImageDetail: View {
 
 #Preview {
   ImageDetail(
-    selectedIndex: .constant(0), showImageViewer: .constant(true),
+    selectedIndex: 0,
+    onDismiss: {
+    },
     postImage: [PostImage(
       imageId: UUID(),
       postId: "",
       imageUrl: "",
       imageOrder: 0
-    )], cachedURL: [:]
+    )],
+    cachedURL: [:]
   )
 }
