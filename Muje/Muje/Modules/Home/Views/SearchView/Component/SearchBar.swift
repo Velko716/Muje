@@ -17,8 +17,7 @@ struct SearchBar: View {
     
     var body: some View {
         HStack {
-            
-            //MARK: 왼쪽 셰브론
+            // MARK: 왼쪽 셰브론
             Button(action: {
                 searchText = ""
                 router.pop()

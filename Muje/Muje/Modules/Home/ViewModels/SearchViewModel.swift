@@ -8,42 +8,85 @@
 //뷰모델에서 관리할 것 : 입력 상태, 검색어 타이핑한 거, 비동기 처리 필터링
 
 import Foundation
-import SwiftUI
-import FirebaseFirestore
-import Combine
 
 @Observable
 final class SearchViewModel {
-    let allPosts: [Post]
-    var searchText = ""
-    var searchResults: [Post] = []
-    var errorMessage: String?
-    var searchState: SearchStatus = .typing
+  var searchText = ""
+  var searchResults: [Post] = []
+  var searchState: SearchStatus = .typing
+  
+  var thumbnailImages: [UUID: PostImage] = [:]
+  
+  
+  // MARK: 서버 필터링
+  private var suggestionTask: Task<Void, Never>?
+  private var searchTask: Task<Void, Never>?
+  
+  var suggestions: [PostSuggestion] = []
+  var isSuggestionsLoading: Bool = false
+  var isSearching: Bool = false
+  
+  @MainActor
+  func updateSuggestions() {
+    suggestionTask?.cancel()
     
-    init(posts: [Post]) {
-        searchResults = []
-        searchText = ""
-        self.allPosts = posts
-    }
-    //FIXME: 지금 단계에서는 post 전체를 불러와서 swift의 filter 메서드 사용하고, 출시 후에는 token 사용 또는 외부 검색 기능 사용(algolia 등)으로 수정
-    func filterPosts() {
-        if searchText.isEmpty {
-            searchResults = []
-        } else {
-            searchResults = allPosts.filter { post in
-                post.title.localizedCaseInsensitiveContains(searchText) ||
-                post.content.localizedStandardContains(searchText) ||
-                post.authorName.localizedCaseInsensitiveContains(searchText) ||
-                post.organization.localizedStandardContains(searchText) ||
-                post.authorOrganization.localizedStandardContains(searchText)
-                
-            }
-        }
+    let query = searchText.trimmingCharacters(in: .whitespaces)
+    guard !query.isEmpty else {
+      suggestions = []
+      return
     }
     
-    //UUID를 String으로 바꿔주는 함수 (RecruitmentDetailView 인자가 String 타입이라 변환해서 넘겨줘야 함)
-    func postIdToString(_ id: UUID) -> String {
-            return id.uuidString
+    suggestionTask = Task {
+      try? await Task.sleep(for: .seconds(0.3))
+      
+      guard !Task.isCancelled else { return }
+      
+      do {
+        await MainActor.run { self.isSuggestionsLoading = true }
+        
+        let results = try await FirestoreManager.shared.searchSuggestions(query: query)
+        
+        await MainActor.run {
+          if !Task.isCancelled {
+            self.suggestions = results
+          }
+          self.isSuggestionsLoading = false
         }
-
+      } catch {
+        await MainActor.run {
+          print("자동완성 실패")
+          self.isSuggestionsLoading = false
+        }
+      }
+    }
+  }
+  
+  @MainActor
+  func performSearch() {
+    searchTask?.cancel()
+    
+    let query = searchText.trimmingCharacters(in: .whitespaces)
+    guard !query.isEmpty else { return }
+    
+    searchTask = Task {
+      do {
+        await MainActor.run { self.isSearching = true }
+        
+        let(posts, thum) = try await FirestoreManager.shared.searchPosts(query: query)
+        
+        await MainActor.run {
+          if !Task.isCancelled {
+            self.searchResults = posts
+            self.thumbnailImages = thum
+          }
+          self.isSearching = false
+        }
+      } catch {
+        await MainActor.run {
+          print("상세 검색 실패 \(error)")
+          self.isSearching = false
+        }
+      }
+    }
+  }
 }
