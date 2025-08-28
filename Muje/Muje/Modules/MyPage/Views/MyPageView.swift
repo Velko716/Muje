@@ -14,7 +14,7 @@ struct MyPageView: View {
     @State private var viewModel: MyPageViewModel = .init()
     
     @State private var showLogoutAlert: Bool = false
-    @State private var withdrawSheet: Bool = false
+    @State private var showWithdrawAlert: Bool = false
     
     private var sections: [MyPageSection] {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
@@ -41,7 +41,7 @@ struct MyPageView: View {
                     .init(kind: .action(id: "consent", title: "정보 동의 설정", action: { router.push(to: .contentView )})),
                     // FIXME: - 라우터 변경
                     .init(kind: .action(id: "logout", title: "로그아웃", action: { showLogoutAlert = true })),
-                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { /* withdraw */ })) // FIXME: - 라우터 변경
+                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { showWithdrawAlert = true })) // FIXME: - 라우터 변경
                 ]
             )
         ]
@@ -83,6 +83,20 @@ struct MyPageView: View {
                         await viewModel.currentUserSignOut()
                     }
                 }
+            }
+            .alert("정말로 탈퇴하시겠습니까?", isPresented: $showWithdrawAlert) {
+                Button("취소", role: .cancel) { }
+                Button("탈퇴", role: .destructive) {
+                    Task {
+                        do {
+                            try await viewModel.deleteAuth()
+                        } catch {
+                            print("erorr: \(error)")
+                        }
+                    }
+                }
+            } message: {
+                Text("작성한 공고와 채팅 기록이 모두 삭제됩니다")
             }
         }
     }
