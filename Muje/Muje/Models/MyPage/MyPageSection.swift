@@ -15,3 +15,4 @@ struct MyPageSection: Identifiable {
 
 extension MyPageSection {
     var stableID: String { header }
+}
