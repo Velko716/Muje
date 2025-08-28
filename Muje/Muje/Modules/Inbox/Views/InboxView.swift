@@ -15,6 +15,7 @@ struct InboxView: View {
     @State private var viewModel: InboxViewModel
     @State private var text: String = ""
     
+    @State private var showReportSheet = false
     @State private var showActionSheet = false
     @State private var showLeaveAlert = false
     
@@ -72,8 +73,8 @@ struct InboxView: View {
             if showActionSheet {
                 InboxActionSheetView(
                     onReport: {
+                        showReportSheet = true
                         showActionSheet = false
-                        // TODO: 신고 플로우
                     },
                     onBlock: {
                         Task {
@@ -120,6 +121,10 @@ struct InboxView: View {
             } label: {
                 Text("닫기")
             }
+        }
+        // MARK: - 신고하기 시트
+        .sheet(isPresented: $showReportSheet) {
+            ReportView()
         }
     }
     // MARK: - 탑 현재 공고 뷰
