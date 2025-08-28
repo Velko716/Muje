@@ -8,7 +8,10 @@
 import Foundation
 
 struct MyPageSection: Identifiable {
-    let id = UUID()
     var header: String
     var rows: [MyPageRow]
+    var id: String { header }
 }
+
+extension MyPageSection {
+    var stableID: String { header }
