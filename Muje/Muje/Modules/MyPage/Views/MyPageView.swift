@@ -18,7 +18,7 @@ struct MyPageView: View {
     
     private var sections: [MyPageSection] {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
-        return [
+        var result: [MyPageSection] = [
             .init(header: "", rows: [
                 .init(kind: .action(id: "notif", title: "알림 설정", action: { viewModel.openAppNotificationSettings(using: openURL) })),
             ]),
@@ -35,7 +35,9 @@ struct MyPageView: View {
                 .init(kind: .action(id: "youth", title: "청소년 보호 정책", action: { router.push(to: .textView(type: .youthProtectionPolicy) )})),
                 .init(kind: .action(id: "oss", title: "오픈 소스 라이선스", action: { router.push(to: .textView(type: .openSourceLicenses) )}))
             ]),
-            .init(
+        ]
+        if auth.currentUser != nil {
+            result.append(.init(
                 header: "기타",
                 rows: [
                     .init(kind: .action(id: "consent", title: "정보 동의 설정", action: { router.push(to: .contentView )})),
@@ -43,8 +45,9 @@ struct MyPageView: View {
                     .init(kind: .action(id: "logout", title: "로그아웃", action: { showLogoutAlert = true })),
                     .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { showWithdrawAlert = true })) // FIXME: - 라우터 변경
                 ]
-            )
-        ]
+            ))
+        }
+        return result
     }
     
     var body: some View {
@@ -190,7 +193,6 @@ struct MyPageView: View {
             }
             .buttonStyle(.plain)
             .contentShape(Rectangle())
-            //.background(Color.yellow)
         }
     }
 }
