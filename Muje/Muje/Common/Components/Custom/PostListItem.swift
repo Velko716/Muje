@@ -7,61 +7,104 @@
 
 import SwiftUI
 import Firebase
+import FirebaseFirestore
 
 struct PostListItem: View {
-    let post: Post
-    let thumbnailImage: UIImage?
-    
-    var body: some View {
-        HStack {
-            
-            // MARK: 상단 - 동아리명
-            VStack(alignment: .leading){
-                //FIXME: 에셋 추가되면 폰트 수정
-                Text(post.organization)
-                    .fontWeight(.medium)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color(red: 0.53, green: 0.53, blue: 0.53))
-                Spacer().frame(height: 4)
-                
-                // MARK: 중간 - 제목
-                Text(post.title)
-                    .fontWeight(.semibold)
-                    .font(.system(size: 18))
-                    .lineSpacing(8)
-                    .lineLimit(2)
-                
-                Spacer()
-                
-                // MARK: 하단 - 모집 상태
-                Text(post.status)
-                    .fontWeight(.medium)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color(red: 0.66, green: 0.66, blue: 0.66))
-            } //: VSTACK
-            .padding(.vertical, 20)
-            .frame(height: 152)
-            
-            Spacer()
-            
-            // MARK: 우측 - 사진 (미리보기)
-            if let thumbnailImage = thumbnailImage {
-                Image(uiImage: thumbnailImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 78, height: 78)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            } else {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 78, height: 78)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            
-        } //: HSTACK
-        .contentShape(Rectangle())
-        .ignoresSafeArea()
-        .frame(maxWidth: .infinity)
+  let post: Post
+  let thumbnailImage: PostImage?
+  
+  var body: some View {
+    HStack {
+      // MARK: 상단 - 동아리명
+      VStack(alignment: .leading) {
+        Text(post.organization)
+          .fontWeight(.medium)
+          .font(.system(size: 14))
+          .foregroundStyle(Color(red: 0.53, green: 0.53, blue: 0.53))
+        Spacer().frame(height: 4)
+        
+        // MARK: 중간 - 제목
+        Text(post.title)
+          .fontWeight(.semibold)
+          .font(.system(size: 18))
+          .padding(.vertical, 7)
+          .lineSpacing(8)
+          .lineLimit(2)
+        Spacer().frame(height: 12)
+        // MARK: 하단 - 모집 상태
+        Text(post.status)
+          .fontWeight(.medium)
+          .font(.system(size: 14))
+          .foregroundStyle(Color(red: 0.66, green: 0.66, blue: 0.66))
+      } //: VSTACK
+      .padding(.vertical, 20)
+      Spacer()
+      // MARK: 우측 - 사진 (썸네일)
+      ThumbnailAsyncImage(postImage: thumbnailImage)
+    } //: HSTACK
+    .contentShape(Rectangle())
+    .frame(maxWidth: .infinity)
+  }
+  
+}
+
+struct ThumbnailAsyncImage: View {
+  let postImage: PostImage?
+  @State private var downloadURL: String?
+  @State private var isLoading: Bool = true
+  
+  var body: some View {
+    Group {
+      if let downloadURL = downloadURL {
+        AsyncImage(url: URL(string: downloadURL)) { image in
+          image
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        } placeholder: {
+          ProgressView()
+        }
+      } else if isLoading {
+        ProgressView()
+      } else {
+        defaultImageView
+      }
+    }
+    .frame(width: 78, height: 78)
+    .clipped()
+    .clipShape(RoundedRectangle(cornerRadius: 8))
+    .task(id: postImage?.imageId) {
+      await loadDownloadURL()
+    }
+  }
+  
+  private var defaultImageView: some View {
+    Rectangle()
+      .fill(Color.gray.opacity(0.3))
+      .clipShape(RoundedRectangle(cornerRadius: 8))
+      .overlay(
+        Image(systemName: "photo")
+          .font(.title3)
+          .foregroundStyle(.gray)
+      )
+  }
+  
+  private func loadDownloadURL() async {
+    guard let postImage = postImage else {
+      await MainActor.run { self.isLoading = false }
+      return
     }
     
+    do {
+      let url = try await postImage.getDownloadURL()
+      await MainActor.run {
+        self.downloadURL = url
+        self.isLoading = false
+      }
+    } catch {
+      await MainActor.run {
+        self.isLoading = false
+      }
+    }
+  }
 }

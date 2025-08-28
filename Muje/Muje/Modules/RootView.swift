@@ -12,6 +12,7 @@ struct RootView: View {
     @EnvironmentObject private var router: NavigationRouter
     @EnvironmentObject private var unreadBadge: UnreadBadgeStore
     @EnvironmentObject private var deepLink: DeepLinkController
+    
     @State private var tabcase: TabCase = .home
     
     
@@ -69,7 +70,7 @@ struct RootView: View {
             case .home:
                 HomeView()
             case .myPosts:
-                MyPostsView()
+                TestPostView()
             case .inbox:
                 InboxListView()
             case .myPage:

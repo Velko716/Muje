@@ -170,6 +170,7 @@ extension FirestoreManager {
         }
         return thumbnails
     }
+  }
     
     // 실제 이미지를 storage에서 병렬 처리로 가져오는 함수, UUID(post_id)와 PostImage를 딕셔너리 형태로 묶어서 관리
     func fetchThumbnailUIImages(from postImages: [PostImage]) async -> [UUID: UIImage] {
@@ -204,7 +205,7 @@ extension FirestoreManager {
         
         return result
     }
-}
+
 
 // MARK: - 쪽지 내용 관련
 extension FirestoreManager {
@@ -379,4 +380,222 @@ extension FirestoreManager {
         }
     }
 }
+// MARK: - 메인화면 전용 메서드
+extension FirestoreManager {
+  
+  func fetchPostsWithThumbnails() async throws -> ([Post], [UUID: PostImage]) {
+    async let postTask = fetchPosts()
+    async let thumbnailTask = fetchImage()
+    
+    let (posts, allThumbnails) = try await (postTask, thumbnailTask)
+    // postId와 이미지 딕셔너리 배열 형태로 관리
+    var thumbnailMap: [UUID: PostImage] = [:] // postId로 매핑
+    
+    for thum in allThumbnails {
+      if let postId = UUID(uuidString: thum.postId) {
+        thumbnailMap[postId] = thum
+      }
+    }
+    
+    return (posts, thumbnailMap)
+  }
+  
+  private func fetchPosts() async throws -> [Post] {
+    return try await fetchWithCondition(
+      from: .posts,
+      whereField: "status",
+      equalTo: "모집중",
+      sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date() }
+    )
+  }
+  
+  private func fetchImage() async throws -> [PostImage] {
+    return try await fetchWithCondition(
+      from: .postImages,
+      whereField: "image_order",
+      equalTo: 0,
+      sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date()}
+    )
+  }
+}
 
+// MARK: - 페이징, 자동완성 검색, 검색 로직 구성
+extension FirestoreManager {
+  // MARK: 페이징 로딩
+  func fetchPostPaginated(
+    limit: Int,
+    lastDocument: DocumentSnapshot?
+  ) async throws -> ([Post], [UUID: PostImage], DocumentSnapshot?) {
+    
+    var query: Query = db.collection("posts")
+      .whereField("status", isEqualTo: "모집중")
+      .order(by: "created_at", descending: true)
+      .limit(to: limit)
+    
+    if let lastDoc = lastDocument {
+      query = query.start(afterDocument: lastDoc)
+    }
+    
+    let snapshot = try await query.getDocuments()
+    
+    let posts = try snapshot.documents.compactMap { document in
+      try document.data(as: Post.self)
+    }
+    
+    // 썸네일
+    let postId = posts.map { $0.postId }
+    let thumnails = try await fetchThumbnailsForPost(for: postId)
+    
+    return (posts, thumnails, snapshot.documents.last)
+  }
+  
+  // MARK: - 자동완성
+  func searchSuggestions(
+    query: String,
+    limit: Int = 10
+  ) async throws -> [PostSuggestion] {
+    
+    async let title = db.collection("posts")
+      .whereField("status", isEqualTo: "모집중")
+      .whereField("title", isGreaterThanOrEqualTo: query)
+      .whereField("title", isLessThan: query + "\u{f8ff}")
+      .limit(to: limit/2)
+      .getDocuments()
+    
+    async let org = db.collection("posts")
+      .whereField("status", isEqualTo: "모집중")
+      .whereField("organization", isGreaterThanOrEqualTo: query)
+      .whereField("organization", isLessThan: query + "\u{f8ff}")
+      .getDocuments()
+    
+    let (titleSnap, orgSnap) = try await (title, org)
+    
+    var suggestions: [PostSuggestion] = []
+    var seenIds = Set<String>()
+    
+    for doc in titleSnap.documents {
+      let data = doc.data()
+      if let postid = data["post_id"] as? String,
+         let title = data["title"] as? String,
+         let org = data["organization"] as? String,
+         !seenIds.contains(postid) {
+        
+        suggestions.append(
+          PostSuggestion(
+            postId: postid,
+            title: title,
+            organization: org
+          )
+        )
+        seenIds.insert(postid)
+      }
+    }
+    
+    for doc in orgSnap.documents {
+      let data = doc.data()
+      if let postid = data["post_id"] as? String,
+         let title = data["title"] as? String,
+         let org = data["organization"] as? String,
+         !seenIds.contains(postid) {
+        
+        suggestions.append(
+          PostSuggestion(
+            postId: postid,
+            title: title,
+            organization: org
+          )
+        )
+        seenIds.insert(postid)
+      }
+    }
+    
+    return Array(suggestions.prefix(limit))
+  }
+  // MARK: - SearchResult 로직
+  func searchPosts(query: String, limit: Int = 50) async throws -> (
+    [Post],
+    [UUID: PostImage]
+  ) {
+    
+    async let title = db.collection("posts")
+      .whereField("status", isEqualTo: "모집중")
+      .whereField("title", isGreaterThanOrEqualTo: query)
+      .whereField("title", isLessThan: query + "\u{f8ff}")
+      .order(by: "title")
+      .limit(to: limit/2)
+      .getDocuments()
+    
+    async let org = db.collection("posts")
+      .whereField("status", isEqualTo: "모집중")
+      .whereField("organization", isGreaterThanOrEqualTo: query)
+      .whereField("organization", isLessThan: query + "\u{f8ff}")
+      .order(by: "organization")
+      .limit(to: limit/2)
+      .getDocuments()
+    
+    let (titleSnap, orgSnap) = try await (title, org)
+    
+    var postDic: [String: Post] = [:]
+    
+    for doc in titleSnap.documents {
+      do {
+        let post = try doc.data(as: Post.self)
+        postDic[post.postId.uuidString] = post
+      } catch {
+        print("title 디코딩 에러")
+      }
+    }
+    
+    for doc in orgSnap.documents {
+      do {
+        let post = try doc.data(as: Post.self)
+        postDic[post.postId.uuidString] = post
+      } catch {
+        print("org 디코딩 에러")
+      }
+    }
+    
+    let posts = Array(postDic.values).sorted {
+      ($0.createdAt?.dateValue() ?? Date()) > ($1.createdAt?.dateValue() ?? Date())
+    }
+    
+    let postId = posts.map { $0.postId }
+    let thumnails = try await fetchThumbnailsForPost(for: postId)
+    
+    
+    return (posts, thumnails)
+  }
+  
+  func fetchThumbnailsForPost(for postIds: [UUID]) async throws -> [UUID: PostImage] {
+    guard !postIds.isEmpty else { return [:] }
+    
+    let postIdString = postIds.map { $0.uuidString }
+    
+    let snapshot = try await db.collection("post_images")
+      .whereField("post_id", in: postIdString)
+      .whereField("image_order", isEqualTo: 0)
+      .getDocuments()
+    
+    var thumbnailMap: [UUID: PostImage] = [:]
+    
+    for doc in snapshot.documents {
+      do {
+        let postImage = try doc.data(as: PostImage.self)
+        if let postId = UUID(uuidString: postImage.postId) {
+          thumbnailMap[postId] = postImage
+        }
+      } catch {
+        print("postImage 디코딩 실패")
+      }
+    }
+    return thumbnailMap
+  }
+}
+
+struct PostSuggestion: Codable, Identifiable {
+  let postId: String
+  let title: String
+  let organization: String
+  
+  var id: String { postId }
+}

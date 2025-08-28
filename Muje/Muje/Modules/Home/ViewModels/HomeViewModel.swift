@@ -12,51 +12,70 @@ import FirebaseStorage
 
 @Observable
 final class HomeViewModel {
-    var postList: [Post] = []
-    var errorMessage: String? = nil
-    var isLoading: Bool = false
-    var thumbnailImages: [UUID: UIImage] = [:] //postId를 키로 하는 딕셔너리
-    var postIds: [UUID] = []
-    init() {
-        postListFetch()
+  
+  private let firestoreManager = FirestoreManager.shared
+  
+  var postList: [Post] = []
+  var isLoading: Bool = false
+  var thumbnailImages: [UUID: PostImage] = [:] // postId를 키로 하는 딕셔너리
+  
+  
+  //MARK: 페이징관련
+  private let pageSize = 20
+  private var lastDocument: DocumentSnapshot?
+  
+  var hasMoreData: Bool = true
+  var isLoadingMore: Bool = false
+  
+  // MARK: - 페이징 관련 로직
+  
+  @MainActor
+  func loadInitialPosts() async {
+    guard !isLoading else { return }
+    
+    do {
+      isLoading = true
+      
+      let (posts, thumbnails, lastDoc) = try await firestoreManager.fetchPostPaginated(
+        limit: pageSize,
+        lastDocument: nil
+      )
+      
+      self.postList = posts
+      self.thumbnailImages = thumbnails
+      self.lastDocument = lastDoc
+      self.hasMoreData = posts.count == pageSize
+      
+      isLoading = false
+      
+    } catch {
+      print("초기로딩실패")
+      isLoading = false
     }
+  }
+  
+  @MainActor
+  func loadMorePosts() async {
+    guard !isLoadingMore && hasMoreData && lastDocument != nil else { return }
     
-    func postListFetch() {
-        Task {
-            do {
-                isLoading = true
-                errorMessage = nil
-                
-                postList = try await
-                FirestoreManager.shared.fetchPosts(
-                    as: Post.self,
-                    .posts,
-                    order: "created_at",
-                    descending: true, //최신순 정렬
-                    count: 0 //count가 0이면 모든 데이터를 가져옴
-                )
-                
-                postIds = postList.map { $0.postId } //모든 post들의 postID 추출해서 썸네일 이미지 가져올 때 뽑아서 가져옴
-                let postImages = try await FirestoreManager.shared.fetchThumbnailImages(for: postIds)
-                
-                thumbnailImages = await FirestoreManager.shared.fetchThumbnailUIImages(from: postImages)
-                
-                isLoading = false
-
-                
-            }  catch {
-                await MainActor.run {
-                    errorMessage = error.localizedDescription
-                    isLoading = false
-                }
-            }
-        }
+    do {
+      isLoadingMore = true
+      
+      let (newPosts, newThumbnails, newLastDoc) = try await firestoreManager.fetchPostPaginated(
+        limit: pageSize,
+        lastDocument: lastDocument
+      )
+      
+      self.postList.append(contentsOf: newPosts)
+      self.thumbnailImages.merge(newThumbnails) { _, new in new }
+      self.lastDocument = newLastDoc
+      self.hasMoreData = newPosts.count == pageSize
+      
+      isLoadingMore = false
+      
+    } catch {
+      print("추가 로딩 실패 \(error)")
+      isLoadingMore = false
     }
-    
-    //UUID를 String으로 바꿔주는 함수 (RecruitmentDetailView 인자가 String 타입이라 변환해서 넘겨줘야 함)
-    func postIdToString(_ id: UUID) -> String {
-            return id.uuidString
-        }
-
-    
+  }
 }
