@@ -592,10 +592,4 @@ extension FirestoreManager {
   }
 }
 
-struct PostSuggestion: Codable, Identifiable {
-  let postId: String
-  let title: String
-  let organization: String
-  
-  var id: String { postId }
-}
+
