@@ -24,7 +24,7 @@ struct TopNavigationView: View {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 26))
             }
-            
+            Spacer().frame(width: 16)
             //MARK: 알림 아이콘
             Button(action: {
                 router.push(to: .notificationView)
@@ -32,7 +32,7 @@ struct TopNavigationView: View {
                 Image(systemName: "bell")
                     .font(.system(size: 26))
             }
-            
+            Spacer().frame(width: 16)
             //MARK: 설정 아이콘
             Button(action: {
                 router.push(to: .notificationView) //FIXME: 설정뷰로 수정
