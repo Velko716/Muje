@@ -5,15 +5,13 @@
 //  Created by 김서현 on 8/12/25.
 //
 
-// FIXME: 폰트, 컬러 수정
-
 import SwiftUI
 
 struct SearchBar: View {
     @Binding var searchText: String
     @Binding var status: SearchStatus
     @EnvironmentObject var router: NavigationRouter
-    @FocusState private var isTextFieldFocused: Bool
+    @FocusState var isTextFieldFocused: Bool
     
     var body: some View {
         HStack {
@@ -41,13 +39,6 @@ struct SearchBar: View {
                         status = .typing
                     }
                 }
-                // 검색창 들어가자마자 자동으로 키보드 활성화
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now()) {
-                        self.isTextFieldFocused = true
-                    }
-                }
-                
                 Spacer()
             }
             .padding(.vertical, 11)
