@@ -20,28 +20,28 @@ struct MyPageView: View {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
         return [
             .init(header: "", rows: [
-                .init(kind: .action(title: "알림 설정", action: { viewModel.openAppNotificationSettings(using: openURL) })),
+                .init(kind: .action(id: "notif", title: "알림 설정", action: { viewModel.openAppNotificationSettings(using: openURL) })),
             ]),
             .init(header: "커뮤니티", rows: [
-                .init(kind: .action(title: "신고 내역", action: { router.push(to: .reportsHistoryView )})),
-                .init(kind: .action(title: "차단 내역", action: { router.push(to: .blockHistoryView )})),
-                .init(kind: .action(title: "커뮤니티 이용 규칙", action: { router.push(to: .textView(type: .communityRule) )}))
+                .init(kind: .action(id: "reports", title: "신고 내역", action: { router.push(to: .reportsHistoryView )})),
+                .init(kind: .action(id: "blocks", title: "차단 내역", action: { router.push(to: .blockHistoryView )})),
+                .init(kind: .action(id: "communityRule", title: "커뮤니티 이용 규칙", action: { router.push(to: .textView(type: .communityRule) )}))
             ]),
             .init(header: "이용 안내", rows: [
                 .init(kind: .value(title: "앱 버전", value: appVersion)),
-                .init(kind: .action(title: "문의하기", action: { print("문의하기"); router.push(to: .contentView )})), // FIXME: - 라우터 변경
-                .init(kind: .action(title: "서비스 이용약관", action: { router.push(to: .textView(type: .termsOfService) )})),
-                .init(kind: .action(title: "개인정보 처리 방침", action: { router.push(to: .textView(type: .privacyPolicy) )})),
-                .init(kind: .action(title: "청소년 보호 정책", action: { router.push(to: .textView(type: .youthProtectionPolicy) )})),
-                .init(kind: .action(title: "오픈 소스 라이선스", action: { router.push(to: .textView(type: .openSourceLicenses) )}))
+                .init(kind: .action(id: "contact", title: "문의하기", action: { print("문의하기"); router.push(to: .contentView )})), // FIXME: - 라우터 변경
+                .init(kind: .action(id: "tos", title: "서비스 이용약관", action: { router.push(to: .textView(type: .termsOfService) )})),
+                .init(kind: .action(id: "privacy", title: "개인정보 처리 방침", action: { router.push(to: .textView(type: .privacyPolicy) )})),
+                .init(kind: .action(id: "youth", title: "청소년 보호 정책", action: { router.push(to: .textView(type: .youthProtectionPolicy) )})),
+                .init(kind: .action(id: "oss", title: "오픈 소스 라이선스", action: { router.push(to: .textView(type: .openSourceLicenses) )}))
             ]),
             .init(
                 header: "기타",
                 rows: [
-                    .init(kind: .action(title: "정보 동의 설정", action: { router.push(to: .contentView )})),
+                    .init(kind: .action(id: "consent", title: "정보 동의 설정", action: { router.push(to: .contentView )})),
                     // FIXME: - 라우터 변경
-                    .init(kind: .action(title: "로그아웃", action: { showLogoutAlert = true })),
-                    .init(kind: .action(title: "회원 탈퇴", action: { /* withdraw */ })) // FIXME: - 라우터 변경
+                    .init(kind: .action(id: "logout", title: "로그아웃", action: { showLogoutAlert = true })),
+                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { /* withdraw */ })) // FIXME: - 라우터 변경
                 ]
             )
         ]
@@ -56,9 +56,9 @@ struct MyPageView: View {
                         .listRowInsets(.init(top: 0, leading: 0, bottom: 0, trailing: 0))
                         .listRowBackground(Color.clear)
                     
-                    ForEach(sections) { section in
+                    ForEach(sections, id: \.stableID) { section in
                         Section {
-                            ForEach(section.rows) { row in
+                            ForEach(section.rows, id: \.stableID) { row in
                                 rowView(row)
                             }
                             .listRowBackground(Color(.secondarySystemBackground)) // FIXME: - Gray 50으로 색상 변경
@@ -106,7 +106,7 @@ struct MyPageView: View {
                         Text(user.studentId)
                             .font(Font.system(size: 16))
                             .foregroundStyle(Color.gray)
-                    } //: VSTACK
+                    }
                     .contentShape(Rectangle()) // 전체 폭 터치
                 }
                 .buttonStyle(.plain)// List에서 안전하게 동작
@@ -159,7 +159,7 @@ struct MyPageView: View {
                 Text(title)
                     .settingListItem(color: Color.black) // FIXME: - Gray700 수정
             }
-        case .action(let title, let action):
+        case .action(_, let title, let action):
             Button(action: action) {
                 HStack {
                     Text(title)
@@ -169,11 +169,14 @@ struct MyPageView: View {
                     Image(systemName: "chevron.right")
                         .foregroundStyle(.gray)
                         .frame(width: 24, height: 24)
+                    
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.vertical, 20)
-                .contentShape(Rectangle()) // 전체 폭 터치
             }
-            .buttonStyle(.plain)// List에서 안전하게 동작
+            .buttonStyle(.plain)
+            .contentShape(Rectangle())
+            //.background(Color.yellow)
         }
     }
 }

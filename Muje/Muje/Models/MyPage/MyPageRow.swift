@@ -10,9 +10,29 @@ import Foundation
 struct MyPageRow: Identifiable {
     enum Kind {
         case value(title: String, value: String)
-        case action(title: String, action: () -> Void)
+        case action(id: String, title: String, action: () -> Void)
     }
-    
-    let id = UUID()
     var kind: Kind
+    
+    var id: String {
+        switch kind {
+        case .value(let title, _):
+            return "value.\(title)"
+        case .action(let id, _, _):
+            return "action.\(id)"
+        }
+    }
 }
+// 안정 키만 계산해 주는 가벼운 익스텐션
+extension MyPageRow {
+    var stableID: String {
+        switch kind {
+        case .value(let title, _):
+            return "value.\(title)"
+        case .action(let id, _, _):
+            return "action.\(id)" 
+        }
+    }
+}
+
+
