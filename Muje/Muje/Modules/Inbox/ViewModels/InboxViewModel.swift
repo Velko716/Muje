@@ -19,9 +19,12 @@ final class InboxViewModel {
     let conversationId: UUID
     let currentUserId: String
     
+    var showBlockedAlert: Bool = false
+    
     private var listener: ListenerRegistration?
     
     private var isLoadingMore = false
+    
     
     init(conversationId: UUID, currentUserId: String) {
         self.conversationId = conversationId
@@ -97,5 +100,22 @@ final class InboxViewModel {
         Task { try? await FirestoreManager.shared
                 .markConversationRead(conversationId: self.conversationId, userId: self.currentUserId)
         }
+    }
+    
+   
+    
+    /// 대화 문서에서 상대방 UID를 확보 (participant1/2 혹은 participants 배열 지원)
+    func ensureOtherUserId(conversationId: String) async throws {
+        let conversation: Conversation = try await FirestoreManager.shared.get(
+            conversationId,
+            from: .conversations
+        )
+        
+        let arr = conversation.participants.filter { $0 != FirebaseAuthManager.shared.currentUser?.userId ?? "" }
+        
+        try await FirestoreManager.shared.addBlock(
+            for: FirebaseAuthManager.shared.currentUser?.userId ?? "",
+            blockedUserId: arr.first ?? ""
+        )
     }
 }
