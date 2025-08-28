@@ -50,5 +50,8 @@ struct SearchBar: View {
             )
         }
         .frame(maxWidth: .infinity)
+        .onTapGesture {
+            isTextFieldFocused = true
+        }
     }
 }
