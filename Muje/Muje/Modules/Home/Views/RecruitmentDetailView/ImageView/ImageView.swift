@@ -32,9 +32,11 @@ struct ImageView: View {
           DownloadImage(postImage: image, cachedURL: cachedURL[image.imageId])
           .frame(width: screenWidth)
           .clipped()
-          .onTapGesture {
-            selectedImageForViewr = SelectedImageIndex(index: index)
-          }
+          .highPriorityGesture(
+            TapGesture().onEnded {
+              selectedImageForViewr = SelectedImageIndex(index: index)
+            }
+          )
           .tag(index)
         }
       }
