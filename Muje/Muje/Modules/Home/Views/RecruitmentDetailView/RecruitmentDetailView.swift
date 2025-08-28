@@ -51,8 +51,8 @@ struct RecruitmentDetailView: View {
     VStack {
       ScrollView {
         ImageView(
-          postImage: viewModel.postImages,
-          cachedURL: viewModel.imageURLCache
+          viewModel: viewModel,
+          postImage: viewModel.postImages
         )
         RecruitmentDataView(postId: postId, viewModel: viewModel)
       }

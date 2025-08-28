@@ -9,12 +9,14 @@ import SwiftUI
 
 struct ImageView: View {
   @State var currentPage: Int = 0
-//  @State var selectedImageIndex: Int
-//  @State var showImageViewer: Bool = false
+  //  @State var selectedImageIndex: Int
+  //  @State var showImageViewer: Bool = false
   @State private var selectedImageForViewr: SelectedImageIndex? = nil
+  @Bindable var viewModel: RecruitmentViewModel
   
   let postImage: [PostImage]
-  let cachedURL: [UUID: String]
+//  let cachedURL: [UUID: String]
+  
   
   var sortedImageUrls: [PostImage] {
     postImage.sorted{ $0.imageOrder < $1.imageOrder }
@@ -29,15 +31,15 @@ struct ImageView: View {
       TabView(selection: $currentPage) {
         ForEach(sortedImageUrls.indices, id: \.self) { index in
           let image = sortedImageUrls[index]
-          DownloadImage(postImage: image, cachedURL: cachedURL[image.imageId])
-          .frame(width: screenWidth)
-          .clipped()
-          .highPriorityGesture(
-            TapGesture().onEnded {
-              selectedImageForViewr = SelectedImageIndex(index: index)
-            }
-          )
-          .tag(index)
+          DownloadImage(postImage: image, cachedURL: viewModel.imageURLCache[image.imageId])
+            .frame(width: screenWidth)
+            .clipped()
+            .highPriorityGesture(
+              TapGesture().onEnded {
+                selectedImageForViewr = SelectedImageIndex(index: index)
+              }
+            )
+            .tag(index)
         }
       }
       .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
@@ -54,20 +56,20 @@ struct ImageView: View {
       
     }
     .frame(height: UIScreen.main.bounds.width)
-//    .fullScreenCover(isPresented: $showImageViewer) {
-//      ImageDetail(
-//        selectedIndex: $selectedImageIndex,
-//        showImageViewer: $showImageViewer,
-//        postImage: sortedImageUrls,
-//        cachedURL: cachedURL
-//      )
-//    }
+    //    .fullScreenCover(isPresented: $showImageViewer) {
+    //      ImageDetail(
+    //        selectedIndex: $selectedImageIndex,
+    //        showImageViewer: $showImageViewer,
+    //        postImage: sortedImageUrls,
+    //        cachedURL: cachedURL
+    //      )
+    //    }
     .fullScreenCover(item: $selectedImageForViewr) { selectedImage in
       ImageDetail(
         selectedIndex: selectedImage.index,
         onDismiss: { selectedImageForViewr = nil },
         postImage: sortedImageUrls,
-        cachedURL: cachedURL
+        cachedURL: viewModel.imageURLCache
       )
     }
     
@@ -83,9 +85,9 @@ struct DownloadImage: View {
   
   var body: some View {
     Group {
-      if let urlString = cachedURL ?? downloadURL, let url = URL(string: urlString) {
+      if let urlString = downloadURL, let url = URL(string: urlString) {
         AsyncImage(url: url) { image in
-            image
+          image
             .resizable()
             .aspectRatio(contentMode: .fill)
         } placeholder: {
@@ -97,11 +99,19 @@ struct DownloadImage: View {
           .fill(Color.gray.opacity(0.3))
       }
     }
+    .onChange(of: cachedURL) { _, newValue in
+      if let newValue {
+        self.downloadURL = newValue
+        self.isLoading = false
+      }
+    }
     .task(id: postImage.imageId) {
-      if cachedURL == nil, let url = try? await postImage.getDownloadURL() {
-        await MainActor.run {
-          self.downloadURL = url
-          self.isLoading = false
+      if downloadURL == nil && cachedURL == nil {
+        if let url = try? await postImage.getDownloadURL() {
+          await MainActor.run {
+            self.downloadURL = url
+            self.isLoading = false
+          }
         }
       } else {
         isLoading = false
@@ -117,12 +127,11 @@ struct SelectedImageIndex: Identifiable {
 
 #Preview {
   ImageView(
-    postImage: [PostImage(
+    viewModel: RecruitmentViewModel(), postImage: [PostImage(
       imageId: UUID(),
       postId: "",
       imageUrl: "",
       imageOrder: 0
-    )],
-    cachedURL: [:]
+    )]
   )
 }
