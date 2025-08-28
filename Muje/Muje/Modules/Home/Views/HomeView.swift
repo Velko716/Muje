@@ -13,11 +13,6 @@ struct HomeView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            if viewModel.isLoading {
-                Text("불러오는 중...")
-                    .frame(maxHeight: .infinity)
-            }
-            else {
                 VStack {
                     TopNavigationView()
                     List {
@@ -57,8 +52,7 @@ struct HomeView: View {
                         await viewModel.loadInitialPosts()
                     }
                 } //: VSTACK
-                .padding(.horizontal, 16)
-            }
+                .padding(.horizontal, 16)  
             PostCreateButton()
                 .padding(.bottom, 24)
         } //: ZSTACK
