@@ -90,7 +90,6 @@ struct HomeView: View {
     .task {
       if viewModel.postList.isEmpty {
         await viewModel.loadInitialPosts()
-      }
-    }
+     }
   }
 }
