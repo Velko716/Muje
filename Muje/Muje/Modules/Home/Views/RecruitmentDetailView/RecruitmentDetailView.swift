@@ -16,21 +16,54 @@ struct RecruitmentDetailView: View {
   
   var body: some View {
     ZStack {
-      ScrollView {
-        ImageView(postImage: viewModel.postImages)
-        RecruitmentDataView(postId: postId, viewModel: viewModel)
+      if viewModel.isLoading {
+        loadingView
+      } else {
+        contentView
       }
-      TopButtonView {
-        router.pop()
+//      TopButtonView(isAuthor: viewModel.isAuthor) {
+//        router.pop()
+//      }
+      TopButtonView(
+        isAuthor: viewModel.isAuthor,
+        action: { router.pop() },
+        fixAction: {
+          guard let post = viewModel.post else { return }
+          router.push(to: .EditContentView(post: post, postImages: viewModel.postImages))},
+        reportAction: {}, // 신고하기 화면 이동
+        deleteAction: { Task { await viewModel.deletePostInfo(for: postId) } }
+      )
+    }
+    .onChange(of: viewModel.showAlert) {
+      if viewModel.showAlert {
+        router.popToRootView()
       }
     }
     .task {
       await viewModel.loadPostDetail(for: postId)
+      await viewModel.preloadImageURL()
     }
     .navigationBarBackButtonHidden()
     .ignoresSafeArea(.all, edges: .top)
-    
-    BottomButtonView {
+  }
+  
+  private var contentView: some View {
+    VStack {
+      ScrollView {
+        ImageView(
+          viewModel: viewModel,
+          postImage: viewModel.postImages
+        )
+        RecruitmentDataView(postId: postId, viewModel: viewModel)
+      }
+      if !viewModel.isAuthor { // 작성자가 아닐때 하단 버튼 표시
+        bottomButtonArea
+      }
+    }
+  }
+  
+  private var bottomButtonArea: some View {
+    BottomButtonView(hasApplied: viewModel.hasApplied) {
       guard let post = viewModel.post else { return }
       router.push(
         to: .ApplicationFormView(
@@ -51,12 +84,26 @@ extension RecruitmentDetailView {
     VStack {
       ProgressView()
         .scaleEffect(1.5)
-      Text("이미지 불러오는 중...")
+      Text(viewModel.loadingMessage.title)
         .font(.headline)
         .foregroundStyle(.secondary)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(.systemBackground))
+  }
+}
+
+enum loadingCase {
+  case loadRecruitment
+  case loadDelete
+  
+  var title: String {
+    switch self {
+    case .loadRecruitment:
+      return "모집글 상세 데이터 불러오는 중..."
+    case .loadDelete:
+      return "삭제 중..."
+    }
   }
 }
 

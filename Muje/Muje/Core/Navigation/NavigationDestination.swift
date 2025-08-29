@@ -24,6 +24,7 @@ enum NavigationDestination: Equatable, Hashable {
       customQuestion: [CustomQuestion],
       questionAnswer: [String: String]
   )
+    case EditContentView(post: Post, postImages: [PostImage])
     case ApplicationManagementView(
       postId: String,
       postInfo: ApplicationManagementPostInfo

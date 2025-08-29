@@ -62,4 +62,7 @@ struct HomeView: View {
             }
         }
     }
+      } 
+    } //: ZSTACK
+  }
 }

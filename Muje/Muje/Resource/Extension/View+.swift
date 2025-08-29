@@ -31,5 +31,20 @@ extension View {
     func paddingH16() -> some View {
         self.padding(.horizontal, 16)
     }
+    
+    //토스트 형식 경고 컴포넌트 사용 모디파이어
+    func toast(isShown: Binding<Bool>, message: String, alignment: Alignment = .bottom) -> some View {
+        ZStack {
+            self
+            Toast(isShown: isShown, message: message)
+        }
+    }
+    
+    //상하, 좌우 여백 통합 모디파이어 ex)hvPadding(12, 24) -> horizontal: 12, vertical: 24
+    func hvPadding(_ h: CGFloat, _ v: CGFloat) -> some View {
+            self
+                .padding(.horizontal, h)
+                .padding(.vertical, v)
+        }
 }
 
