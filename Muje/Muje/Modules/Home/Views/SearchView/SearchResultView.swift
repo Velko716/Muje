@@ -33,6 +33,7 @@ struct SearchResultView: View {
               thumbnailImage: viewModel.thumbnailImages[post.postId]
             )
             .frame(maxWidth: .infinity, alignment: .leading)
+            .listRowInsets(EdgeInsets())
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .contentShape(Rectangle()) // 여백까지 터치 영역 확장
