@@ -33,6 +33,11 @@ struct ApplicationPreview: View {
       
       userInfoDetailSection
       
+      Rectangle()
+        .frame(maxWidth: .infinity)
+        .frame(height: 12)
+        .foregroundStyle(Color.gray.opacity(0.2))
+      
       customQuestionSection
       
     }
@@ -60,14 +65,12 @@ struct ApplicationPreview: View {
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, 24)
-    .padding(.vertical, 30)
+    .padding(.top, 16)
+    .padding(.bottom, 24)
   }
   
   private var userInfoDetailSection: some View {
     VStack(spacing: 5) {
-      if requirementFlags.requiresPhone {
-        InfoRow(title: "연락처", value: viewModel.userInfo?.phone ?? "")
-      }
       if requirementFlags.requiresStudentId {
         InfoRow(title: "학번", value: viewModel.userInfo?.studentId ?? "")
       }
@@ -76,6 +79,7 @@ struct ApplicationPreview: View {
       }
     }
     .padding(.horizontal, 24)
+    .padding(.bottom, 24)
   }
   
   private var customQuestionSection: some View {
@@ -115,6 +119,79 @@ struct ApplicationPreview: View {
   }
 }
 
-//#Preview {
-//  ApplicationPreview(postId: "", customQuestion: "", requirementFlags: RequirementFlags(from: Post(postId: UUID(), authorUserId: "", title: "ddddddd", organization: "ddddd", content: "ddddd", recruitmentStart: Timestamp(date: Date()), recruitmentEnd: Timestamp(date: Date()), status: "PostStatus.recruiting", authorName: "dd", authorOrganization: "dd")))
-//}
+#Preview {
+  @Previewable @State var viewModel = ApplicationPreviewModel()
+    
+  return ApplicationPreview(
+    postId: "",
+    requirementFlags: RequirementFlags(
+      from: Post(
+        postId: UUID(),
+        authorUserId: "",
+        title: "ddddd",
+        organization: "dddddd",
+        content: "ddddddd",
+        recruitmentStart: Timestamp(date: Date()),
+        recruitmentEnd: Timestamp(date: Date()),
+        hasInterview: true,
+        status: PostStatus.recruiting.rawValue,
+        requiresName: true,
+        requiresStudentId: true,
+        requiresDepartment: true,
+        requiresGender: true,
+        requiresAge: true,
+        requiresPhone: true,
+        authorName: "박기연",
+        authorOrganization: "MAD"
+      )
+    ),
+    postBasicInfo: PostBasicInfo(
+      from: Post(
+        postId: UUID(),
+        authorUserId: "",
+        title: "ddddd",
+        organization: "dddddd",
+        content: "ddddddd",
+        recruitmentStart: Timestamp(date: Date()),
+        recruitmentEnd: Timestamp(date: Date()),
+        hasInterview: true,
+        status: PostStatus.recruiting.rawValue,
+        requiresName: true,
+        requiresStudentId: true,
+        requiresDepartment: true,
+        requiresGender: true,
+        requiresAge: true,
+        requiresPhone: true,
+        authorName: "박기연",
+        authorOrganization: "MAD"
+      )
+    ),
+    customQuestion: [CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 1
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 2
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 3
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 4
+    ),CustomQuestion(
+      questionId: UUID(),
+      postId: "",
+      questionText: "햄버거 햄버거",
+      questionOrder: 5
+    )],
+    questionAnswer: .constant(["dddddddddd" : "우아아아아ㅏㅇ아ㅏ아"])
+  )
+}

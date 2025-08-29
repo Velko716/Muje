@@ -22,6 +22,9 @@ final class FirebaseAuthManager {
         return currentUserEmail
     }
     
+    /// 현재 로그인 유저 입니다.
+    var currentUser: User? 
+    
     
     /// 현재 로그인 유저 로그아웃
     func currentUserSignOut() async throws {

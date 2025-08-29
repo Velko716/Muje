@@ -4,7 +4,6 @@
 //
 //  Created by 김진혁 on 7/19/25.
 //
-
 import SwiftUI
 
 struct NavigationRoutingView: View {
@@ -16,20 +15,24 @@ struct NavigationRoutingView: View {
             switch destination {
             case .contentView: // 임시
                 RootView() // 임시
+            case .searchView:
+              SearchView()
+            case .notificationView:
+                NotificationView()
             case .RecruitmentDetailView(let postId):
                 RecruitmentDetailView(postId: postId)
             case .ApplicationFormView(let postId, let requirementFlags, let postBasicInfo):
-              ApplicationFormView(
-                postId: postId,
-                requirementFlags: requirementFlags,
-                postBasicInfo: postBasicInfo
-              )
+                ApplicationFormView(
+                    postId: postId,
+                    requirementFlags: requirementFlags,
+                    postBasicInfo: postBasicInfo
+                )
             case .ApplicationPreview(
-              let postId,
-              let requirementFlags,
-              let postBasicInfo,
-              let customQuestion,
-              let questionAnswer
+                let postId,
+                let requirementFlags,
+                let postBasicInfo,
+                let customQuestion,
+                let questionAnswer
             ):
               ApplicationPreview(
                 postId: postId,
@@ -38,15 +41,21 @@ struct NavigationRoutingView: View {
                 customQuestion: customQuestion,
                 questionAnswer: .constant(questionAnswer)
               )
+            case .ApplicationManagementView(let postId, let postInfo):
+              ApplicationManagementView(
+                postId: postId,
+                postInfo: postInfo
+              )
             case .emailVerificationView:
                 EmailVerificationView()
             case .userInfoInputView(let uuid, let email):
                 UserInfoInputView(uuid: uuid, email: email)
-            case .makeRecruitmentView:
-                RecruitmentPostView()
+            case .inboxView(let conversationId):
+                InboxView(conversationId: conversationId)   
             }
         }
         .hideBackButton()
+        .dismissKeyboardOnTap()
         .environmentObject(router)
     }
 }

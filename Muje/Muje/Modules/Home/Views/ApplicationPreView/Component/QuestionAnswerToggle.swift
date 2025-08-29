@@ -15,27 +15,23 @@ struct QuestionAnswerToggle: View {
   
   var body: some View {
     VStack(spacing: 0) {
-      HeaderSection
-      
-      Divider()
-        .padding(.horizontal, 20)
-      
-      ScrollView {
-       AnswerSection
-      }
-      .frame(height: isExpanded ? 200 : 60)
-      .clipped()
+      questionHeader
+      AnswerSection
     }
-    .background(Color(.systemGray6))
-    .clipShape(RoundedRectangle(cornerRadius: 12))
-    .padding(.horizontal, 16)
+    .background(Color.white)
+//    .overlay(
+//      RoundedRectangle(cornerRadius: 12)
+//        .stroke(Color(.systemGray), lineWidth: 1)
+//    )
+//    .clipShape(RoundedRectangle(cornerRadius: 12))
+//    .animation(.easeInOut(duration: 0.3), value: isExpanded)
   }
   
-  private var HeaderSection: some View {
+  private var questionHeader: some View {
     Button {
-      withAnimation(.easeInOut(duration: 0.3)) {
+      
         isExpanded.toggle()
-      }
+      
     } label: {
       HStack {
         Text(question)
@@ -43,6 +39,7 @@ struct QuestionAnswerToggle: View {
           .fontWeight(.medium)
           .foregroundStyle(Color.black)
           .multilineTextAlignment(.leading)
+          .frame(maxWidth: .infinity, alignment: .leading)
         
         Spacer()
         
@@ -50,10 +47,11 @@ struct QuestionAnswerToggle: View {
           .font(.caption)
           .foregroundStyle(Color.gray)
           .rotationEffect(.degrees(isExpanded ? 180 : 0))
+          .animation(.easeInOut(duration: 0.3), value: isExpanded)
       }
-      .padding(.top, 22)
-      .padding(.bottom, 15)
       .padding(.horizontal, 20)
+      .padding(.top, 20)
+      .padding(.bottom, isExpanded ? 16 : 12)
     }
     .buttonStyle(PlainButtonStyle())
   }
@@ -62,11 +60,20 @@ struct QuestionAnswerToggle: View {
     Text(answer)
       .font(.body)
       .foregroundStyle(.primary)
-      .lineLimit(1)
+      .lineLimit(isExpanded ? nil : 1)
       .multilineTextAlignment(.leading)
-      .frame(maxWidth: .infinity, alignment: .topLeading)
-      .fixedSize(horizontal: false, vertical: true)
+      .frame(maxWidth: .infinity, alignment: .leading)
       .padding(.horizontal, 20)
-      .padding(.vertical, 20)
+      .padding(.top, isExpanded ? 16 : 8)
+      .padding(.bottom, 20)
+      .background(Color.white)
+//      .animation(.easeInOut(duration: 0.3), value: isExpanded)
   }
+}
+
+#Preview {
+  QuestionAnswerToggle(
+    question: "햄버거 햄버거 햄버거",
+    answer: "우와와와와와오아ㅘ오아 개많이 먹음 진짜 개맣ㄴ이ㅏ먼ㅇ리"
+  )
 }
