@@ -23,9 +23,9 @@ class TestDataCreator {
     let testPost = Post(
       postId: testPostId,
       authorUserId: "current_user_id",
-      title: "이미지 테스트 테스트",
-      organization: "이미지",
-      content: "그만..",
+      title: "파베 테스트 테스트 테스트",
+      organization: "파이어베이스",
+      content: "이게 되네",
       recruitmentStart: Timestamp(date: Date()),
       recruitmentEnd: Timestamp(date: Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()),
       hasInterview: true,
@@ -37,8 +37,7 @@ class TestDataCreator {
       requiresAge: true,
       requiresPhone: true,
       authorName: "Kadan",
-      authorOrganization: "파이어베이스",
-      createdAt: Timestamp(date: Date())
+      authorOrganization: "파이어베이스"
     )
     
     self.post = testPost

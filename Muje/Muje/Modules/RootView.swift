@@ -70,7 +70,7 @@ struct RootView: View {
             case .home:
                 HomeView()
             case .myPosts:
-                TestPostView()
+                MyPostsView()
             case .inbox:
                 InboxListView()
             case .myPage:
