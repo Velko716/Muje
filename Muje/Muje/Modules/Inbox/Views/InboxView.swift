@@ -46,8 +46,14 @@ struct InboxView: View {
             }
             .paddingH16()
         }
+        .task {
+            Task {
+                try await viewModel.otherUserId(conversationId: viewModel.conversationId.uuidString)
+            }
+        }
         .onAppear {
             CurrentChatContext.shared.activeConversationId = viewModel.conversationId
+            
         }
         .onDisappear {
             if CurrentChatContext.shared.activeConversationId == viewModel.conversationId {
@@ -124,7 +130,10 @@ struct InboxView: View {
         }
         // MARK: - 신고하기 시트
         .sheet(isPresented: $showReportSheet) {
-            ReportView()
+            ReportView(
+                reportedUserId: viewModel.reportedUserId,
+                conversationId: viewModel.conversationId.uuidString
+            )
         }
     }
     // MARK: - 탑 현재 공고 뷰
@@ -229,9 +238,9 @@ struct InboxView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        InboxView(conversationId: UUID())
-            .environmentObject(NavigationRouter())
-    }
-}
+//#Preview {
+//    NavigationStack {
+//        InboxView(conversationId: UUID())
+//            .environmentObject(NavigationRouter())
+//    }
+//}

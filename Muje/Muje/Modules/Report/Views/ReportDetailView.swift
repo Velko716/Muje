@@ -39,7 +39,13 @@ struct ReportDetailView: View {
                         CompleteReportView(viewModel: viewModel)
                             .hideBackButton()
                         
-                        // TODO: 현재 유저의 신고 기능 추가하기
+                        task {
+                            // TODO: 현재 유저의 신고 기능 추가하기
+                            await viewModel.createReport(
+                                reportedUserId: viewModel.reportedUserId ?? "",
+                                conversationId: viewModel.conversationId ?? ""
+                            )
+                        }
                         
                     } label: {
                         RoundedRectangle(cornerRadius: 10)
