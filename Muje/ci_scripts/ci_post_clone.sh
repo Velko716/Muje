@@ -34,7 +34,7 @@ else
     echo "🔄 다른 방법 시도 중..."
     
     # macOS와 Linux base64 차이 때문에 다른 옵션 시도
-    if echo "$GOOGLE_SERVICE_INFO" | base64 -d > GoogleService-Info.plist 2>/dev/null; then
+    if echo "$GOOGLE_SERVICE_INFO" | base64 -d > "Muje/Service/GoogleService-Info.plist" 2>/dev/null; then
         echo "✅ base64 -d 옵션으로 성공!"
     else
         echo "❌ 모든 디코딩 방법 실패"
