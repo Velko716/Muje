@@ -30,6 +30,10 @@ final class ReportViewModel {
         ]
     }
     
+    deinit {
+        self.selectedReason = ""
+        self.detailText = ""
+    }
     
     // MARK: - 신고 생성 (채팅)
     func createReport(reportedUserId: String, conversationId: String) async {
