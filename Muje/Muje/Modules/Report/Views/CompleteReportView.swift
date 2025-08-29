@@ -58,6 +58,12 @@ struct CompleteReportView: View {
                 }
             }
         }
+        .task {
+            await viewModel.createReport(
+                reportedUserId: viewModel.reportedUserId ?? "",
+                conversationId: viewModel.conversationId ?? ""
+            )
+        }
         .paddingH16()
         .toolbar {
             ToolbarLeadingXmarkBackButton()
