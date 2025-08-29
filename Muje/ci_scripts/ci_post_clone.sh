@@ -26,9 +26,9 @@ echo "🚀 Firebase 설정 파일 복원 시작..."
 
 # base64 디코딩 시도
 echo "🔓 base64 디코딩 중..."
-if echo "$GOOGLE_SERVICE_INFO" | base64 --decode > "$CI_WORKSPACE/Muje/Service/GoogleService-Info.plist" 2>/dev/null; then
+if echo "$GOOGLE_SERVICE_INFO" | base64 --decode > "Muje/Service/GoogleService-Info.plist" 2>/dev/null; then
     echo "✅ base64 디코딩 성공!"
-    echo "저장위치: $CI_WORKSPACE/Muje/Service/GoogleService-Info.plist"
+    echo "저장위치: Muje/Service/GoogleService-Info.plist"
 else
     echo "❌ base64 디코딩 실패!"
     echo "🔄 다른 방법 시도 중..."
