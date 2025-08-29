@@ -12,6 +12,7 @@ import SwiftUI
 struct UploadPostView: View {
     @State var uploadPostViewModel = UploadPostViewModel()
     @State var postInfoViewModel = PostInfoViewModel()
+    @State var postInterviewViewModel = PostInterviewViewModel()
     
     var body: some View {
         NavigationStack {
@@ -25,7 +26,7 @@ struct UploadPostView: View {
                         if uploadPostViewModel.currentStatus == .input {
                             PostInfoView(postInfoViewModel: postInfoViewModel)
                         } else if uploadPostViewModel.currentStatus == .interview {
-                            PostInterviewView()
+                            PostInterviewView(postInfoViewModel: postInfoViewModel, postInterviewViewModel: postInterviewViewModel)
                         }
                         
                     }
@@ -85,9 +86,11 @@ struct UploadPostView: View {
                     Spacer()
                     Button(action: {
                         print("다음")
+                        postInterviewViewModel.debug()
                     }, label: {
-                        ActionButton(title: "다음", condition: true)
+                        ActionButton(title: "다음", condition: postInterviewViewModel.nextCheck())
                     })
+                    .disabled(postInterviewViewModel.nextCheck())
                 }
                 .hvPadding(16, 20)
             }
