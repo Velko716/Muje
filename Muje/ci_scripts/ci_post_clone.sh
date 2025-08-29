@@ -26,8 +26,9 @@ echo "🚀 Firebase 설정 파일 복원 시작..."
 
 # base64 디코딩 시도
 echo "🔓 base64 디코딩 중..."
-if echo "$GOOGLE_SERVICE_INFO" | base64 --decode > GoogleService-Info.plist 2>/dev/null; then
+if echo "$GOOGLE_SERVICE_INFO" | base64 --decode > "$CI_WORKSPACE/Muje/Service/GoogleService-Info.plist" 2>/dev/null; then
     echo "✅ base64 디코딩 성공!"
+    echo "저장위치: $CI_WORKSPACE/Muje/Service/GoogleService-Info.plist"
 else
     echo "❌ base64 디코딩 실패!"
     echo "🔄 다른 방법 시도 중..."
@@ -41,21 +42,20 @@ else
     fi
 fi
 
-# 생성된 파일 확인
-if [ -f "GoogleService-Info.plist" ]; then
+if [ -f "$CI_WORKSPACE/Muje/Service/GoogleService-Info.plist" ]; then
     echo "✅ GoogleService-Info.plist 생성 완료!"
-    echo "📏 파일 크기: $(wc -c < GoogleService-Info.plist) bytes"
+    echo "📏 파일 크기: $(wc -c < "$CI_WORKSPACE/Muje/Service/GoogleService-Info.plist") bytes"
     echo "📋 파일 첫 줄:"
-    head -1 GoogleService-Info.plist
+    head -1 "$CI_WORKSPACE/Muje/Service/GoogleService-Info.plist"
     
     # plist 파일이 유효한지 간단 체크
-    if grep -q "<?xml" GoogleService-Info.plist; then
+    if grep -q "<?xml" "$CI_WORKSPACE/Muje/Service/GoogleService-Info.plist"; then
         echo "✅ 유효한 XML 파일 형식"
     else
         echo "⚠️  XML 형식이 아닐 수 있음"
     fi
     
-    if grep -q "PROJECT_ID" GoogleService-Info.plist; then
+    if grep -q "PROJECT_ID" "$CI_WORKSPACE/Muje/Service/GoogleService-Info.plist"; then
         echo "✅ Firebase 설정 파일로 보임"
     else
         echo "⚠️  Firebase 설정 파일이 아닐 수 있음"
@@ -66,7 +66,7 @@ else
 fi
 
 echo "📁 최종 파일 목록:"
-ls -la *.plist 2>/dev/null || echo "plist 파일이 없습니다"
+ls -la "$CI_WORKSPACE/Muje/Service/"*.plist 2>/dev/null || echo "plist 파일이 없습니다"
 
 echo "🎯 CI 스크립트 완료!"
 echo "🚀🚀🚀 CI 스크립트 실행 종료! 🚀🚀🚀"
