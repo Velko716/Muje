@@ -38,15 +38,6 @@ struct ReportDetailView: View {
                     NavigationLink {
                         CompleteReportView(viewModel: viewModel)
                             .hideBackButton()
-                        
-                        task {
-                            // TODO: 현재 유저의 신고 기능 추가하기
-                            await viewModel.createReport(
-                                reportedUserId: viewModel.reportedUserId ?? "",
-                                conversationId: viewModel.conversationId ?? ""
-                            )
-                        }
-                        
                     } label: {
                         RoundedRectangle(cornerRadius: 10)
                             .fill(viewModel.detailText.isEmpty ? Color.gray : Color.red) // FIXME: - 컬러 수정
