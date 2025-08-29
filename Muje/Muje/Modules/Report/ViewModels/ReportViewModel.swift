@@ -7,30 +7,16 @@
 
 import Foundation
 
-/*
- // MARK: - 신고 생성 테스트 버튼 로직 (삭제 예정)
- func createReportTestButtonTapped() async {
-     // 공고 신고 Model postId: "00DD1837-4416-46BD-8246-50CE26567717"
-     let report = Report(
-         reportId: UUID(),
-         reporterUserId: FirebaseAuthManager.shared.currentUser?.userId ?? "",
-         reportedUserId: "FTMIffTVLdb8GuhHweHJEgAwFqB2",
-         postId: "00DD1837-4416-46BD-8246-50CE26567717",
-         reportType: ReportType.spam.rawValue,
-         reason: "저한테 욕설을 빈번하게 사용했어요",
-         status: ReportStatus.pending.rawValue
-     )
-     
-     let _ = try? await FirestoreManager.shared.create(report)
- }
- */
-
 @Observable
 final class ReportViewModel {
     var selectedReason = ""
     var detailText = ""
     var reportRow: [ReportRow] = []
-
+    
+    // FIXME: - 임시 (신고 변수)
+    var reportedUserId: String?
+    var conversationId: String?
+    
     init() {
         reportRow = [
             .init(title: "1. \(ReportType.insult.rawValue)", content: ReportType.insult.rawValue),
@@ -43,5 +29,21 @@ final class ReportViewModel {
             .init(title: "8. \(ReportType.other.rawValue)", content: ReportType.other.rawValue)
         ]
     }
+    
+    
+    // MARK: - 신고 생성 (채팅)
+    func createReport(reportedUserId: String, conversationId: String) async {
+        let report = Report(
+            reportId: UUID(),
+            reporterUserId: FirebaseAuthManager.shared.currentUser?.userId ?? "",
+            reportedUserId: reportedUserId,
+            conversationId: conversationId,
+            reportType: self.selectedReason,
+            reason: self.detailText,
+            status: ReportStatus.pending.rawValue
+        )
+        let _ = try? await FirestoreManager.shared.create(report)
+    }
+    
     
 }
