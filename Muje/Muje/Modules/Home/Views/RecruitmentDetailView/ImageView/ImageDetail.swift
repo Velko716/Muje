@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ImageDetail: View {
-//  @Binding var selectedIndex: Int
   @State private var selectedIndex: Int
-//  @Binding var showImageViewer: Bool
+  @State private var imageURLs: [UUID: String] = [:]
+  
   let onDismiss: () -> Void
   let postImage: [PostImage]
   let cachedURL: [UUID: String]
@@ -29,9 +29,9 @@ struct ImageDetail: View {
       
       TabView(selection: $selectedIndex) {
         ForEach(postImage.indices, id: \.self) { index in
-          DownloadImage(
+          ImageDetailItem(
             postImage: postImage[index],
-            cachedURL: cachedURL[postImage[index].imageId]
+            cachedURL: imageURLs[postImage[index].imageId]
           )
             .scaledToFit()
             .frame(width: UIScreen.main.bounds.width,
@@ -59,6 +59,9 @@ struct ImageDetail: View {
           }
         }
     )
+    .task {
+      await loadAllImages()
+    }
   }
   
   private var DetailIndicator: some View {
@@ -88,6 +91,55 @@ struct ImageDetail: View {
     }
     .padding(.leading, 16)
     .padding(.top, 16)
+  }
+  
+  private func loadAllImages() async {
+    await withTaskGroup(of: (UUID, String?).self) { group in
+      for image in postImage {
+        group.addTask {
+          if let cached = cachedURL[image.imageId] {
+            return (image.imageId, cached)
+          }
+          
+          do {
+            let url = try await image.getDownloadURL()
+            return (image.imageId, url)
+          } catch {
+            print("독립 이미지 로드 실패")
+            return (image.imageId, nil)
+          }
+        }
+      }
+      for await (imageId, url) in group {
+        if let url = url {
+          await MainActor.run {
+            imageURLs[imageId] = url
+          }
+        }
+      }
+    }
+  }
+}
+
+
+struct ImageDetailItem: View {
+  let postImage: PostImage
+  let cachedURL: String?
+  
+  var body: some View {
+    Group {
+      if let urlString = cachedURL, let url = URL(string: urlString) {
+        AsyncImage(url: url) { image in
+          image
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+        } placeholder: {
+          ProgressView()
+        }
+      } else {
+        ProgressView()
+      }
+    }
   }
 }
 
