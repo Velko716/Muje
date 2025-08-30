@@ -131,6 +131,7 @@ struct InboxView: View {
         // MARK: - 신고하기 시트
         .sheet(isPresented: $showReportSheet) {
             ReportView(
+                showReportSheet: $showReportSheet,
                 reportedUserId: viewModel.reportedUserId,
                 conversationId: viewModel.conversationId.uuidString
             )
@@ -238,9 +239,9 @@ struct InboxView: View {
     }
 }
 
-//#Preview {
-//    NavigationStack {
-//        InboxView(conversationId: UUID())
-//            .environmentObject(NavigationRouter())
-//    }
-//}
+#Preview {
+    NavigationStack {
+        InboxView(conversationId: UUID())
+            .environmentObject(NavigationRouter())
+    }
+}

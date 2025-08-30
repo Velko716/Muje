@@ -11,6 +11,7 @@ import SwiftUI
 // TODO: 신고를 처리하는 로직을 만들어야 함. (ex. 이메일 전송, 파이어베이스 저장 등등)
 struct CompleteReportView: View {
     @Bindable var viewModel: ReportViewModel
+    @Binding var showReportSheet: Bool
     
     var body: some View {
         ZStack {
@@ -66,7 +67,7 @@ struct CompleteReportView: View {
         }
         .paddingH16()
         .toolbar {
-            ToolbarLeadingXmarkBackButton()
+            ToolbarLeadingXmarkBackButton { showReportSheet = false }
             ToolbarCenterTitle(text: "신고하기")
         }
     }
@@ -74,6 +75,6 @@ struct CompleteReportView: View {
 
 #Preview {
     NavigationStack {
-        CompleteReportView(viewModel: ReportViewModel())
+        CompleteReportView(viewModel: ReportViewModel(), showReportSheet: .constant(false))
     }
 }
