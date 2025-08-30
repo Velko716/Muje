@@ -9,26 +9,6 @@ import Foundation
 import FirebaseCore
 import FirebaseFirestore
 
-
-struct Block: Codable {
-    let blockedUserId: String
-    @ServerTimestamp var createdAt: Timestamp?
-    
-    init(
-        blockedUserId: String,
-        createdAt: Timestamp? = nil
-    ) {
-        self.blockedUserId = blockedUserId
-        self.createdAt = createdAt
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case blockedUserId = "blocked_user_id"
-        case createdAt = "created_at"
-    }
-}
-
-
 struct User: Codable {
     let userId: String
     let email: String
@@ -42,8 +22,8 @@ struct User: Codable {
     let privacyAgreed: Bool
     @ServerTimestamp var createdAt: Timestamp?
     @ServerTimestamp var updatedAt: Timestamp?
-//    let createdAt: Date
-//    let updatedAt: Date
+    //    let createdAt: Date
+    //    let updatedAt: Date
     
     init(
         userId: String,
@@ -58,8 +38,8 @@ struct User: Codable {
         privacyAgreed: Bool,
         createdAt: Timestamp? = nil,
         updatedAt: Timestamp? = nil
-//        createdAt: Date,
-//        updatedAt: Date,
+        //        createdAt: Date,
+        //        updatedAt: Date,
     ) {
         self.userId = userId
         self.email = email
@@ -107,29 +87,39 @@ extension User: EntityRepresentable {
             "email_verified": emailVerified,
             "terms_agreed": termsAgreed,
             "privacy_agreed": privacyAgreed
-//            "created_at": createdAt ?? FieldValue.serverTimestamp(),
-//            "updated_at": updatedAt ?? FieldValue.serverTimestamp(),
+            //            "created_at": createdAt ?? FieldValue.serverTimestamp(),
+            //            "updated_at": updatedAt ?? FieldValue.serverTimestamp(),
         ]
     }
 }
 
-extension User {
-    func addBlock(_ block: Block) async throws {
-        let docRef = Firestore.firestore()
-            .collection("User")
-            .document(self.userId)
-            .collection("blocks")
-            .document(self.userId)
-
-        try await docRef.setData(block.asDictionary)
+struct Block: Codable {
+    let blockedUserId: String
+    @ServerTimestamp var createdAt: Timestamp?
+    
+    init(
+        blockedUserId: String,
+        createdAt: Timestamp? = nil
+    ) {
+        self.blockedUserId = blockedUserId
+        self.createdAt = createdAt
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case blockedUserId = "blocked_user_id"
+        case createdAt = "created_at"
     }
 }
 
-extension Block {
-    var asDictionary: [String: Any] {
+
+extension Block: EntityRepresentable {
+    var entityName: CollectionType { .blocks }
+    
+    var documentID: String { blockedUserId }
+    
+    var asDictionary: [String : Any]? {
         [
-            "blocked_user_id": blockedUserId,
-            "created_at": FieldValue.serverTimestamp()
+            "blocked_user_id" : blockedUserId
         ]
     }
 }
@@ -142,7 +132,7 @@ extension Block {
 //                as? [String: Any] else {
 //            return nil
 //        }
-//        
+//
 //        return dictionary
 //    }
 //}

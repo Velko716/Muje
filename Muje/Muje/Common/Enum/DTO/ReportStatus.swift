@@ -8,8 +8,21 @@
 import Foundation
 
 enum ReportStatus: String, Codable {
-    case pending = "접수됨"
-    case reviewing = "검토중"
-    case resolved = "해결됨"
-    case dismissed = "기각됨"
+    case pending = "pending"
+    case reviewing = "reviewing"
+    case resolved = "resolved"
+    case dismissed = "dismissed"
+    
+    var displayName: String {
+        switch self {
+        case .pending:
+            return "접수됨"
+        case .reviewing:
+            return "검토중"
+        case .resolved:
+            return "해결됨"
+        case .dismissed:
+            return "기각됨"
+        }
+    }
 }

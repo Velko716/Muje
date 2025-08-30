@@ -26,6 +26,7 @@ struct InboxListView: View {
                     .paddingH16()
                 Group {
                     if viewModel.isLoading { middleLoadingView }
+                    else if FirebaseAuthManager.shared.currentUser == nil { middleUnloginView }
                     else if viewModel.conversations.isEmpty { middleContentUnavailableView }
                     else { middleListView }
                 }
@@ -54,6 +55,17 @@ struct InboxListView: View {
             "대화를 시작해보세요",
             systemImage: "rectangle.and.pencil.and.ellipsis"
         )
+    }
+    
+    // MARK: - Middle 비로그인 뷰
+    private var middleUnloginView: some View {
+        VStack {
+            ContentUnavailableView(
+                "로그인을 진행해주세요",
+                systemImage: "rectangle.and.pencil.and.ellipsis"
+            )
+            Spacer()
+        }
     }
     
     // MARK: - Middle ListView

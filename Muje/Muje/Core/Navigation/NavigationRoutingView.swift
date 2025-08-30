@@ -54,6 +54,14 @@ struct NavigationRoutingView: View {
                 UserInfoInputView(uuid: uuid, email: email)
             case .inboxView(let conversationId):
                 InboxView(conversationId: conversationId)   
+            case .myPageView:
+                MyPageView()
+            case .reportsHistoryView:
+                ReportsHistoryView()
+            case .blockHistoryView:
+                BlockHistoryView()
+            case .textView(let type):
+                TextView(viewModel: TextViewModel(type: type)) // 커뮤니티 이용 규칙, 서비스 이용약관, 개인정보 처리 방침, 청소년 보호 정책, 오픈 소스 라이선스
             }
         }
         .hideBackButton()
