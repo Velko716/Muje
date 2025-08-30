@@ -53,7 +53,9 @@ struct HomeView: View {
         }
       } //: VSTACK
       .padding(.horizontal, 16)
-      PostCreateButton()
+      PostCreateButton(action: {
+        router.push(to: .uploadPostView)
+      })
         .padding(.bottom, 24)
     } //: ZSTACK
     .task {

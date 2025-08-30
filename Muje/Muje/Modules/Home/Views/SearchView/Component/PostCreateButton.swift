@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct PostCreateButton: View {
+  let action: () -> Void
     var body: some View {
         Button {
-            // Post 만드는 화면으로 이동
+          action()
         } label: {
             HStack {
                 Text("모임 올리기")
