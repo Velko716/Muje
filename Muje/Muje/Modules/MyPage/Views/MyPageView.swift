@@ -177,29 +177,30 @@ struct MyPageView: View {
                     .settingListItem(color: Color.black) // FIXME: - Gray700 수정
             }
         case .action(_, let title, let action):
-            Button(action: action) {
-                HStack {
-                    Text(title)
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundStyle(title == "회원 탈퇴" ? .red : .primary)
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(.gray)
-                        .frame(width: 24, height: 24)
-                    
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 20)
+            LabeledContent {
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.gray)
+                    .frame(width: 24, height: 24)
+            } label: {
+                Text(title)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(title == "회원 탈퇴" ? .red : .primary)
             }
-            .buttonStyle(.plain)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 20)
             .contentShape(Rectangle())
+            .highPriorityGesture(
+                TapGesture().onEnded {
+                    action()
+                }
+            )
         }
     }
 }
 
-#Preview {
-    NavigationStack {
-        MyPageView()
-            .environmentObject(NavigationRouter())
-    }
-}
+//#Preview {
+//    NavigationStack {
+//        MyPageView()
+//            .environmentObject(NavigationRouter())
+//    }
+//}
