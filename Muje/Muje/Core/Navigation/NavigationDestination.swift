@@ -12,20 +12,22 @@ enum NavigationDestination: Equatable, Hashable {
     case searchView
     case notificationView // 임시
     case RecruitmentDetailView(postId: String)
-    case ApplicationFormView(
+    case uploadCompleteView
+    case myPostView
+    case applicationFormView(
       postId: String,
       requirementFlags: RequirementFlags,
       postBasicInfo: PostBasicInfo
   ) 
-    case ApplicationPreview(
+    case applicationPreview(
       postId: String,
       requirementFlags: RequirementFlags,
       postBasicInfo: PostBasicInfo,
       customQuestion: [CustomQuestion],
       questionAnswer: [String: String]
   )
-    case EditContentView(post: Post, postImages: [PostImage])
-    case ApplicationManagementView(
+    case editContentView(post: Post, postImages: [PostImage])
+    case applicationManagementView(
       postId: String,
       postInfo: ApplicationManagementPostInfo
     )
