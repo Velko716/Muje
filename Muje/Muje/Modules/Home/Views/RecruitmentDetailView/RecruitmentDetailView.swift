@@ -29,7 +29,7 @@ struct RecruitmentDetailView: View {
         action: { router.pop() },
         fixAction: {
           guard let post = viewModel.post else { return }
-          router.push(to: .EditContentView(post: post, postImages: viewModel.postImages))},
+          router.push(to: .editContentView(post: post, postImages: viewModel.postImages))},
         reportAction: {}, // 신고하기 화면 이동
         deleteAction: { Task { await viewModel.deletePostInfo(for: postId) } }
       )
@@ -66,7 +66,7 @@ struct RecruitmentDetailView: View {
     BottomButtonView(hasApplied: viewModel.hasApplied) {
       guard let post = viewModel.post else { return }
       router.push(
-        to: .ApplicationFormView(
+        to: .applicationFormView(
           postId: postId,
           requirementFlags: RequirementFlags(from: post),
           postBasicInfo: PostBasicInfo(from: post)

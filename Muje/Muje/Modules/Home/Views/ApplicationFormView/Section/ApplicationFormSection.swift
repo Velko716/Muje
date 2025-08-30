@@ -52,7 +52,7 @@ extension ApplicationFormView {
     VStack {
       Button {
         router.push(
-          to: .ApplicationPreview(
+          to: .applicationPreview(
             postId: postId,
             requirementFlags: requirementFlags,
             postBasicInfo: postBasicInfo,
