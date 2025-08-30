@@ -17,6 +17,14 @@ class PostInterviewViewModel {
     func nextCheck() -> Bool {
         return hasInterview == nil
     }
+  
+  func locationPass() -> String? {
+    if interviewLocation.isEmpty {
+      return nil
+    } else {
+      return interviewLocation
+    }
+  }
     
     func debug() {
         print("인터뷰 진행여부: \(hasInterview ?? false)")

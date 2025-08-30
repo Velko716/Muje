@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 
 @Observable
@@ -19,7 +20,7 @@ class InterviewSlotViewModel {
         return lhs.startTime < rhs.startTime
     }
     
-    var interviewSlotLists: [InterviewSlotModel] = [] //인터뷰 슬롯 DTO에 필요
+    var interviewSlotLists: [InterviewSlot] = [] //인터뷰 슬롯 DTO에 필요
     
     //슬롯들 시간 순으로 정렬하는 함수
     func slotUpdate() {
@@ -50,14 +51,19 @@ class InterviewSlotViewModel {
     }
     
     //선택된 캘린더 슬롯에서 당일 인터뷰 슬롯 생성하는 함수
-    func generateSlot(from startTime: Date, to endTime: Date) {
-        let title = "post_ID"
+    func generateSlot(from startTime: Date, to endTime: Date, postId: String) {
         
         let calendar = Calendar.current
         var currentDate = startTime
         
         while currentDate <= endTime {
-            let model = InterviewSlotModel(postId: title, interviewDate: currentDate, interviewTime: currentDate, maxCapacity: maxCount, currentReservations: 0, createdAt: .now)
+          let model = InterviewSlot(
+            slotId: UUID(),
+            postId: postId,
+            interviewDate: Timestamp(date: currentDate),
+            interviewTime: currentDate.hourMinute24,
+            createdAt: Timestamp(date: Date())
+          )
             interviewSlotLists.append(model)
             guard let nextDate = calendar.date(byAdding: .minute, value: timeInterval, to: currentDate) else {
                 break
@@ -67,10 +73,11 @@ class InterviewSlotViewModel {
     }
     
     //선택된 캘린더 슬롯에서 모든 시간 당 인터뷰 슬롯 생성하는 함수 -> 인터뷰 슬롯 리스트에 저장됨
-    func updateAllSlot() {
+  func updateAllSlot(postId: String) -> [InterviewSlot] {
         for list in selectedSlots {
-            generateSlot(from: list.startTime, to: list.endTime)
+          generateSlot(from: list.startTime, to: list.endTime, postId: postId)
         }
+    return interviewSlotLists
     }
     
     //인터뷰 시작 시간이 변경될 때마다 인터뷰 종료 피커들을 변경하는 함수
@@ -95,10 +102,10 @@ class InterviewSlotViewModel {
     
     //인터뷰 슬롯의 시작 날짜와 종료 날짜를 출력하는 함수
     func datePrint() -> String {
-        if interviewSlotLists.isEmpty {
+        if selectedSlots.isEmpty {
             return "시작일 ~ 마감일 설정"
         } else {
-            return "\(interviewSlotLists.first?.interviewTime.shortDateString ?? "시작오류") ~ \(interviewSlotLists.last?.interviewTime.shortDayString ?? "끝 오류")"
+          return "\(selectedSlots.first?.startTime.dateString ?? "시작오류") ~ \(selectedSlots.last?.startTime.dateString ?? "끝 오류")"
         }
     }
     
@@ -107,14 +114,14 @@ class InterviewSlotViewModel {
         print("timeInterval: \(timeInterval)")
         
         for slot in interviewSlotLists {
-            if interviewSlotLists.first?.id == slot.id {
+            if interviewSlotLists.first?.slotId == slot.slotId {
                 print("postID: \(slot.postId)")
                 print("currentReservation: \(slot.currentReservations)")
                 print("---------------------------------")
             }
             
-            print("\(slot.interviewDate.shortDateString)")
-            print("\(slot.interviewTime.hourMinute24)")
+            print("\(slot.interviewDate)")
+            print("\(slot.interviewTime)")
             
         }
     }

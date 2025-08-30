@@ -32,8 +32,6 @@ struct InterviewSlotView: View {
             
             Button(action: {
                 postInterviewViewModel.isSheet = false
-                interviewSlotViewModel.updateAllSlot()
-                interviewSlotViewModel.slotDebug()
             }, label: {
                 ActionButton(title: "등록", condition: false)
                     .padding(.horizontal, 16)
