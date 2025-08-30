@@ -48,6 +48,8 @@ struct NavigationRoutingView: View {
               )
             case .EditContentView(let post, let postImages):
               EditContentView(post: post, postImages: postImages)
+            case .uploadPostView:
+              UploadPostView()
             case .emailVerificationView:
                 EmailVerificationView()
             case .userInfoInputView(let uuid, let email):
