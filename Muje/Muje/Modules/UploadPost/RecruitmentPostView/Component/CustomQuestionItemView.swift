@@ -8,24 +8,26 @@
 import SwiftUI
 
 struct CustomQuestionItemView: View {
-    // 커스텀 질문은 각자 하나의 객체로 쓰여야 하기 때문에 id를 넣었습니다 (생성, 삭제를 위함)
-    let id: UUID
+  let question: DraftCustomQuestion
+  let onTextChange: (String) -> Void
+  let onDelete: () -> Void
     
-    @Binding var text: String
-    @FocusState var IsTyping: Bool
-    
-    var onDelete: ((UUID) -> Void)? = nil //부모뷰에서 받을거에욤
+    @State private var text: String = ""
+    @FocusState var isTyping: Bool
     
     var body: some View {
         HStack {
             // FIXME: 플레이스 홀더는 랜덤 질문으로 변경
             // 랜덤 질문 따로 정리 되어 있는게 없어서 지금은 자기 소개 300자로만 넣었습니다!
             TextField("자기 소개 300자를 입력해주세요", text: $text)
-                .focused($IsTyping)
+                .focused($isTyping)
                 .font(.system(size: 16))
+                .onChange(of: text) { _, newValue in
+                    onTextChange(newValue)
+                }
             Spacer()
             Button {
-                onDelete!(id)
+                onDelete()
             } label: {
                 Image(.removeCIrcle)
                     .resizable()
@@ -38,8 +40,7 @@ struct CustomQuestionItemView: View {
         .padding(.vertical, 21.5)
         .background (
             RoundedRectangle(cornerRadius: 10)
-                .stroke(IsTyping ? Color.blue : Color.gray, lineWidth: 1)
+                .stroke(isTyping ? Color.blue : Color.gray, lineWidth: 1)
         )
-        
     }
 }
