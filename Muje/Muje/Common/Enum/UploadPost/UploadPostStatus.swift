@@ -33,4 +33,15 @@ enum UploadPostStatus: CaseIterable {
             return "지원자로부터 \n수집할 정보를 선택해주세요"
         }
     }
+  
+    var padding: CGFloat {
+      switch self {
+      case .input:
+          return 42
+      case .interview:
+          return 28
+      case .info:
+          return 16
+      }
+    }
 }
