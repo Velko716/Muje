@@ -12,6 +12,7 @@ struct CustomTextField: View {
     var tempTitle: String
     var textValue: Binding<String>
     var subTitle: String?
+    let maxLength: Int
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -26,6 +27,7 @@ struct CustomTextField: View {
                 Text(title)
             }
             TextField(tempTitle, text: textValue, axis: .vertical)
+                .maxLength(text: textValue, maxLength)
                 .bold()
                 .padding(18)
                 .background(

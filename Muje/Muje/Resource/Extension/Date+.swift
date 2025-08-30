@@ -107,6 +107,22 @@ extension Date {
         return df.string(from: self)
     }
     
+    func setTo9AM() -> Date {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: self)
+        let nineAM = calendar.date(byAdding: .hour, value: 9, to: startOfToday) ?? Date()
+        
+        return nineAM
+    }
+    
+    func endOfDay() -> Date {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: self)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfToday) ?? Date()
+        
+        return endOfDay
+    }
+    
     private static let cachedDateFormatter: DateFormatter = {
         let f = DateFormatter()
         return f

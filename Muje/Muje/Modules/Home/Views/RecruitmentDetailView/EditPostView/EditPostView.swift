@@ -18,12 +18,12 @@ struct EditPostView: View {
           CustomTextField(
             title: "공고제목",
             tempTitle: "공고 제목을 적어주세요",
-            textValue: $viewModel.title
+            textValue: $viewModel.title, maxLength: 100
           )
           CustomTextField(
             title: "단체명",
             tempTitle: "단체명을 적어주세요",
-            textValue: $viewModel.organization
+            textValue: $viewModel.organization, maxLength: 50
           )
           PickerView(
             title: "모집 마감일",
@@ -132,6 +132,8 @@ struct EditPostView: View {
     VStack(alignment: .leading) {
       Text("모집 내용")
       TextField("활동 목적, 모집 인원, 활동 일정, 지원 자격 등을 자유롭게 작성해주세요", text: $viewModel.content, axis: .vertical)
+        .maxLength(text: $viewModel.content, 2000)
+        .lineLimit(2...)
         .frame(minHeight: 168, alignment: .top)
         .bold()
         .padding(18)
