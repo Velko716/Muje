@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - 신고하기 - 텍스트 필드 뷰
 struct ReportDetailView: View {
     @Bindable var viewModel: ReportViewModel
+    @Binding var showReportSheet: Bool
     
     var body: some View {
         ZStack {
@@ -36,7 +37,10 @@ struct ReportDetailView: View {
                     .frame(height: 1)
                     
                     NavigationLink {
-                        CompleteReportView(viewModel: viewModel)
+                        CompleteReportView(
+                            viewModel: viewModel,
+                            showReportSheet: $showReportSheet
+                        )
                             .hideBackButton()
                     } label: {
                         RoundedRectangle(cornerRadius: 10)
@@ -52,12 +56,11 @@ struct ReportDetailView: View {
                     .disabled(viewModel.detailText.isEmpty)
                 }
             }
-            
         }
         .paddingH16()
         .dismissKeyboardOnTap()
         .toolbar {
-            ToolbarLeadingXmarkBackButton()
+            ToolbarLeadingXmarkBackButton { showReportSheet = false }
             ToolbarCenterTitle(text: "신고하기")
         }
     }
@@ -65,7 +68,7 @@ struct ReportDetailView: View {
 
 #Preview {
     NavigationStack {
-        ReportDetailView(viewModel: ReportViewModel())
+        ReportDetailView(viewModel: ReportViewModel(), showReportSheet: .constant(false))
     }
 }
 

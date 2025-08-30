@@ -11,11 +11,16 @@ import SwiftUI
 /// 뒤로가기 버튼입니다.
 struct ToolbarLeadingXmarkBackButton: ToolbarContent {
     @Environment(\.dismiss) private var dismiss
+    let action: (() -> Void)?
+    
+    init(action: (() -> Void)? = nil) {
+        self.action = action
+    }
     
     var body: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             Button {
-                dismiss()
+                if let action { action() } else { dismiss() }
             } label: {
                 Image(.iconCloseBlack)
                     .foregroundStyle(Color.black)
@@ -28,7 +33,7 @@ struct ToolbarLeadingXmarkBackButton: ToolbarContent {
     NavigationStack {
         Text("Preview")
             .toolbar {
-                ToolbarLeadingXmarkBackButton()
+                ToolbarLeadingXmarkBackButton() {}
             }
     }
 }

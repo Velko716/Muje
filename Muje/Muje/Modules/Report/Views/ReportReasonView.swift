@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - 신고하기 - 사유 선택 뷰
 struct ReportReasonView: View {
     @Bindable var viewModel: ReportViewModel
+    @Binding var showReportSheet: Bool
     
     var body: some View {
         VStack {
@@ -32,7 +33,10 @@ struct ReportReasonView: View {
         List {
             ForEach(viewModel.reportRow) { row in
                 NavigationLink {
-                    ReportDetailView(viewModel: viewModel)
+                    ReportDetailView(
+                        viewModel: viewModel,
+                        showReportSheet: $showReportSheet
+                    )
                         .hideBackButton()
                         .onAppear { viewModel.selectedReason = row.content }
                 } label: {
@@ -47,6 +51,6 @@ struct ReportReasonView: View {
 
 #Preview {
     NavigationStack {
-        ReportReasonView(viewModel: ReportViewModel())
+        ReportReasonView(viewModel: ReportViewModel(), showReportSheet: .constant(false))
     }
 }

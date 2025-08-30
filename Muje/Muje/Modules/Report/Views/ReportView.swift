@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ReportView: View {
     @State private var viewModel: ReportViewModel = .init()
+    @Binding var showReportSheet: Bool
     
     // FIXME: - 임시 (신고 변수)
     var reportedUserId: String?
@@ -20,7 +21,8 @@ struct ReportView: View {
                 Color.white
                 VStack(alignment: .leading) {
                     ReportReasonView(
-                        viewModel: viewModel
+                        viewModel: viewModel,
+                        showReportSheet: $showReportSheet
                     )
                 }
             }
@@ -33,7 +35,7 @@ struct ReportView: View {
                 viewModel.conversationId = conversationId
             }
             .toolbar {
-                ToolbarLeadingXmarkBackButton()
+                ToolbarLeadingXmarkBackButton { showReportSheet = false }
                 ToolbarCenterTitle(text: "신고하기")
             }
         }
@@ -43,6 +45,6 @@ struct ReportView: View {
 
 #Preview {
     NavigationStack {
-        ReportView()
+        ReportView(showReportSheet: .constant(false))
     }
 }
