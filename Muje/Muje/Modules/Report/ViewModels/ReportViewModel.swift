@@ -19,14 +19,14 @@ final class ReportViewModel {
     
     init() {
         reportRow = [
-            .init(title: "1. \(ReportType.insult.rawValue)", content: ReportType.insult.rawValue),
-            .init(title: "2. \(ReportType.hateSpeech.rawValue)", content: ReportType.hateSpeech.rawValue),
-            .init(title: "3. \(ReportType.sexualContent.rawValue)", content: ReportType.sexualContent.rawValue),
-            .init(title: "4. \(ReportType.gambling.rawValue)", content: ReportType.gambling.rawValue),
-            .init(title: "5. \(ReportType.spamAds.rawValue)", content: ReportType.spamAds.rawValue),
-            .init(title: "6. \(ReportType.personalInfoLeak.rawValue)", content: ReportType.personalInfoLeak.rawValue),
-            .init(title: "7. \(ReportType.impersonationOrFalse.rawValue)", content: ReportType.impersonationOrFalse.rawValue),
-            .init(title: "8. \(ReportType.other.rawValue)", content: ReportType.other.rawValue)
+            .init(title: "1. \(ReportType.insult.displayName)", content: ReportType.insult.displayName),
+            .init(title: "2. \(ReportType.hateSpeech.displayName)", content: ReportType.hateSpeech.displayName),
+            .init(title: "3. \(ReportType.sexualContent.displayName)", content: ReportType.sexualContent.displayName),
+            .init(title: "4. \(ReportType.gambling.displayName)", content: ReportType.gambling.displayName),
+            .init(title: "5. \(ReportType.spamAds.displayName)", content: ReportType.spamAds.displayName),
+            .init(title: "6. \(ReportType.personalInfoLeak.displayName)", content: ReportType.personalInfoLeak.displayName),
+            .init(title: "7. \(ReportType.impersonationOrFalse.displayName)", content: ReportType.impersonationOrFalse.displayName),
+            .init(title: "8. \(ReportType.other.displayName)", content: ReportType.other.displayName)
         ]
     }
     
