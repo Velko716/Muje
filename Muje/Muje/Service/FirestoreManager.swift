@@ -476,45 +476,6 @@ extension FirestoreManager {
         }
     }
 }
-// MARK: - 메인화면 전용 메서드
-extension FirestoreManager {
-  
-  func fetchPostsWithThumbnails() async throws -> ([Post], [UUID: PostImage]) {
-    async let postTask = fetchPosts()
-    async let thumbnailTask = fetchImage()
-    
-    let (posts, allThumbnails) = try await (postTask, thumbnailTask)
-    // postId와 이미지 딕셔너리 배열 형태로 관리
-    var thumbnailMap: [UUID: PostImage] = [:] // postId로 매핑
-    
-    for thum in allThumbnails {
-      if let postId = UUID(uuidString: thum.postId) {
-        thumbnailMap[postId] = thum
-      }
-    }
-    
-    return (posts, thumbnailMap)
-  }
-  
-  private func fetchPosts() async throws -> [Post] {
-    return try await fetchWithCondition(
-      from: .posts,
-      whereField: "status",
-      equalTo: "모집중",
-      sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date() }
-    )
-  }
-  
-  private func fetchImage() async throws -> [PostImage] {
-    return try await fetchWithCondition(
-      from: .postImages,
-      whereField: "image_order",
-      equalTo: 0,
-      sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date()}
-    )
-  }
-}
-
 // MARK: - 페이징, 자동완성 검색, 검색 로직 구성
 extension FirestoreManager {
   // MARK: 페이징 로딩
