@@ -26,7 +26,7 @@ class RecruitmentPostViewModel {
       basicInfoChecked[field] = field == .name
     }
   }
-    //TODO: 뷰모델에서 개수 세긴 하는데 뷰에서 연결을 안햇네욤;;ㅎㅎ
+    //TODO: 뷰모델에서 개수 세긴 하는데 뷰에서 연결을 안햇네욤;;ㅎㅎ(SEO)
     
     var postButtonColor: Color {
         canSubmit ? Color.black : Color.gray
@@ -60,7 +60,12 @@ class RecruitmentPostViewModel {
     return customQuestions.enumerated().compactMap { index, question in
       guard question.isValid else { return nil }
       
-      return CustomQuestion(questionId: UUID(), postId: postId, questionText: question.questionText, questionOrder: index + 1)
+      return CustomQuestion(
+        questionId: UUID(),
+        postId: postId,
+        questionText: question.questionText,
+        questionOrder: index + 1
+      )
     }
   }
 }
