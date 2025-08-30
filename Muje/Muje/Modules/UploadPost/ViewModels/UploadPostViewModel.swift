@@ -27,7 +27,9 @@ final class UploadPostViewModel {
   // MARK: - 파이어베이스 업로드
   func submit(
     postInfo: PostInfoViewModel,
-    requireInfo: RecruitmentPostViewModel
+    requireInfo: RecruitmentPostViewModel,
+    postInterviewViewModel: PostInterviewViewModel,
+    interviewSlotViewModel: InterviewSlotViewModel
   ) async throws {
     isLoading = true
     defer { isLoading = false }
@@ -40,7 +42,8 @@ final class UploadPostViewModel {
           await self.createPost(
             postId: postId,
             postInfo: postInfo,
-            requireInfo: requireInfo
+            requireInfo: requireInfo,
+            postInterviewViewModel: postInterviewViewModel
           )
           print("\(postId) 공고 정보 생성 완료")
         }
@@ -50,6 +53,12 @@ final class UploadPostViewModel {
             requireInfo: requireInfo
           )
           print("\(postId) 커스텀 질문 목록 생성 완료")
+        }
+        group.addTask {
+          await self.createInterviewSlot(
+            postId: postId.uuidString,
+            interviewSlotViewModel: interviewSlotViewModel
+          )
         }
         try await group.waitForAll()
       }
@@ -62,7 +71,8 @@ final class UploadPostViewModel {
   func createPost(
     postId: UUID,
     postInfo: PostInfoViewModel,
-    requireInfo: RecruitmentPostViewModel
+    requireInfo: RecruitmentPostViewModel,
+    postInterviewViewModel: PostInterviewViewModel
   ) async {
     
     do {
@@ -74,8 +84,8 @@ final class UploadPostViewModel {
         content: postInfo.content,
         recruitmentStart: Timestamp(date: postInfo.startDate),
         recruitmentEnd: Timestamp(date: postInfo.endDate),
-        hasInterview: true,
-        interviewLocation: nil,
+        hasInterview: postInterviewViewModel.hasInterview ?? false,
+        interviewLocation: postInterviewViewModel.locationPass(),
         status: PostStatus.recruiting.rawValue,
         requiresName: true,
         requiresStudentId: requireInfo.basicInfoChecked[.studentId] ?? false,
@@ -112,5 +122,19 @@ final class UploadPostViewModel {
   }
   
   // MARK: InterviewSlot 생성
-  
+  func createInterviewSlot(
+    postId: String,
+    interviewSlotViewModel: InterviewSlotViewModel
+  ) async {
+    
+    do {
+      let slots = interviewSlotViewModel.updateAllSlot(postId: postId)
+      
+      for slot in slots {
+        _ = try await firestoreManager.create(slot)
+      }
+    } catch {
+      print("인터뷰 슬롯 생성 실패")
+    }
+  }
 }

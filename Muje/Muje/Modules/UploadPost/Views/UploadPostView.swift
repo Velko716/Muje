@@ -10,10 +10,13 @@ import SwiftUI
 import SwiftUI
 
 struct UploadPostView: View {
+    @EnvironmentObject private var router: NavigationRouter
     @State var uploadPostViewModel = UploadPostViewModel()
     @State var postInfoViewModel = PostInfoViewModel()
     @State var postInterviewViewModel = PostInterviewViewModel()
     @State var recruitmentPostViewModel = RecruitmentPostViewModel()
+    @State var interviewSlotViewModel = InterviewSlotViewModel()
+  
     
     var body: some View {
         
@@ -25,9 +28,18 @@ struct UploadPostView: View {
                         Spacer()
                         
                         if uploadPostViewModel.currentStatus == .input {
-                            PostInfoView(postInfoViewModel: postInfoViewModel)
+                          PostInfoView(
+                            postInfoViewModel: postInfoViewModel
+                          )
                         } else if uploadPostViewModel.currentStatus == .interview {
-                            PostInterviewView()
+                          PostInterviewView(
+                            postInfoViewModel: postInfoViewModel,
+                            postInterviewViewModel: postInterviewViewModel, interviewSlotViewModel: interviewSlotViewModel
+                          )
+                        } else {
+                          RecruitmentPostView(
+                            viewModel: recruitmentPostViewModel
+                          )
                         }
                         
                     }
@@ -86,7 +98,7 @@ struct UploadPostView: View {
                     })
                     Spacer()
                     Button(action: {
-                        print("다음")
+                        uploadPostViewModel.currentStatus = .info
                     }, label: {
                         ActionButton(title: "다음", condition: postInterviewViewModel.nextCheck())
                     })
@@ -103,8 +115,9 @@ struct UploadPostView: View {
                   Spacer()
                   Button(action: {
                     Task {
-                      try await uploadPostViewModel.submit(postInfo: postInfoViewModel, requireInfo: recruitmentPostViewModel)
+                      try await uploadPostViewModel.submit(postInfo: postInfoViewModel, requireInfo: recruitmentPostViewModel, postInterviewViewModel: postInterviewViewModel, interviewSlotViewModel: interviewSlotViewModel)
                     }
+                    router.push(to: .uploadCompleteView)
                   }, label: {
                       ActionButton(title: "모집글 올리기", condition: true)
                   })

@@ -32,7 +32,7 @@ struct RecruitmentPostView: View {
           .font(.system(size: 14))
           .foregroundStyle(.gray)
       }
-      .padding(.top, 8)
+//      .padding(.top, 8)
     }
     .padding(.bottom, 40)
   }
