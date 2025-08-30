@@ -17,6 +17,31 @@ class MyPostsViewModel {
     
     var currentRecruitPage: Int = 0
     var currentApplyPage: Int = 0
+  
+  
+  // MARK: - 파베 관련
+  private let firebaseAuthManager = FirebaseAuthManager.shared
+  private let firestoreManager = FirestoreManager.shared
+  
+  // MARK: 현재 유저 ID
+  var currentUserId: String? {
+    guard let currentUser = firebaseAuthManager.currentUser else { return nil }
+    
+    return currentUser.userId
+  }
+  
+  // MARK: 현재 유저의 지원 데이터
+  var currentUserApplication: [Application] = []
+  
+  // MARK: 올린 공고에 대한 저장 변수
+  var uploadPost: [Post] = []
+  var uploadPostImage: [PostImage] = []
+  var uploadPostSlot: [InterviewSlot] = []
+  
+  // MARK: 지원한 공고에 대한 저장 변수
+  var applicationPost: [Post] = []
+  var applicationPostImage: [PostImage] = []
+  var applicationSlot: [InterviewSlot] = []
     
     func upcomingRecruitLists() -> [InterviewSlotModel] {
         let upcomingDates = recruitmentLists.filter { slot in
