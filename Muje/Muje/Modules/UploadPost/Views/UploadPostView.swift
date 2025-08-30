@@ -13,9 +13,10 @@ struct UploadPostView: View {
     @State var uploadPostViewModel = UploadPostViewModel()
     @State var postInfoViewModel = PostInfoViewModel()
     @State var postInterviewViewModel = PostInterviewViewModel()
+    @State var recruitmentPostViewModel = RecruitmentPostViewModel()
     
     var body: some View {
-        NavigationStack {
+        
             ZStack(alignment: .bottom) {
                 ScrollView {
                     VStack(alignment: .leading) {
@@ -26,7 +27,7 @@ struct UploadPostView: View {
                         if uploadPostViewModel.currentStatus == .input {
                             PostInfoView(postInfoViewModel: postInfoViewModel)
                         } else if uploadPostViewModel.currentStatus == .interview {
-                            PostInterviewView(postInfoViewModel: postInfoViewModel, postInterviewViewModel: postInterviewViewModel)
+                            PostInterviewView()
                         }
                         
                     }
@@ -56,7 +57,7 @@ struct UploadPostView: View {
             .sheet(isPresented: $uploadPostViewModel.isQuit) {
                 AlertModalView(uploadPostViewModel: $uploadPostViewModel)
             }
-        }
+        
     }
     
     private var nextButtonView: some View {
@@ -86,13 +87,29 @@ struct UploadPostView: View {
                     Spacer()
                     Button(action: {
                         print("다음")
-                        postInterviewViewModel.debug()
                     }, label: {
                         ActionButton(title: "다음", condition: postInterviewViewModel.nextCheck())
                     })
                     .disabled(postInterviewViewModel.nextCheck())
                 }
                 .hvPadding(16, 20)
+            } else {
+              HStack {
+                  Button(action: {
+                      uploadPostViewModel.currentStatus = .interview
+                  }, label: {
+                      ActionButton(title: "이전", condition: true)
+                  })
+                  Spacer()
+                  Button(action: {
+                    Task {
+                      try await uploadPostViewModel.submit(postInfo: postInfoViewModel, requireInfo: recruitmentPostViewModel)
+                    }
+                  }, label: {
+                      ActionButton(title: "모집글 올리기", condition: true)
+                  })
+              }
+              .hvPadding(16, 20)
             }
         }
     }
