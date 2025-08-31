@@ -13,32 +13,32 @@ struct TopNavigationView: View {
     var body: some View {
         HStack {
             Text("oo대학교 모임 찾기")
-                .font(.headline)
-                .font(.system(size: 22))
+                .subheadline22semibold()
+                .foregroundStyle(.gray700)
             Spacer()
             
             //MARK: 검색 아이콘
             Button(action: {
                 router.push(to: .searchView)
             }) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 26))
+                Image(.searchIcon)
+                    .foregroundStyle(.gray600)
             }
             Spacer().frame(width: 16)
             //MARK: 알림 아이콘
             Button(action: {
                 router.push(to: .notificationView)
             }) {
-                Image(systemName: "bell")
-                    .font(.system(size: 26))
+                Image(.alarmIcon)
+                    .foregroundStyle(.gray600)
             }
             Spacer().frame(width: 16)
             //MARK: 설정 아이콘
             Button(action: {
                 router.push(to: .notificationView) //FIXME: 설정뷰로 수정
             }) {
-                Image(systemName: "gearshape")
-                    .font(.system(size: 26))
+                Image(.settingIcon)
+                    .foregroundStyle(.gray600)
             }
         } //: HSTACK
         .padding(.bottom, 25)
