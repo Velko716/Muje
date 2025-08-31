@@ -11,6 +11,8 @@ struct EmailVerificationView : View {
     
     @State private var viewModel: EmailVerificationViewModel = .init()
     @State private var emailText: String = ""
+    @State private var bottomBarText: String = "인증 요청"
+    @State private var showToastMessage: Bool = false
     
     var body: some View {
         ZStack {
@@ -27,13 +29,23 @@ struct EmailVerificationView : View {
         .safeAreaInset(edge: .bottom) {
             VStack {
                 BottomBar(
-                    text: "인증 요청",
+                    text: bottomBarText,
                     textColor: Color.white,
                     bgColor: Color.black,
-                    enabled: emailText.isEmpty ? true : false
+                    enabled: emailText.isEmpty ? false : false
                 ) {
+                    self.bottomBarText = "인증 확인"
+                    self.showToastMessage = true
                     viewModel.sendVerificationEmail(emailText: emailText)
                 }
+            }
+            .toast(
+                isPresented: $showToastMessage,
+                duration: 2,
+                position: .bottom
+            ) {
+                ToastView(text: "인증 요청 이메일을 보냈어요!\n메일함 확인 후, 인증 확인 버튼을 눌러주세요")
+                    .offset(y: -60)
             }
             .bottomBarBackground() // ViewModifier
         }
@@ -87,16 +99,6 @@ struct EmailVerificationView : View {
         }
     }
     
-    // MARK: - 바텀 아래 인증 요청 뷰
-    private var bottomButtonView: some View {
-        VStack {
-            Button {
-                viewModel.sendVerificationEmail(emailText: emailText)
-            } label: {
-                Text("인증 요청")
-            }
-        }
-    }
 }
 
 #Preview {
