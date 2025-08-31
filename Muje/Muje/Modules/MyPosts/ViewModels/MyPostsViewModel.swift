@@ -35,13 +35,13 @@ class MyPostsViewModel {
   
   // MARK: 올린 공고에 대한 저장 변수
   var uploadPost: [Post] = []
-  var uploadPostImage: [PostImage] = []
   var uploadPostSlot: [InterviewSlot] = []
+  var uploadThumbnail: [UUID: PostImage] = [:]
   
   // MARK: 지원한 공고에 대한 저장 변수
   var applicationPost: [Post] = []
-  var applicationPostImage: [PostImage] = []
   var applicationSlot: [InterviewSlot] = []
+  var applicationThumbnail: [UUID: PostImage] = [:]
     
     func upcomingRecruitLists() -> [InterviewSlotModel] {
         let upcomingDates = recruitmentLists.filter { slot in
@@ -73,7 +73,111 @@ class MyPostsViewModel {
 }
 // MARK: - 파이어베이스 로직
 extension MyPostsViewModel {
-  
+  // MARK: 모든 데이터 병렬 함수
+  func loadAllData() async {
+    isLoading = true
+    defer { isLoading = false }
+    
+    await withTaskGroup(of: Void.self) { group in
+      group.addTask {
+        await self.loadApplicationData()
+      }
+      group.addTask {
+        await self.loadUploadData()
+      }
+    }
+  }
+  // MARK: 현재 유저의 지원정보 로드 함수
+  func loadApplicationData() async {
+    guard let userId = currentUserId else { return }
+    
+    do {
+      let app = try await currentUserApplication(for: userId)
+      self.currentUserApplication = app
+      
+      await withTaskGroup(of: Void.self) { group in
+        for i in app {
+          group.addTask {
+            do {
+              guard let postId = UUID(uuidString: i.postId) else { return }
+              let post = try await self.fetchApplicationPost(for: postId)
+              
+              await MainActor.run {
+                self.applicationPost = post
+              }
+              
+            } catch {
+              print("\(userId)가 지원한 공고 정보 불러오기 실패")
+            }
+          }
+          group.addTask {
+            do {
+              let slot = try await self.fetchInterviewSlot(for: i.postId)
+              
+              await MainActor.run {
+                self.applicationSlot = slot
+              }
+              
+            } catch {
+              print("\(userId)가 지원한 인터뷰 슬롯 불러오기 실패")
+            }
+          }
+          group.addTask {
+            do {
+              let postIds: [UUID] = app.compactMap {
+                UUID(
+                  uuidString: $0.postId
+                )
+              }
+              let thumb = try await self.firestoreManager.fetchThumbnailsForPost(for: postIds)
+            } catch {
+              print("\(userId)가 지원한 공고의 썸네일 불러오기 실패 \(error)")
+            }
+          }
+        }
+      }
+    } catch {
+      print("현재 \(userId)의 Application 정보 불러오기 실패")
+    }
+  }
+  // MARK: 내가 올린 공고 로드 함수
+  func loadUploadData() async {
+    guard let userId = currentUserId else { return }
+    
+    do {
+      let posts = try await fetchPost(for: userId)
+      self.uploadPost = posts
+      
+      await withTaskGroup(of: Void.self) { group in
+        for post in posts {
+          group.addTask {
+            do {
+              let slots = try await self.fetchInterviewSlot(
+                for: post.postId.uuidString
+              )
+              await MainActor.run {
+                self.uploadPostSlot.append(contentsOf: slots)
+              }
+            } catch {
+              print("\(post.postId)의 인터뷰 슬롯 불러오기 실패 \(error)")
+            }
+          }
+          group.addTask {
+            do {
+              let postId = posts.compactMap { $0.postId }
+              let thumb = try await self.firestoreManager.fetchThumbnailsForPost(
+                for: postId
+              )
+            } catch {
+              print("썸네일 불러오기 실패: \(error)")
+            }
+          }
+        }
+      }
+    } catch {
+      print("내가 올린 공고 로드 실패 \(error)")
+    }
+  }
 }
 // MARK: - 조건 쿼리문
 private extension MyPostsViewModel {
@@ -110,4 +214,14 @@ private extension MyPostsViewModel {
     )
   }
   
+  func fetchApplicationPost(for postId: UUID) async throws -> [Post] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .posts,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: {
+        $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date()
+      }
+    )
+  }
 }
