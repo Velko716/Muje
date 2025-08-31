@@ -17,7 +17,7 @@ struct BottomBar: View {
     let text: String
     let textColor: Color
     let bgColor: Color
-    let enabled: Bool?
+    let enabled: Bool
     let action: () -> Void
     
     var body: some View {
@@ -32,18 +32,19 @@ struct BottomBar: View {
         } label: {
             Text(text)
                 .font(.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(textColor) // FIXME: - 컬러 수정
+                .foregroundStyle(enabled ? Color.white : textColor) // FIXME: - 컬러 수정
                 .frame(maxWidth: .infinity, maxHeight: 54)
             
         }
+        .disabled(enabled)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(bgColor)
+                .fill(enabled ? Color.secondary : bgColor) // FIXME: - 컬러 수정
         )
         .padding(.horizontal, 16)
     }
 }
 
 #Preview {
-    BottomBar(text: "시작하기", textColor: Color.white, bgColor: Color.black, enabled: nil) { }
+    BottomBar(text: "시작하기", textColor: Color.white, bgColor: Color.black, enabled: false) { }
 }
