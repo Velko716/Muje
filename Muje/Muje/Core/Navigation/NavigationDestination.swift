@@ -39,4 +39,5 @@ enum NavigationDestination: Equatable, Hashable {
     case reportsHistoryView // 신고 내역
     case blockHistoryView // 차단 내역
     case textView(type: TextViewType) // 커뮤니티 이용 규칙, 서비스 이용약관, 개인정보 처리 방침, 청소년 보호 정책, 오픈 소스 라이선스
+    case startLoginView // 로그인 시작화면
 }
