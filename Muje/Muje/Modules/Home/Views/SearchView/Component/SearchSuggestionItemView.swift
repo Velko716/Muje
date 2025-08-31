@@ -25,18 +25,17 @@ struct SearchSuggestionItemView: View {
                 
             } else if viewModel.suggestions.isEmpty && !viewModel.searchText.isEmpty {
                 Text("검색 결과가 없습니다.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .subheadline22semibold()
+                    .foregroundStyle(.gray600)
                 
             } else {
                 List {
                     ForEach(viewModel.suggestions, id: \.postId) { value in
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(viewModel.highlightedText(value.organization, keyword: viewModel.searchText, fontSize: 14))
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary)
-                            Text(viewModel.highlightedText(value.title, keyword: viewModel.searchText, fontSize: 16))
-                                .font(.system(size: 16))
+                            Text(viewModel.highlightedOrgText(value.organization, keyword: viewModel.searchText))
+                                .lineSpacing(Text.lineHeight(fontSize: 14, lineHeightPercent: Text.percent130))
+                            Text(viewModel.highlightedTitleText(value.title, keyword: viewModel.searchText))
+                                .lineSpacing(Text.lineHeight(fontSize: 16, lineHeightPercent: Text.percent185))
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .listRowSeparator(.hidden)
