@@ -10,11 +10,6 @@ import Foundation
 @Observable
 final class EmailVerificationViewModel {
     
-    
-    deinit {
-        FirebaseAuthManager.shared.emailVerified = false
-    }
-    
     func sendVerificationEmail(emailText: String) {
         Task {
             do {

@@ -31,18 +31,25 @@ struct EmailVerificationView : View {
             }
             .paddingH16()
         }
+        .onDisappear {
+            FirebaseAuthManager.shared.emailVerified = false
+        }
         // TODO: 컴포넌트로 이 뷰를 만들기
         .safeAreaInset(edge: .bottom) {
             VStack {
-                BottomBar(
-                    text: bottomBarText,
-                    textColor: Color.white,
-                    bgColor: Color.black,
-                    enabled: emailText.isEmpty ? false : false
-                ) {
-                    self.bottomBarText = "인증 확인"
-                    self.showToastMessage = true
-                    viewModel.sendVerificationEmail(emailText: emailText)
+                if auth.emailVerified {
+                    
+                } else {
+                    BottomBar(
+                        text: bottomBarText,
+                        textColor: Color.white,
+                        bgColor: Color.black,
+                        enabled: emailText.isEmpty ? false : false
+                    ) {
+                        self.bottomBarText = "인증 확인"
+                        self.showToastMessage = true
+                        viewModel.sendVerificationEmail(emailText: emailText)
+                    }
                 }
             }
             .toast(
