@@ -32,10 +32,15 @@ struct RoundedTextField: View {
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color.white)
         )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(isFocused ? Color.blue : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
-        )
+        .overlay {
+            if isSecure {
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isFocused ? Color.red : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+            } else {
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isFocused ? Color.blue : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+            }
+        }
         .animation(.easeOut(duration: 0.15), value: isFocused)
         
     }
