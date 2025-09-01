@@ -49,7 +49,6 @@ struct SearchView: View {
                     }
             }
         } //: VSTACK
-        .padding(.horizontal, 16)
         .onAppear {
             if viewModel.searchText == "" {
                 isSearchBarFocused = true

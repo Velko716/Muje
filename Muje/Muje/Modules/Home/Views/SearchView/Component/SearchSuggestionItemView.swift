@@ -45,7 +45,8 @@ struct SearchSuggestionItemView: View {
                     }
                 }
                 .listStyle(.plain)
-                .padding(.vertical, 18)
+                .contentMargins(.horizontal, 16, for: .scrollContent)
+                .contentMargins(.horizontal, 0, for: .scrollIndicators)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

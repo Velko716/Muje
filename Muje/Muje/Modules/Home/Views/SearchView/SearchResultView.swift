@@ -34,8 +34,6 @@ struct SearchResultView: View {
             )
             .frame(maxWidth: .infinity, alignment: .leading)
             .listRowInsets(EdgeInsets())
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
             .contentShape(Rectangle()) // 여백까지 터치 영역 확장
             .highPriorityGesture(
               TapGesture().onEnded {
@@ -45,6 +43,8 @@ struct SearchResultView: View {
           }
         }
         .listStyle(.plain)
+        .contentMargins(.horizontal, 16, for: .scrollContent)
+        .contentMargins(.horizontal, 0, for: .scrollIndicators)
       }
     } //: VSTACK
     .frame(maxWidth: .infinity, maxHeight: .infinity)
