@@ -1,5 +1,5 @@
 //
-//  ChoiceGenderButton.swift
+//  GenderChoiceButton.swift
 //  Muje
 //
 //  Created by 김진혁 on 9/2/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ChoiceGenderButton: View {
+struct GenderChoiceButton: View {
     let title: String
     let action: () -> Void
     
@@ -27,8 +27,8 @@ struct ChoiceGenderButton: View {
 
 #Preview(traits: .sizeThatFitsLayout) {
     HStack(spacing: 17) {
-        ChoiceGenderButton(title: "남") {}
-        ChoiceGenderButton(title: "여") {}
+        GenderChoiceButton(title: "남") {}
+        GenderChoiceButton(title: "여") {}
     }
     .frame(height: 56)
     .padding(.horizontal, 16)
