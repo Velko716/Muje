@@ -26,6 +26,7 @@
 	</array>
 	<key>UIAppFonts</key>
 	<array>
+		<string>Pretendard.ttf</string>
 		<string>Pretendard-Bold.otf</string>
 		<string>Pretendard-SemiBold.otf</string>
 		<string>Pretendard-Regular.otf</string>
