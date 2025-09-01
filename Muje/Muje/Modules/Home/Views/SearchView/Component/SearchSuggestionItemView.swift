@@ -12,7 +12,6 @@ struct SearchSuggestionItemView: View {
     @Bindable var viewModel: SearchViewModel
     
     var body: some View {
-        
         VStack {
             if viewModel.isSuggestionsLoading {
                 HStack {
@@ -33,9 +32,7 @@ struct SearchSuggestionItemView: View {
                     ForEach(viewModel.suggestions, id: \.postId) { value in
                         VStack(alignment: .leading, spacing: 4) {
                             Text(viewModel.highlightedOrgText(value.organization, keyword: viewModel.searchText))
-                                .lineSpacing(Text.lineHeight(fontSize: 14, lineHeightPercent: Text.percent130))
                             Text(viewModel.highlightedTitleText(value.title, keyword: viewModel.searchText))
-                                .lineSpacing(Text.lineHeight(fontSize: 16, lineHeightPercent: Text.percent185))
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .listRowSeparator(.hidden)
