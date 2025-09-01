@@ -12,11 +12,10 @@ struct TopNavigationView: View {
     
     var body: some View {
         HStack {
-            Text("oo대학교 모임 찾기")
+            Text("전북대학교 모임 찾기")
                 .subheadline22semibold()
                 .foregroundStyle(.gray700)
             Spacer()
-            
             //MARK: 검색 아이콘
             Button(action: {
                 router.push(to: .searchView)
@@ -42,7 +41,6 @@ struct TopNavigationView: View {
             }
         } //: HSTACK
         .padding(.bottom, 25)
-        .padding(.top, 20)
     }
 }
 
