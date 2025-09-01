@@ -13,6 +13,7 @@ struct ConfirmationModalView: View {
   
   let type: ConfirmationModalType
   let onConfirm: () -> Void
+  let exitSheet: () -> Void
   
   var body: some View {
     VStack {
@@ -32,6 +33,7 @@ struct ConfirmationModalView: View {
     VStack {
       Button {
         onConfirm()
+        exitSheet()
       } label: {
         Text(type.buttonText)
           .font(.system(size: 16))
@@ -68,5 +70,5 @@ struct ConfirmationModalView: View {
 }
 
 #Preview {
-  ConfirmationModalView(type: ConfirmationModalType.reject("dd"), onConfirm: {})
+  ConfirmationModalView(type: ConfirmationModalType.reject("dd"), onConfirm: {}, exitSheet: {})
 }
