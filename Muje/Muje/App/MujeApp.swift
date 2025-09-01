@@ -161,7 +161,8 @@ struct MujeApp: App {
                                         unreadBadge.start(for: uid) // 뱃지 초기화
                                         self.isReady = true
                                         FirebaseAuthManager.shared.email = ""
-                                        router.popToRootView() // FIXME: - 팝 루트가 되니까 쪽지 리스트쪽이 안채워짐. 풀 스크린 스택 교체 필요
+                                        FirebaseAuthManager.shared.emailVerified = true // 이메일 검증 완료 (추후 DI로 구현 할 수 있을듯..?)
+                                        // router.popToRootView() // FIXME: - 팝 루트가 되니까 쪽지 리스트쪽이 안채워짐. 풀 스크린 스택 교체 필요
                                     }
                                 } catch {
                                     // 문서가 없거나 에러여도 앱은 열 수 있게 처리
@@ -169,14 +170,15 @@ struct MujeApp: App {
                                     await MainActor.run {
                                         self.isReady = true
                                         FirebaseAuthManager.shared.email = ""
-                                        router.popToRootView()
+                                        // router.popToRootView()
                                     }
                                 }
                             } else {
                                 await MainActor.run {
                                     self.isReady = true
                                     FirebaseAuthManager.shared.email = ""
-                                    router.popToRootView()
+                                    
+                                    // router.popToRootView()
                                 }
                             }
                             FirebaseAuthManager.shared.email = ""
