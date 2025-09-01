@@ -32,14 +32,14 @@ struct BottomBar: View {
         } label: {
             Text(text)
                 .font(.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(enabled ? Color.white : textColor) // FIXME: - 컬러 수정
+                .foregroundStyle(enabled ? textColor : Color.white) // FIXME: - 컬러 수정
                 .frame(maxWidth: .infinity, maxHeight: 54)
             
         }
-        .disabled(enabled)
+        .disabled(!enabled)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(enabled ? Color.secondary : bgColor) // FIXME: - 컬러 수정
+                .fill(enabled ? bgColor : Color.secondary) // FIXME: - 컬러 수정
         )
         .padding(.horizontal, 16)
     }
@@ -47,4 +47,5 @@ struct BottomBar: View {
 
 #Preview {
     BottomBar(text: "시작하기", textColor: Color.white, bgColor: Color.black, enabled: false) { }
+    BottomBar(text: "시작하기", textColor: Color.white, bgColor: Color.black, enabled: true) { }
 }

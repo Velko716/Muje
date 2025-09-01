@@ -22,7 +22,7 @@ struct StartLoginView: View {
         // TODO: 컴포넌트로 이 뷰를 만들기
         .safeAreaInset(edge: .bottom) {
             VStack {
-                BottomBar(text: "시작하기", textColor: Color.white, bgColor: Color.black, enabled: false) {
+                BottomBar(text: "시작하기", textColor: Color.white, bgColor: Color.black, enabled: true) {
                     router.push(to: .emailVerificationView)
                 }
                 
