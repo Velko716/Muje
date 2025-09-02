@@ -679,3 +679,26 @@ extension FirestoreManager {
             .delete()
     }
 }
+// MARK: - 특정 필드 삭제 로직
+extension FirestoreManager {
+  func deleteField(
+    collectionType: CollectionType,
+    documentID: String,
+    fieldToDelete: [String],
+    fieldToUpdate: [String: Any] = [:]
+  ) async throws {
+    
+    var updatedData: [String: Any] = fieldToUpdate
+    
+    for field in fieldToDelete {
+      updatedData[field] = FieldValue.delete()
+    }
+    
+    updatedData["updated_at"] = FieldValue.serverTimestamp()
+    
+    try await db
+      .collection(collectionType.rawValue)
+      .document(documentID)
+      .updateData(updatedData)
+  }
+}
