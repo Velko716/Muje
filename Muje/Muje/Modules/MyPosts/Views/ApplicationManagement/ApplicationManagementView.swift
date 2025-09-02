@@ -74,7 +74,8 @@ struct ApplicationManagementView: View {
           managementViewModel: viewModel,
           applicant: applicant,
           allApplicants: viewModel.getCurrentApplicant()
-        )
+        ),
+        selectedApplicant: $selectedApplicant
       )
     }
   }

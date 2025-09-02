@@ -122,8 +122,11 @@ final class ApplicationManagementViewModel {
   
   func handleLeftButtonAction() {
     switch selectedManagementStage {
-    case .submitted, .interviewWaiting, .reviewWaiting:
+    case .submitted, .reviewWaiting:
       rejectApplicant()
+    case .interviewWaiting:
+      
+      cancelInterview()
     case .reviewCompleted:
       notifyAllResults()
     }
@@ -193,7 +196,7 @@ final class ApplicationManagementViewModel {
   }
   
   func exitSearchMode() {
-      isSearching = false
+    isSearching = false
   }
   
   func promoteApplicant() {
@@ -236,6 +239,49 @@ final class ApplicationManagementViewModel {
     }
     
     // TODO: 실제 알림 로직
+  }
+  
+  // MARK: .interviewWaiting 단계에서 interviewSlot 업데이트 로직
+  func cancelInterview() {
+    guard !selectedApplicantId.isEmpty else { return }
+    
+    for applicationId in selectedApplicantId {
+      guard let i = allApplicants.firstIndex(where: { $0.applicationId == applicationId }) else { continue }
+      
+      let application = allApplicants[i]
+      
+      if let slotId = application.interviewSlotId,
+         var slot = interviewSlotsById[slotId] {
+        slot.currentReservations = max(slot.currentReservations - 1, 0)
+        interviewSlotsById[slotId] = slot
+        
+        Task {
+          do {
+            let _ = try await firestoreManager.update(slot)
+          } catch {
+            print("슬롯 currentReservation 업데이트 실패: \(error)")
+          }
+        }
+      }
+      
+      allApplicants[i].status = ApplicationStatus.submitted.rawValue
+      allApplicants[i].interviewSlotId = nil
+      allApplicants[i].updatedAt = Timestamp()
+      
+      Task {
+        do {
+          try await firestoreManager.deleteField(
+            collectionType: .applications,
+            documentID: applicationId.uuidString,
+            fieldToDelete: ["interview_slot_id"],
+            fieldToUpdate: ["status": ApplicationStatus.submitted.rawValue]
+          )
+        } catch {
+          print("Application 업데이트 실패 \(error)")
+        }
+      }
+    }
+    exitSelectionMode()
   }
   
   func updateApplicationStatus(

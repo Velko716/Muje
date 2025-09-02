@@ -14,7 +14,7 @@ final class ModalViewModel {
   private let firestoreManager = FirestoreManager.shared
   
   var allApplicants: [Application]
-  var applicant: Application
+//  var applicant: Application
   
   var currentApplicant: Application {
     allApplicants[currentIndex]
@@ -31,9 +31,8 @@ final class ModalViewModel {
   
   init(managementViewModel: ApplicationManagementViewModel, applicant: Application, allApplicants: [Application]) {
     self.managementViewModel = managementViewModel
-    self.allApplicants = allApplicants
-    self.applicant = applicant
-    self.currentIndex = allApplicants.firstIndex(where: { $0.applicationId == applicant.applicationId}) ?? 0
+    self.allApplicants = managementViewModel.allApplicants
+    self.currentIndex = managementViewModel.allApplicants.firstIndex(where: { $0.applicationId == applicant.applicationId}) ?? 0
   }
   
   // MARK: 지원자의 면접 슬롯 정보 가져오기
@@ -92,11 +91,7 @@ final class ModalViewModel {
     case .submitted, .reviewWaiting:
       managementViewModel.rejectApplicant()
     case .interviewWaiting:
-      managementViewModel.updateApplicationStatus(
-        applicantIds: [currentApplicant.applicationId],
-        newStatus: ApplicationStatus.submitted.rawValue
-      )
-      managementViewModel.selectedApplicantId.removeAll()
+      managementViewModel.cancelInterview()
     case .reviewCompleted:
       break
     }
