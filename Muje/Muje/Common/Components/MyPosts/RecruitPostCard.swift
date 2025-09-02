@@ -11,6 +11,8 @@ struct RecruitPostCard: View {
     var item: PostModel
     var isPost: Bool
     
+    var tempLists: [InterviewSlotModel] = []
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 16) {
@@ -22,13 +24,15 @@ struct RecruitPostCard: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    DateBox(title: "모집 기간", startDate: item.startDate, endDate: item.endDate, isPost: true)
-                    DateBox(title: "면접 일정", startDate: item.interviewStartDate, endDate: item.interviewEndDate, isPost: isPost)
+                    DateBox(title: "모집 기간", startDate: item.recruitmentStart, endDate: item.recruitmentEnd, isPost: true)
+                    DateBox(title: "면접 일정", startDate: tempLists.first?.interviewDate, endDate: tempLists.last?.interviewDate, isPost: isPost, hasInterview: item.hasInterview)
                 }
             }
             .padding(16)
+            
             Divider()
                 .padding(.bottom, 6)
+            
             HStack {
                 ButtonBox(title: "면접 일정", action: {
                     print("면접 일정 페이지로 이동")
@@ -53,5 +57,5 @@ struct RecruitPostCard: View {
 }
 
 #Preview {
-    RecruitPostCard(item: .init(title: "동아리명", content: "댄스 동아리 OO 모집합니다", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 7), interviewStartDate: Date().addingTimeInterval(3600 * 24 * 3), interviewEndDate: Date().addingTimeInterval(3600 * 24 * 5), hasInterview: true), isPost: true)
+    RecruitPostCard(item: .init(authorUserId: "qwer1234", title: "qwer", organization: "apple", content: "하이하이", recruitmentStart: Date(), recruitmentEnd: Date().addingTimeInterval(3600 * 24 * 5), hasInterview: true, interivewLocation: "도서관", status: "면접 전", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "One", authorOrganization: "Apple"), isPost: false)
 }
