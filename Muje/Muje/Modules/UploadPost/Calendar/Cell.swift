@@ -15,10 +15,11 @@ struct Cell: View {
     var endDate: Date
     @State var isSelectedAble: Bool = false
     @State var isSelected: Bool = true
+    var condition: Bool?
     
     var body: some View {
         ZStack {
-            if isSelectedAble {
+            if isSelectedAble || condition == true {
                 Circle()
                     .fill(Color.yellow.opacity(0.6))
                     .frame(width: 26, height: 27)
@@ -32,10 +33,10 @@ struct Cell: View {
         }
         .frame(height: 30)
         .task {
-            selectSlot(date: calendarDay.date, startDate: startDate, endDate: endDate)
+            selectSlot()
         }
         .onChange(of: endDate) {
-            selectSlot(date: calendarDay.date, startDate: startDate, endDate: endDate)
+            selectSlot()
         }
     }
     
@@ -51,7 +52,7 @@ struct Cell: View {
         }
     }
     
-    func selectSlot(date: Date, startDate: Date, endDate: Date) {
-        self.isSelectedAble = (startDate < date && date < endDate)
+    func selectSlot() {
+        self.isSelectedAble = (startDate < calendarDay.date && calendarDay.date < endDate)
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MyPostsView: View {
     @State var myPostsViewModel: MyPostsViewModel = .init()
+    @State var selectViewModel: SelectViewModel = .init()
     
     var body: some View {
         ScrollView {
@@ -19,6 +20,9 @@ struct MyPostsView: View {
             }
         }
         .safeAreaPadding(.horizontal, 16)
+        .fullScreenCover(isPresented: $selectViewModel.isSetting) {
+            SelectView(selectViewModel: selectViewModel)
+        }
     }
     
     private var topView: some View {
@@ -34,12 +38,12 @@ struct MyPostsView: View {
                 Button(action: {
                     myPostsViewModel.isRecruit.toggle()
                 }, label: {
-                    UpcomingRecruitCard(myPostsViewModel: $myPostsViewModel, title: "모집 면접", codition: myPostsViewModel.isRecruit)
+                    UpcomingCard(myPostsViewModel: $myPostsViewModel, title: "모집 면접", codition: myPostsViewModel.isRecruit, lists: myPostsViewModel.upcomingRecruitLists())
                 })
                 Button(action: {
                     myPostsViewModel.isApply.toggle()
                 }, label: {
-                    UpcomingApplyCard(myPostsViewModel: $myPostsViewModel, title: "지원 면접", codition: myPostsViewModel.isApply)
+                    UpcomingCard(myPostsViewModel: $myPostsViewModel, title: "지원 면접", codition: myPostsViewModel.isApply, lists: myPostsViewModel.upcomingApplyLists())
                 })
                 
             }
@@ -82,7 +86,7 @@ struct MyPostsView: View {
             } else {
                 TabView(selection: $myPostsViewModel.currentApplyPage) {
                     ForEach(myPostsViewModel.applyPosts.indices, id: \.self) { index in
-                        RecruitPostCard(item: myPostsViewModel.applyPosts[index], isPost: false)
+                        ApplyPostCard(selectViewModel: selectViewModel, item: myPostsViewModel.applyPosts[index], isPost: false)
                             .tag(index)
                     }
                 }

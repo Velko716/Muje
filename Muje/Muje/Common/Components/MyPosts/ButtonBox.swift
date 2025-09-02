@@ -10,6 +10,7 @@ import SwiftUI
 struct ButtonBox: View {
     var title: String
     var action: () -> Void
+    var condition: Bool?
     
     var body: some View {
         Button(action: {
@@ -20,9 +21,17 @@ struct ButtonBox: View {
                 .frame(height: 36)
                 .overlay(content: {
                     Text(title)
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(manageColor())
                 })
         })
+    }
+    
+    func manageColor() -> Color {
+        if let condition = condition {
+            condition ? Color.gray : Color.black
+        } else {
+            Color.black
+        }
     }
 }
 
