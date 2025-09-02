@@ -30,7 +30,6 @@ struct UserInfoInputView: View {
             Color.white
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: .zero) {
-                    Spacer().frame(height: 32)
                     topTitleView
                     Spacer().frame(height: 48)
                     middleInfoInputView
@@ -70,7 +69,6 @@ struct UserInfoInputView: View {
                     }
                 }
             }
-            .padding(.bottom, 43)
             .bottomBarBackground()
         }
         .toolbar {
@@ -101,7 +99,6 @@ struct UserInfoInputView: View {
             Spacer()
         }
     }
-    
     
     // MARK: - 중간 유저 정보 입력 뷰
     private var middleInfoInputView: some View {
@@ -197,7 +194,7 @@ struct UserInfoInputView: View {
                 .overlay {
                     VStack(spacing: 8) {
                         Button {
-                            // TODO: 약관 동의 뷰 네비게이션 이동하기
+                            router.push(to: .termsAndPrivacyView(type: .termsOfService))
                         } label: {
                             HStack(spacing: .zero) {
                                 Text("[필수] 이용약관에 동의합니다.")
@@ -214,7 +211,7 @@ struct UserInfoInputView: View {
                             }
                         }
                         Button {
-                            // TODO: 약관 동의 뷰 네비게이션 이동하기
+                            router.push(to: .termsAndPrivacyView(type: .privacyPolicy))
                         } label: {
                             HStack(spacing: .zero) {
                                 Text("[필수] 개인정보 처리방침에 동의합니다.")
