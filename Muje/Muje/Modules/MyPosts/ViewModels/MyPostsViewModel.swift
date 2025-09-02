@@ -35,12 +35,12 @@ class MyPostsViewModel {
   
   // MARK: 올린 공고에 대한 저장 변수
   var uploadPost: [Post] = []
-  var uploadPostSlot: [InterviewSlot] = []
+  var uploadPostSlot: [UUID: [InterviewSlot]] = [:]
   var uploadThumbnail: [UUID: PostImage] = [:]
   
   // MARK: 지원한 공고에 대한 저장 변수
   var applicationPost: [Post] = []
-  var applicationSlot: [InterviewSlot] = []
+  var applicationSlot: [UUID: [InterviewSlot]] = [:]
   var applicationThumbnail: [UUID: PostImage] = [:]
     
     func upcomingRecruitLists() -> [InterviewSlotModel] {
@@ -115,7 +115,7 @@ extension MyPostsViewModel {
               let slot = try await self.fetchInterviewSlot(for: i.postId)
               
               await MainActor.run {
-                self.applicationSlot = slot
+                self.applicationSlot = self.mapDic(for: slot)
               }
               
             } catch {
@@ -130,6 +130,10 @@ extension MyPostsViewModel {
                 )
               }
               let thumb = try await self.firestoreManager.fetchThumbnailsForPost(for: postIds)
+              
+              await MainActor.run {
+                self.applicationThumbnail = thumb
+              }
             } catch {
               print("\(userId)가 지원한 공고의 썸네일 불러오기 실패 \(error)")
             }
@@ -152,11 +156,9 @@ extension MyPostsViewModel {
         for post in posts {
           group.addTask {
             do {
-              let slots = try await self.fetchInterviewSlot(
-                for: post.postId.uuidString
-              )
+              let slots = try await self.fetchInterviewSlot(for: post.postId.uuidString)
               await MainActor.run {
-                self.uploadPostSlot.append(contentsOf: slots)
+                self.uploadPostSlot = self.mapDic(for: slots)
               }
             } catch {
               print("\(post.postId)의 인터뷰 슬롯 불러오기 실패 \(error)")
@@ -165,9 +167,12 @@ extension MyPostsViewModel {
           group.addTask {
             do {
               let postId = posts.compactMap { $0.postId }
-              let thumb = try await self.firestoreManager.fetchThumbnailsForPost(
-                for: postId
-              )
+              let thumb = try await self.firestoreManager.fetchThumbnailsForPost(for: postId)
+              
+              await MainActor.run {
+                self.uploadThumbnail = thumb
+              }
+              
             } catch {
               print("썸네일 불러오기 실패: \(error)")
             }
@@ -223,5 +228,20 @@ private extension MyPostsViewModel {
         $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date()
       }
     )
+  }
+  // MARK: - 딕셔너리 변환 함수
+  func mapDic(for slots: [InterviewSlot]) -> [UUID: [InterviewSlot]] {
+    var slotDic: [UUID: [InterviewSlot]] = [:]
+    
+    for slot in slots {
+      guard let postId = UUID(uuidString: slot.postId) else { continue }
+      
+      if slotDic[postId] == nil {
+        slotDic[postId] = []
+      }
+      slotDic[postId]?.append(slot)
+    }
+    
+    return slotDic
   }
 }
