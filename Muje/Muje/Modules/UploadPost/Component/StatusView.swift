@@ -36,7 +36,7 @@ struct StatusView: View {
                 .font(.title2)
                 .bold()
         }
-        .padding(.bottom, uploadPostViewModel.currentStatus == .interview ? 28 : 42)
+        .padding(.bottom, uploadPostViewModel.currentStatus.padding)
     }
 }
 

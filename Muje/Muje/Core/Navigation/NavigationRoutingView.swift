@@ -21,13 +21,17 @@ struct NavigationRoutingView: View {
                 NotificationView()
             case .RecruitmentDetailView(let postId):
                 RecruitmentDetailView(postId: postId)
-            case .ApplicationFormView(let postId, let requirementFlags, let postBasicInfo):
+            case .uploadCompleteView:
+                UploadCompleteView()
+            case .myPostView:
+                MyPostsView()
+            case .applicationFormView(let postId, let requirementFlags, let postBasicInfo):
                 ApplicationFormView(
                     postId: postId,
                     requirementFlags: requirementFlags,
                     postBasicInfo: postBasicInfo
                 )
-            case .ApplicationPreview(
+            case .applicationPreview(
                 let postId,
                 let requirementFlags,
                 let postBasicInfo,
@@ -41,13 +45,15 @@ struct NavigationRoutingView: View {
                 customQuestion: customQuestion,
                 questionAnswer: .constant(questionAnswer)
               )
-            case .ApplicationManagementView(let postId, let postInfo):
+            case .applicationManagementView(let postId, let postInfo):
               ApplicationManagementView(
                 postId: postId,
                 postInfo: postInfo
               )
-            case .EditContentView(let post, let postImages):
+            case .editContentView(let post, let postImages):
               EditContentView(post: post, postImages: postImages)
+            case .uploadPostView:
+              UploadPostView()
             case .emailVerificationView:
                 EmailVerificationView()
             case .userInfoInputView(let uuid, let email):

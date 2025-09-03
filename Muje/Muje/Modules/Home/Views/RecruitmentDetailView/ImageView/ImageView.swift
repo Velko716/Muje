@@ -56,14 +56,6 @@ struct ImageView: View {
       
     }
     .frame(height: UIScreen.main.bounds.width)
-    //    .fullScreenCover(isPresented: $showImageViewer) {
-    //      ImageDetail(
-    //        selectedIndex: $selectedImageIndex,
-    //        showImageViewer: $showImageViewer,
-    //        postImage: sortedImageUrls,
-    //        cachedURL: cachedURL
-    //      )
-    //    }
     .fullScreenCover(item: $selectedImageForViewr) { selectedImage in
       ImageDetail(
         selectedIndex: selectedImage.index,
@@ -106,15 +98,22 @@ struct DownloadImage: View {
       }
     }
     .task(id: postImage.imageId) {
-      if downloadURL == nil && cachedURL == nil {
-        if let url = try? await postImage.getDownloadURL() {
-          await MainActor.run {
-            self.downloadURL = url
-            self.isLoading = false
-          }
-        }
-      } else {
+      if let cachedURL = cachedURL {
+        downloadURL = cachedURL
         isLoading = false
+        return
+      }
+      
+      do {
+        let url = try await postImage.getDownloadURL()
+        await MainActor.run {
+          self.downloadURL = url
+          self.isLoading = false
+        }
+      } catch {
+        await MainActor.run {
+          self.isLoading = false
+        }
       }
     }
   }

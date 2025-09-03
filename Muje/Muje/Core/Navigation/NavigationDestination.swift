@@ -12,23 +12,26 @@ enum NavigationDestination: Equatable, Hashable {
     case searchView
     case notificationView // 임시
     case RecruitmentDetailView(postId: String)
-    case ApplicationFormView(
+    case uploadCompleteView
+    case myPostView
+    case applicationFormView(
       postId: String,
       requirementFlags: RequirementFlags,
       postBasicInfo: PostBasicInfo
   ) 
-    case ApplicationPreview(
+    case applicationPreview(
       postId: String,
       requirementFlags: RequirementFlags,
       postBasicInfo: PostBasicInfo,
       customQuestion: [CustomQuestion],
       questionAnswer: [String: String]
   )
-    case EditContentView(post: Post, postImages: [PostImage])
-    case ApplicationManagementView(
+    case editContentView(post: Post, postImages: [PostImage])
+    case applicationManagementView(
       postId: String,
       postInfo: ApplicationManagementPostInfo
     )
+    case uploadPostView
     case emailVerificationView // 이메일 인증 뷰
     case userInfoInputView(uuid: String, email: String) // 유저 정보 입력 뷰
     case inboxView(conversationId: UUID)

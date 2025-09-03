@@ -10,7 +10,7 @@ import SwiftUI
 struct PostInterviewView: View {
     @Bindable var postInfoViewModel: PostInfoViewModel
     @Bindable var postInterviewViewModel: PostInterviewViewModel
-    @State var interviewSlotViewModel = InterviewSlotViewModel()
+    @Bindable var interviewSlotViewModel: InterviewSlotViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
@@ -80,5 +80,5 @@ struct PostInterviewView: View {
 
 
 #Preview {
-    PostInterviewView(postInfoViewModel: .init(), postInterviewViewModel: .init())
+  PostInterviewView(postInfoViewModel: .init(), postInterviewViewModel: .init(), interviewSlotViewModel: .init())
 }
