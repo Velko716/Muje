@@ -29,7 +29,7 @@ struct SearchBar: View {
                 ZStack(alignment: .leading) {
                     if searchText.isEmpty {
                         Text("제목, 단체명")
-                            .body2_16Regular()
+                            .body2Regular16()
                             .foregroundStyle(.gray500)
                     }
                     TextField("", text: $searchText)

@@ -23,7 +23,7 @@ struct PostListItem: View {
                 
                 // MARK: 중간 - 제목
                 Text(post.title)
-                    .body2_16SemiBold()
+                    .body2SemiBold16()
                     .foregroundStyle(.gray700)
                     .lineLimit(2)
                 Spacer().frame(height: 12)

@@ -139,7 +139,7 @@ extension Text {
             .kerning(config.letterSpacing)
     }
     //MARK: Body1
-    func body1_18SemiBold() -> some View {
+    func body1SemiBold18() -> some View {
         let config = Font.lineHeight(
             type: .semiBold,
             fontSize: 18,
@@ -151,7 +151,7 @@ extension Text {
             .padding(.vertical, config.verticalPadding)
             .kerning(config.letterSpacing)
     }
-    func body1_18Medium() -> some View {
+    func body1Medium18() -> some View {
         let config = Font.lineHeight(
             type: .medium,
             fontSize: 18,
@@ -163,7 +163,7 @@ extension Text {
             .padding(.vertical, config.verticalPadding)
             .kerning(config.letterSpacing)
     }
-    func body1_18Regular() -> some View {
+    func body1Regular18() -> some View {
         let config = Font.lineHeight(
             type: .regular,
             fontSize: 18,
@@ -175,7 +175,7 @@ extension Text {
             .padding(.vertical, config.verticalPadding)
             .kerning(config.letterSpacing)
     }
-    func body1_16SemiBold() -> some View {
+    func body1SemiBold16() -> some View {
         let config = Font.lineHeight(
             type: .semiBold,
             fontSize: 16,
@@ -187,7 +187,7 @@ extension Text {
             .padding(.vertical, config.verticalPadding)
             .kerning(config.letterSpacing)
     }
-    func body1_16Medium() -> some View {
+    func body1Medium16() -> some View {
         let config = Font.lineHeight(
             type: .medium,
             fontSize: 16,
@@ -199,7 +199,7 @@ extension Text {
             .padding(.vertical, config.verticalPadding)
             .kerning(config.letterSpacing)
     }
-    func body1_16Regular() -> some View {
+    func body1Regular16() -> some View {
         let config = Font.lineHeight(
             type: .regular,
             fontSize: 16,
@@ -212,7 +212,7 @@ extension Text {
             .kerning(config.letterSpacing)
     }
     //MARK: Body2
-    func body2_16SemiBold() -> some View {
+    func body2SemiBold16() -> some View {
         let config = Font.lineHeight(
             type: .semiBold,
             fontSize: 16,
@@ -224,7 +224,7 @@ extension Text {
             .padding(.vertical, config.verticalPadding)
             .kerning(config.letterSpacing)
     }
-    func body2_16Medium() -> some View {
+    func body2Medium16() -> some View {
         let config = Font.lineHeight(
             type: .medium,
             fontSize: 16,
@@ -237,7 +237,7 @@ extension Text {
             .kerning(config.letterSpacing)
         
     }
-    func body2_16Regular() -> some View {
+    func body2Regular16() -> some View {
         let config = Font.lineHeight(
             type: .regular,
             fontSize: 16,

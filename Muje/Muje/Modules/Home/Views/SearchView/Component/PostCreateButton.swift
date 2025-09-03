@@ -15,7 +15,7 @@ struct PostCreateButton: View {
         } label: {
             HStack {
                 Text("모임 올리기")
-                    .body2_16Medium()
+                    .body2Medium16()
                     .foregroundStyle(.white)
                 Image(.pencilIcon)
             }
