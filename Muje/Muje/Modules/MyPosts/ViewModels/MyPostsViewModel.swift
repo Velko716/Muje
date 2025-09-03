@@ -14,6 +14,7 @@ class MyPostsViewModel {
     var applyPosts: [PostModel] = [] //이후에 서버에서 받아오도록 변경_내가 지원한 공고에 활용
     var isRecruit: Bool = false //모달 시트_다가오는 일정
     var isApply: Bool = false //모달 시트_다가오는 일정
+    var isLoading: Bool = false
     
     var currentRecruitPage: Int = 0
     var currentApplyPage: Int = 0
@@ -31,7 +32,7 @@ class MyPostsViewModel {
   }
   
   // MARK: 현재 유저의 지원 데이터
-  var currentUserApplication: [Application] = []
+  var currentUserApplication: [UUID: Application] = [:]
   
   // MARK: 올린 공고에 대한 저장 변수
   var uploadPost: [Post] = []
@@ -93,7 +94,7 @@ extension MyPostsViewModel {
     
     do {
       let app = try await currentUserApplication(for: userId)
-      self.currentUserApplication = app
+      self.currentUserApplication = mapDicApp(for: app)
       
       await withTaskGroup(of: Void.self) { group in
         for i in app {
@@ -115,7 +116,7 @@ extension MyPostsViewModel {
               let slot = try await self.fetchInterviewSlot(for: i.postId)
               
               await MainActor.run {
-                self.applicationSlot = self.mapDic(for: slot)
+                self.applicationSlot = self.mapDicSlot(for: slot)
               }
               
             } catch {
@@ -158,7 +159,7 @@ extension MyPostsViewModel {
             do {
               let slots = try await self.fetchInterviewSlot(for: post.postId.uuidString)
               await MainActor.run {
-                self.uploadPostSlot = self.mapDic(for: slots)
+                self.uploadPostSlot = self.mapDicSlot(for: slots)
               }
             } catch {
               print("\(post.postId)의 인터뷰 슬롯 불러오기 실패 \(error)")
@@ -230,7 +231,7 @@ private extension MyPostsViewModel {
     )
   }
   // MARK: - 딕셔너리 변환 함수
-  func mapDic(for slots: [InterviewSlot]) -> [UUID: [InterviewSlot]] {
+  func mapDicSlot(for slots: [InterviewSlot]) -> [UUID: [InterviewSlot]] {
     var slotDic: [UUID: [InterviewSlot]] = [:]
     
     for slot in slots {
@@ -244,57 +245,16 @@ private extension MyPostsViewModel {
     
     return slotDic
   }
-}
-
-final class RecruitPosts {
-    static let lists: [PostModel] = [
-        .init(title: "댄스 동아리", content: "댄스 동아리 OO모집합니다", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 14), interviewStartDate: Date().addingTimeInterval(3600 * 24 * 3), interviewEndDate: Date().addingTimeInterval(3600 * 24 * 7), hasInterview: true),
-        .init(title: "롤 동아리", content: "롤 동아리 OO모집합니다", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 7), hasInterview: false)
-    ]
-}
-
-final class ApplyPosts {
-    static let lists: [PostModel] = [
-        .init(title: "컴퓨터 동아리", content: "컴퓨터 동아리 XX입니다", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 5), hasInterview: true)
-    ]
-}
-// MARK: - 파이어베이스 로직
-extension MyPostsViewModel {
   
-}
-// MARK: - 조건 쿼리문
-private extension MyPostsViewModel {
-  func currentUserApplication(
-    for currentUserId: String
-  ) async throws -> [Application] {
-    return try await firestoreManager.fetchWithCondition(
-      from: .applications,
-      whereField: "applicant_user_id",
-      equalTo: currentUserId,
-      sortedBy: {
-        $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date()
-      }
-    )
+  func mapDicApp(for apps: [Application]) -> [UUID: Application] {
+    var appDic: [UUID: Application] = [:]
+    
+    for app in apps {
+      guard let postId = UUID(uuidString: app.postId) else { continue }
+      
+      appDic[postId] = app
+    }
+    
+    return appDic
   }
-  
-  func fetchPost(for currentUserId: String) async throws -> [Post] {
-    return try await firestoreManager.fetchWithCondition(
-      from: .posts,
-      whereField: "author_user_id",
-      equalTo: currentUserId,
-      sortedBy: {
-        $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date()
-      }
-    )
-  }
-  
-  func fetchInterviewSlot(for postId: String) async throws -> [InterviewSlot] {
-    return try await firestoreManager.fetchWithCondition(
-      from: .interviewSlots,
-      whereField: "post_id",
-      equalTo: postId,
-      sortedBy: { $0.interviewDate.dateValue() < $1.interviewDate.dateValue() }
-    )
-  }
-  
 }
