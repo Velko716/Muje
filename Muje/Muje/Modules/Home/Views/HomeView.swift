@@ -63,19 +63,5 @@ struct HomeView: View {
                 await viewModel.loadInitialPosts()
             }
         }
-<<<<<<< HEAD
-      } //: VSTACK
-      .padding(.horizontal, 16)
-      PostCreateButton(action: {
-        router.push(to: .uploadPostView)
-      })
-        .padding(.bottom, 24)
-    } //: ZSTACK
-    .task {
-      if viewModel.postList.isEmpty {
-        await viewModel.loadInitialPosts()
-      }
-=======
->>>>>>> 89766c3 (💄[Design]#32 - 홈 뷰 디자인 수정)
     }
 }
