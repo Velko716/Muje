@@ -12,6 +12,7 @@ struct RoundedTextField: View {
     var placeholder: String
     var keyboard: UIKeyboardType
     var isSecure: Bool = false
+    var overlayColorBule: Bool = false // FIXME: - 분기처리를 위한 임시 변수
     
     @FocusState private var isFocused: Bool
     
@@ -34,8 +35,13 @@ struct RoundedTextField: View {
         )
         .overlay {
             if isSecure {
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(isFocused ? Color.red : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+                if overlayColorBule {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(isFocused ? Color.blue : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+                } else {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(isFocused ? Color.red : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+                }
             } else {
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(isFocused ? Color.blue : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
