@@ -56,7 +56,6 @@ final class FirebaseAuthManager: ObservableObject {
         try await Auth.auth().sendSignInLink(toEmail: email, actionCodeSettings: actionCodeSettings)
     }
     
-    
     /// 딥 링크 로그인 인증 로직을 처리하는 메서드입니다.
     func handleEmailSignInLink(url: URL, inputEmail: String) async throws -> Bool {
         guard url.scheme == "muje",
@@ -89,7 +88,6 @@ final class FirebaseAuthManager: ObservableObject {
         }
     }
     
-    
     /// 핸드폰 인증으로 로그인 하는 메서드입니다.
     func verifyPhoneNumberAsync(phoneNumber: String) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
@@ -112,7 +110,6 @@ final class FirebaseAuthManager: ObservableObject {
                 }
         }
     }
-    
     
     /// 전화번호 인증 코드 검증 후, 성공 시 true / 실패 시 false 반환
     func verifyPhoneCodeAndSignOut(id verificationID: String, code verificationCode: String) async throws -> Bool {
@@ -171,6 +168,47 @@ final class FirebaseAuthManager: ObservableObject {
             self.currentUser = nil
         } catch {
             print("error: \(error.localizedDescription)")
+        }
+    }
+    
+    
+    /// Firebase Auth 패스워드를 설정하는 메서드 입니다. (회원 가입 뷰 사용)
+    func setInitialPassword(_ newPassword: String, email: String) async throws {
+        guard let user = Auth.auth().currentUser else { throw AppAuthError.notLoggedIn }
+        
+        do {
+            // 1) 가장 단순: 이미 email provider가 붙어있다면 비번을 업데이트
+            try await user.updatePassword(to: newPassword)
+            try? await user.reload()
+            return
+        } catch let nsErr as NSError {
+            // 일부 케이스는 link 로 해결
+            let code = AuthErrorCode(_bridgedNSError: nsErr)
+            
+            if code == .operationNotAllowed {
+                // Firebase Console > Authentication > Sign-in method 에서
+                // Email/Password 를 활성화해야 로그인에 비번 사용 가능
+                throw AppAuthError.operationNotAllowed
+            }
+            if code == .requiresRecentLogin {
+                throw AppAuthError.requiresRecentLogin
+            }
+            if code == .weakPassword {
+                throw AppAuthError.weakPassword
+            }
+            
+            // 2) provider 상태에 따라 link 시도 (Apple/Google만 있던 계정에 비번 추가하는 시나리오 등)
+            do {
+                let credential = EmailAuthProvider.credential(withEmail: email, password: newPassword)
+                _ = try await user.link(with: credential)
+                try? await user.reload()
+            } catch let linkErr as NSError {
+                let linkCode = AuthErrorCode(_bridgedNSError: linkErr)
+                if linkCode == .credentialAlreadyInUse {
+                    // 이미 비번이 설정된 계정일 수 있음 → updatePassword 로 재시도 유도
+                }
+                throw linkErr
+            }
         }
     }
     
