@@ -53,27 +53,29 @@ struct UserInfoInputView: View {
                     bgColor: .black,
                     enabled: true
                 ) {
-                    let user = User(
-                        userId: self.uuid,
-                        email: self.email,
-                        name: name,
-                        birthYear: Int(birthYear) ?? 0,
-                        gender: gender,
-                        department: department,
-                        studentId: studentId,
-                        emailVerified: true,
-                        termsAgreed: true,
-                        privacyAgreed: true
-                    )
+//                    let user = User(
+//                        userId: self.uuid,
+//                        email: self.email,
+//                        name: name,
+//                        birthYear: Int(birthYear) ?? 0,
+//                        gender: gender,
+//                        department: department,
+//                        studentId: studentId,
+//                        emailVerified: true,
+//                        termsAgreed: true,
+//                        privacyAgreed: true
+//                    )
+//                    
+//                    Task {
+//                        do {
+//                            let _ = try await FirestoreManager.shared.update(user)
+//                        } catch {
+//                            print("error : \(error.localizedDescription)")
+//                        }
+//                        router.popToRootView() // FIXME: - 임시
+//                    }
+                    router.push(to: .registrationCompleteView(userName: name))
                     
-                    Task {
-                        do {
-                            let _ = try await FirestoreManager.shared.update(user)
-                        } catch {
-                            print("error : \(error.localizedDescription)")
-                        }
-                        router.popToRootView() // FIXME: - 임시
-                    }
                 }
             }
             .bottomBarBackground()
