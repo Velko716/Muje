@@ -32,6 +32,18 @@ struct UserInfoInputView: View {
     @State private var termsAgreed: Bool = false // 서비스 이용약관 여부
     @State private var privacyAgreed: Bool = false // 개인정보 처리방침 여부
     
+    /// 모든 텍스트 입력 여부와 약관에 대한 동의에 대한 허용을 해야 계정이 성공적으로 만들어집니다.
+    private var isSubmitEnabled: Bool {
+        let nameOK = !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let birthOK = birthYear.trimmingCharacters(in: .whitespacesAndNewlines).count == 8
+        let deptOK = !department.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let studentOK = !studentId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let genderOK = !gender.isEmpty // 남/여 중 하나 선택됨
+        let consentOK = termsAgreed && privacyAgreed // 두 약관 모두 동의
+
+        return nameOK && birthOK && deptOK && studentOK && genderOK && consentOK
+    }
+    
     var body: some View {
         ZStack {
             Color.white
@@ -51,7 +63,7 @@ struct UserInfoInputView: View {
                     text: "확인",
                     textColor: .white,
                     bgColor: .black,
-                    enabled: true
+                    enabled: isSubmitEnabled
                 ) {
 //                    let user = User(
 //                        userId: self.uuid,
