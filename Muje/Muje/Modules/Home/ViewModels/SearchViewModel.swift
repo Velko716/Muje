@@ -91,16 +91,55 @@ final class SearchViewModel {
         }
     }
     
-    func highlightedText(_ text: String, keyword: String, fontSize: CGFloat) -> AttributedString {
-        var attributed = AttributedString(text)
-        
-        if let range = text.range(of: keyword, options: [.caseInsensitive]),
-            let attributedRange = Range(range, in: attributed) {
-                attributed[attributedRange].font = .system(size: fontSize, weight: .bold)
-                attributed[attributedRange].foregroundColor = .blue
-            }
-
-        return attributed
+    func highlightedOrgText(_ text: String, keyword: String) -> AttributedString {
+        return createHighlightedText(
+            text: text,
+            keyword: keyword,
+            normalFont: .pretendard(type: .regular, size: 14),
+            highlightFont: .pretendard(type: .semiBold, size: 14)
+        )
     }
     
+    func highlightedTitleText(_ text: String, keyword: String) -> AttributedString {
+        return createHighlightedText(
+            text: text,
+            keyword: keyword,
+            normalFont: .pretendard(type: .medium, size: 16),
+            highlightFont: .pretendard(type: .semiBold, size: 16)
+        )
+    }
+    
+    // 하이라이트 함수
+    private func createHighlightedText(
+        text: String,
+        keyword: String,
+        normalFont: Font,
+        highlightFont: Font
+    ) -> AttributedString {
+        var attributed = AttributedString(text)
+        
+        // 전체 텍스트에 기본 스타일 적용
+        attributed.font = normalFont
+        
+        // 검색어 하이라이트
+        guard !keyword.isEmpty else { return attributed }
+        
+        let lowercasedText = text.lowercased()
+        let lowercasedKeyword = keyword.lowercased()
+        
+        var searchStartIndex = lowercasedText.startIndex
+        
+        while let range = lowercasedText.range(of: lowercasedKeyword, range: searchStartIndex..<lowercasedText.endIndex) {
+            if let attributedRange = Range(range, in: attributed) {
+                // 하이라이트 스타일 적용
+                attributed[attributedRange].font = highlightFont
+                attributed[attributedRange].foregroundColor = .pointSkyBlue
+                // 배경색을 원한다면:
+                // attributed[attributedRange].backgroundColor = .yellow.opacity(0.3)
+            }
+            searchStartIndex = range.upperBound
+        }
+        
+        return attributed
+    }
 }

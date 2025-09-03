@@ -12,7 +12,6 @@ struct SearchSuggestionItemView: View {
     @Bindable var viewModel: SearchViewModel
     
     var body: some View {
-        
         VStack {
             if viewModel.isSuggestionsLoading {
                 HStack {
@@ -25,18 +24,15 @@ struct SearchSuggestionItemView: View {
                 
             } else if viewModel.suggestions.isEmpty && !viewModel.searchText.isEmpty {
                 Text("검색 결과가 없습니다.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .subheadline22semibold()
+                    .foregroundStyle(.gray600)
                 
             } else {
                 List {
                     ForEach(viewModel.suggestions, id: \.postId) { value in
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(viewModel.highlightedText(value.organization, keyword: viewModel.searchText, fontSize: 14))
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary)
-                            Text(viewModel.highlightedText(value.title, keyword: viewModel.searchText, fontSize: 16))
-                                .font(.system(size: 16))
+                            Text(viewModel.highlightedOrgText(value.organization, keyword: viewModel.searchText))
+                            Text(viewModel.highlightedTitleText(value.title, keyword: viewModel.searchText))
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .listRowSeparator(.hidden)
@@ -49,7 +45,8 @@ struct SearchSuggestionItemView: View {
                     }
                 }
                 .listStyle(.plain)
-                .padding(.vertical, 18)
+                .contentMargins(.horizontal, 16, for: .scrollContent)
+                .contentMargins(.horizontal, 0, for: .scrollIndicators)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

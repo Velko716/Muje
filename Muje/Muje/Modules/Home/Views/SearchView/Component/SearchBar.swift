@@ -20,19 +20,24 @@ struct SearchBar: View {
                 searchText = ""
                 router.pop()
             }) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 24))
+                Image(.chevronLeft)
             }
             
             //MARK: 검색바
             HStack {
-                Image(systemName: "magnifyingglass")
-                TextField(
-                    "",
-                    text: $searchText,
-                    prompt: Text("제목, 작성자") //폰트, 컬러 설정할 수 있음
-                )
+                Image(.searchBarIcon)
+                ZStack(alignment: .leading) {
+                    if searchText.isEmpty {
+                        Text("제목, 단체명")
+                            .body2Regular16()
+                            .foregroundStyle(.gray500)
+                    }
+                    TextField("", text: $searchText)
+                        .font(.pretendard(type: .regular, size: 16))
+                        .foregroundStyle(.gray700)
+                }
                 .submitLabel(.search)
+                .frame(height: 30)
                 .focused($isTextFieldFocused)
                 .onChange(of: isTextFieldFocused) { oldValue, newValue in
                     if newValue {
@@ -45,8 +50,7 @@ struct SearchBar: View {
             .padding(.horizontal, 11.5)
             .background(
                 RoundedRectangle(cornerRadius: 100)
-                    .fill(Color.gray)
-                    .opacity(0.2)
+                    .fill(.gray50)
             )
         }
         .frame(maxWidth: .infinity)

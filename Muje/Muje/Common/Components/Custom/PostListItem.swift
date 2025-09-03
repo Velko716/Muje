@@ -16,26 +16,21 @@ struct PostListItem: View {
     var body: some View {
         HStack {
             // MARK: 상단 - 동아리명
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(post.organization)
-                    .fontWeight(.medium)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color(red: 0.53, green: 0.53, blue: 0.53))
-                Spacer().frame(height: 4)
+                    .caption14Medium()
+                    .foregroundStyle(.gray500)
                 
                 // MARK: 중간 - 제목
                 Text(post.title)
-                    .fontWeight(.semibold)
-                    .font(.system(size: 18))
-                    .padding(.vertical, 7)
-                    .lineSpacing(8)
+                    .body2SemiBold16()
+                    .foregroundStyle(.gray700)
                     .lineLimit(2)
                 Spacer().frame(height: 12)
                 // MARK: 하단 - 모집 상태
                 Text(post.status)
-                    .fontWeight(.medium)
-                    .font(.system(size: 14))
-                    .foregroundStyle(Color(red: 0.66, green: 0.66, blue: 0.66))
+                    .caption14Regular()
+                    .foregroundStyle(.gray400)
             } //: VSTACK
             .padding(.vertical, 20)
             Spacer(minLength: 16)
@@ -45,7 +40,6 @@ struct PostListItem: View {
         .contentShape(Rectangle())
         .frame(maxWidth: .infinity)
     }
-    
 }
 
 struct ThumbnailAsyncImage: View {
@@ -77,7 +71,6 @@ struct ThumbnailAsyncImage: View {
             await loadDownloadURL()
         }
     }
-    
     private var defaultImageView: some View {
         Rectangle()
             .fill(Color.gray.opacity(0.3))
@@ -88,13 +81,11 @@ struct ThumbnailAsyncImage: View {
                     .foregroundStyle(.gray)
             )
     }
-    
     private func loadDownloadURL() async {
         guard let postImage = postImage else {
             await MainActor.run { self.isLoading = false }
             return
         }
-        
         do {
             let url = try await postImage.getDownloadURL()
             await MainActor.run {

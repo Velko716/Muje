@@ -15,15 +15,15 @@ struct PostCreateButton: View {
         } label: {
             HStack {
                 Text("모임 올리기")
-                    .foregroundStyle(Color.white)
-                Image(systemName: "pencil")
-                    .foregroundStyle(Color.white)
+                    .body2Medium16()
+                    .foregroundStyle(.white)
+                Image(.pencilIcon)
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 24)
             .background {
                 RoundedRectangle(cornerRadius: 36)
-                    .fill(Color.blue)
+                    .fill(.pointSkyBlue)
                     .shadow(color: Color.black.opacity(0.15), radius: 20, x: 0, y: 0)
             }
         }
