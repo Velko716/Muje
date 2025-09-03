@@ -75,6 +75,8 @@ extension Report: EntityRepresentable {
             //"created_at": createdAt ?? FieldValue.serverTimestamp()
         ]
         
+        // MARK: - 신고 유형에 따른 분기 처리
+        
         if let postId = postId {
             dict["post_id"] = postId
         }

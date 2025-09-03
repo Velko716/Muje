@@ -15,6 +15,13 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    var fullDateSlashString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/M/dd"
+        
+        return formatter.string(from: self)
+    }
+    
     var fullDateString: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy년 M월 d일"
@@ -105,6 +112,22 @@ extension Date {
         df.locale = .current
         df.dateFormat = sameYear ? "M월 d일" : "yyyy. M. d."
         return df.string(from: self)
+    }
+    
+    func setTo9AM() -> Date {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: self)
+        let nineAM = calendar.date(byAdding: .hour, value: 9, to: startOfToday) ?? Date()
+        
+        return nineAM
+    }
+    
+    func endOfDay() -> Date {
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: self)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfToday) ?? Date()
+        
+        return endOfDay
     }
     
     private static let cachedDateFormatter: DateFormatter = {

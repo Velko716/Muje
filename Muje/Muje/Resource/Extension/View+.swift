@@ -40,6 +40,33 @@ extension View {
         }
     }
     
+    func startPicker(isShown: Bool, date: Binding<Date>) -> some View {
+        ZStack {
+            self
+            if isShown {
+                CustomDatePicker(date: date, minuteInterval: 5)
+                    .frame(width: 200)
+                    .background(Color.white)
+            }
+        }
+    }
+    
+    func endPicker(isShown: Bool, endTime: Binding<Date>, lists: [Date]) -> some View {
+        ZStack {
+            self
+            if isShown {
+                Picker("", selection: endTime) {
+                    ForEach(lists, id: \.self) { date in
+                        Text(date.hourMinute24)
+                            .tag(date)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .background(Color.white)
+            }
+        }
+    }
+    
     //상하, 좌우 여백 통합 모디파이어 ex)hvPadding(12, 24) -> horizontal: 12, vertical: 24
     func hvPadding(_ h: CGFloat, _ v: CGFloat) -> some View {
             self
@@ -47,4 +74,3 @@ extension View {
                 .padding(.vertical, v)
         }
 }
-

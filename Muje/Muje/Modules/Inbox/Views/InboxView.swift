@@ -15,6 +15,7 @@ struct InboxView: View {
     @State private var viewModel: InboxViewModel
     @State private var text: String = ""
     
+    @State private var showReportSheet = false
     @State private var showActionSheet = false
     @State private var showLeaveAlert = false
     
@@ -45,8 +46,14 @@ struct InboxView: View {
             }
             .paddingH16()
         }
+        .task {
+            Task {
+                try await viewModel.otherUserId(conversationId: viewModel.conversationId.uuidString)
+            }
+        }
         .onAppear {
             CurrentChatContext.shared.activeConversationId = viewModel.conversationId
+            
         }
         .onDisappear {
             if CurrentChatContext.shared.activeConversationId == viewModel.conversationId {
@@ -72,12 +79,21 @@ struct InboxView: View {
             if showActionSheet {
                 InboxActionSheetView(
                     onReport: {
+                        showReportSheet = true
                         showActionSheet = false
-                        // TODO: 신고 플로우
                     },
                     onBlock: {
+                        Task {
+                            do {
+                                try await viewModel.ensureOtherUserId(
+                                    conversationId: viewModel.conversationId.uuidString
+                                )
+                                viewModel.showBlockedAlert = true
+                            } catch {
+                                print("error: \(error.localizedDescription)")
+                            }
+                        }
                         showActionSheet = false
-                        // TODO: 차단 플로우
                     },
                     onLeave: {
                         showActionSheet = false
@@ -102,6 +118,23 @@ struct InboxView: View {
             Button("취소", role: .cancel) { }
         } message: {
             Text("채팅방을 나가면 대화내용이 삭제됩니다.")
+        }
+        // FIXME: - 디자인 수정하기
+        .alert("차단하기 완료", isPresented: $viewModel.showBlockedAlert) {
+            Button {
+                viewModel.showBlockedAlert = false
+                rotuer.pop()
+            } label: {
+                Text("닫기")
+            }
+        }
+        // MARK: - 신고하기 시트
+        .sheet(isPresented: $showReportSheet) {
+            ReportView(
+                showReportSheet: $showReportSheet,
+                reportedUserId: viewModel.reportedUserId,
+                conversationId: viewModel.conversationId.uuidString
+            )
         }
     }
     // MARK: - 탑 현재 공고 뷰

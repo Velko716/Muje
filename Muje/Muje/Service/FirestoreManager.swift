@@ -40,8 +40,31 @@ final class FirestoreManager {
         return data
     }
     
+    
     func create<T: EntityRepresentable>(_ data: T) async throws -> T {
         try await save(data, isCreate: true)
+    }
+    
+    
+    func createSubCollection<T: EntityRepresentable>(
+        _ data: T,
+        id: String,
+        from type: CollectionType,
+        fromSub subType: CollectionType
+    ) async throws {
+        // 2) 저장할 데이터 구성
+        guard var dict = data.asDictionary else {
+            throw FirestoreError.encodingFailed
+        }
+        dict["created_at"] = FieldValue.serverTimestamp()
+
+        // 3) 부모문서/{subType}/{data.documentID} 경로에 저장
+        try await db
+            .collection(type.rawValue)
+            .document(id)
+            .collection(subType.rawValue)
+            .document(data.documentID)
+            .setData(dict)
     }
     
     func update<T: EntityRepresentable>(_ data: T) async throws -> T {
@@ -61,12 +84,85 @@ final class FirestoreManager {
         return data
     }
     
+    
+    /// 컬렉션의 모든 데이터를 가져옵니다.
+    /// 파이어베이스 색인으로 정렬합니다.
+    /// - id: userID
+    /// - type: 컬렉션 타입
+    /// - key: 컬렉션 안의 문서의 대한 조건절
+    /// - orderKey: 어느 기준으로 정렬
+    /// - descending: 정렬 방향
+    func fetchAll<T: Decodable>(
+        _ id: String,
+        from type: CollectionType,
+        where key: String,
+        orderBy orderKey: String? = nil,
+        descending: Bool = true
+    ) async throws -> [T] {
+        var query: Query = db.collection(type.rawValue).whereField(key, isEqualTo: id)
+        if let orderKey { query = query.order(by: orderKey, descending: descending) }
+        let snap = try await query.getDocuments()
+        return snap.documents.compactMap { try? $0.data(as: T.self) }
+    }
+    
+    /// 특정 부모 문서 하위의 서브컬렉션을 가져옵니다.
+    /// - Parameters:
+    ///   - parentType: 부모 컬렉션(.user 등)
+    ///   - parentId: 부모 문서 ID(userId 등)
+    ///   - subType: 서브컬렉션(.blocks 등)
+    ///   - orderKey: 정렬 기준(옵션)
+    ///   - descending: 정렬 방향
+    func fetchAllFromSubcollection<T: Decodable>(
+        under parentType: CollectionType,
+        parentId: String,
+        subCollection subType: CollectionType,
+        orderBy orderKey: String? = nil,
+        descending: Bool = true
+    ) async throws -> [T] {
+        var q: Query = db
+            .collection(parentType.rawValue)
+            .document(parentId)
+            .collection(subType.rawValue)
+        
+        if let orderKey {
+            q = q.order(by: orderKey, descending: descending)
+        }
+        
+        let snap = try await q.getDocuments()
+        return snap.documents.compactMap { try? $0.data(as: T.self) }
+    }
+    
+    
+    
+    
     func delete(collectionType: CollectionType, documentID: String) async throws {
         try await db
             .collection(collectionType.rawValue)
             .document(documentID)
             .delete()
     }
+    
+    
+    /// 특정 부모 문서 하위의 서브컬렉션을 가져옵니다.
+    /// - Parameters:
+    ///   - parentType: 부모 컬렉션(.user 등)
+    ///   - parentId: 부모 문서 ID(userId 등)
+    ///   - subType: 서브컬렉션(.blocks 등)
+    ///   - documentID: 삭제 문서(삭제 하려는 user_id)
+    func deleteFromSubcollection(
+        under parentType: CollectionType,
+        parentId: String,
+        subCollection subType: CollectionType,
+        target documentID: String
+    ) async throws {
+        try await db
+            .collection(parentType.rawValue)
+            .document(parentId)
+            .collection(subType.rawValue)
+            .document(documentID)
+            .delete()
+    }
+    
     
 }
 
@@ -593,3 +689,32 @@ extension FirestoreManager {
 }
 
 
+
+// MARK: - 차단 관련
+extension FirestoreManager {
+    /// user/{userId}/blocks/{blockedUserId}에 차단 문서 생성
+    func addBlock(for userId: String, blockedUserId: String) async throws {
+        let block = Block(blockedUserId: blockedUserId)
+        try await createSubCollection(block, id: userId, from: .user, fromSub: .blocks)
+    }
+
+    /// user/{userId}/blocks 를 최신순으로 조회
+    func fetchBlocks(for userId: String, limit: Int? = nil) async throws -> [Block] {
+        var q = db.collection(CollectionType.user.rawValue)
+            .document(userId)
+            .collection(CollectionType.blocks.rawValue)
+            .order(by: "created_at", descending: true)
+        if let limit { q = q.limit(to: limit) }
+        let snap = try await q.getDocuments()
+        return snap.documents.compactMap { try? $0.data(as: Block.self) }
+    }
+
+    /// 차단 해제
+    func removeBlock(for userId: String, blockedUserId: String) async throws {
+        try await db.collection(CollectionType.user.rawValue)
+            .document(userId)
+            .collection(CollectionType.blocks.rawValue)
+            .document(blockedUserId)                 // documentID 전략과 일치해야 함
+            .delete()
+    }
+}
