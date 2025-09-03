@@ -13,10 +13,10 @@ struct RecruitmentInfo: View {
     var body: some View {
         HStack(spacing: 16) {
             Text(info)
-                .body2_16SemiBold()
+                .body2SemiBold16()
                 .foregroundStyle(.gray400)
             Text(content)
-                .body2_16SemiBold()
+                .body2SemiBold16()
                 .foregroundStyle(.gray700)
         }
     }

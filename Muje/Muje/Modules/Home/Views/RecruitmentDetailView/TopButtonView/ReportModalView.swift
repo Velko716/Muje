@@ -78,7 +78,7 @@ struct ReportModalView: View {
       HStack {
         Image(.reportIcon)
         Text("신고하기")
-            .body1_18SemiBold()
+            .body1SemiBold18()
       }
       .padding(.vertical, 15.5)
       .frame(maxWidth: .infinity)
@@ -94,7 +94,7 @@ struct ReportModalView: View {
     } label: {
       Text("닫기")
         .foregroundStyle(.gray500)
-        .body1_18Medium()
+        .body1Medium18()
         .padding(.vertical, 18)
         .frame(maxWidth: .infinity)
     }
