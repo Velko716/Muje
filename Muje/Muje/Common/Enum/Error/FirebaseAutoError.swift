@@ -23,3 +23,11 @@ enum FirebaseAutoError: LocalizedError {
         }
     }
 }
+
+/// Firebase Auth 패스워드 설정 에러
+enum AppAuthError: Error {
+    case notLoggedIn
+    case operationNotAllowed // 콘솔에서 Email/Password 비활성화
+    case requiresRecentLogin // 세션 오래됨 → 재인증 필요
+    case weakPassword // 6자 미만 등
+}

@@ -15,7 +15,7 @@ struct EmailVerificationView: View {
     @State private var viewModel: EmailVerificationViewModel = .init()
     @State private var emailText: String = ""
     @State private var passwordText: String = ""
-    @State private   var rePasswordText: String = ""
+    @State private var rePasswordText: String = ""
     @State private var showToastMessage = false
     
     // 포커스 & 에러 노출 제어
@@ -73,7 +73,16 @@ struct EmailVerificationView: View {
                         guard isConfirmValid  else { focused = .confirm;  return }
                         
                         if let uid = Auth.auth().currentUser?.uid {
-                            router.push(to: .userInfoInputView(uuid: uid, email: FirebaseAuthManager.shared.email))
+                            viewModel.setPassword(
+                                newPassword: passwordText,
+                                email: emailText
+                            )
+                            router.push(
+                                to: .userInfoInputView(
+                                    uuid: uid,
+                                    email: FirebaseAuthManager.shared.email
+                                )
+                            )
                             FirebaseAuthManager.shared.email = ""
                         }
                     } else {
