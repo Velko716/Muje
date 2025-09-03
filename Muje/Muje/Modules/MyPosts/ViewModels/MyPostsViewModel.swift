@@ -245,3 +245,56 @@ private extension MyPostsViewModel {
     return slotDic
   }
 }
+
+final class RecruitPosts {
+    static let lists: [PostModel] = [
+        .init(title: "댄스 동아리", content: "댄스 동아리 OO모집합니다", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 14), interviewStartDate: Date().addingTimeInterval(3600 * 24 * 3), interviewEndDate: Date().addingTimeInterval(3600 * 24 * 7), hasInterview: true),
+        .init(title: "롤 동아리", content: "롤 동아리 OO모집합니다", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 7), hasInterview: false)
+    ]
+}
+
+final class ApplyPosts {
+    static let lists: [PostModel] = [
+        .init(title: "컴퓨터 동아리", content: "컴퓨터 동아리 XX입니다", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 5), hasInterview: true)
+    ]
+}
+// MARK: - 파이어베이스 로직
+extension MyPostsViewModel {
+  
+}
+// MARK: - 조건 쿼리문
+private extension MyPostsViewModel {
+  func currentUserApplication(
+    for currentUserId: String
+  ) async throws -> [Application] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .applications,
+      whereField: "applicant_user_id",
+      equalTo: currentUserId,
+      sortedBy: {
+        $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date()
+      }
+    )
+  }
+  
+  func fetchPost(for currentUserId: String) async throws -> [Post] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .posts,
+      whereField: "author_user_id",
+      equalTo: currentUserId,
+      sortedBy: {
+        $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date()
+      }
+    )
+  }
+  
+  func fetchInterviewSlot(for postId: String) async throws -> [InterviewSlot] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .interviewSlots,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: { $0.interviewDate.dateValue() < $1.interviewDate.dateValue() }
+    )
+  }
+  
+}
