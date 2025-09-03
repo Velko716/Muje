@@ -52,7 +52,15 @@ struct ImageView: View {
       .clipped()
       .offset(y: minY > 0 ? -minY : 0)
       
-      ImageIndicator
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                ImageIndicator
+            }
+            .padding(.bottom, 16)
+            .padding(.trailing, 16)
+        }
       
     }
     .frame(height: UIScreen.main.bounds.width)
