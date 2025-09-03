@@ -13,20 +13,45 @@ enum ApplicationStatus: String, Codable, CaseIterable {
     case interviewWaiting = "면접 대기 중"
     case reviewWaiting = "심사 대기 중"
     case reviewCompleted = "심사 완료됨"
-  
-  var displayName: String {
-    switch self {
-    case .submitted:
-      return "지원서 제출"
-    case .interviewWaiting:
-      return "면접 대기"
-    case .reviewWaiting:
-      return "심사 대기"
-    case .reviewCompleted:
-      return "심사 완료"
+    
+    var displayName: String {
+        switch self {
+        case .submitted:
+            return "지원서 제출"
+        case .interviewWaiting:
+            return "면접 대기"
+        case .reviewWaiting:
+            return "심사 대기"
+        case .reviewCompleted:
+            return "심사 완료"
+        }
     }
-  }
+    
+    func buttonString(slotId: String?) -> String {
+        switch self {
+        case .submitted:
+            return "면접 제안 전"
+        case .interviewWaiting:
+            if let id = slotId {
+                return "면접 일정 신청 완료"
+            } else {
+                return "면접일정 신청하기"
+            }
+        default:
+            return "면접완료"
+        }
+    }
+    
+    var buttonStatus: Bool {
+        switch self {
+        case .interviewWaiting:
+            return false
+        default:
+            return true
+        }
+    }
 }
+
 // MARK: - ManagementView 사용
 extension Application {
   var detailedStatusText: String {
