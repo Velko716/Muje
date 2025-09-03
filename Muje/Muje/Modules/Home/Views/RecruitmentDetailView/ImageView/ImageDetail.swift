@@ -45,7 +45,12 @@ struct ImageDetail: View {
       
       VStack {
         Spacer()
-        DetailIndicator
+          HStack {
+              DetailIndicator
+              Spacer()
+              ImageOrderIndicator
+              Spacer()
+          }
       }
       .padding(.leading, 16)
       
@@ -92,6 +97,16 @@ struct ImageDetail: View {
     .padding(.leading, 16)
     .padding(.top, 16)
   }
+    private var ImageOrderIndicator: some View {
+        VStack {
+            Text("\(selectedIndex) + 1")
+                .body1SemiBold18()
+                .foregroundStyle(.gray50)
+            Text("/\(postImage.count)")
+                .body1SemiBold18()
+                .foregroundStyle(.gray300)
+        }
+    }
   
   private func loadAllImages() async {
     await withTaskGroup(of: (UUID, String?).self) { group in

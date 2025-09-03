@@ -76,13 +76,14 @@ struct ReportModalView: View {
       reportAction()
     } label: {
       HStack {
-        Image(systemName: "light.beacon.min.fill")
+        Image(.reportIcon)
         Text("신고하기")
+            .body1_18SemiBold()
       }
-      .padding(.vertical, 18)
+      .padding(.vertical, 15.5)
       .frame(maxWidth: .infinity)
-      .foregroundStyle(.red)
-      .background(Color.gray.opacity(0.2))
+      .foregroundStyle(.accentRed)
+      .background(.gray50)
       .clipShape(RoundedRectangle(cornerRadius: 10))
     }
   }
@@ -92,7 +93,8 @@ struct ReportModalView: View {
       showReportModal = false
     } label: {
       Text("닫기")
-        .foregroundStyle(.gray)
+        .foregroundStyle(.gray500)
+        .body1_18Medium()
         .padding(.vertical, 18)
         .frame(maxWidth: .infinity)
     }

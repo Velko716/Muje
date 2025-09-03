@@ -8,24 +8,20 @@
 import SwiftUI
 
 extension ImageView {
-  var ImageIndicator: some View {
-    VStack {
-      Spacer()
-      HStack {
-        Spacer()
-        Text("\(currentPage + 1) / \(sortedImageUrls.count)")
-          .font(.caption)
-          .fontWeight(.medium)
-          .foregroundStyle(.white)
-          .padding(.horizontal, 13)
-          .padding(.vertical, 8)
-          .background(
+    var ImageIndicator: some View {
+        HStack(spacing: 0) {
+            Text("\(currentPage + 1)")
+                .caption14SemiBold()
+                .foregroundStyle(.white)
+            Text(" /\(sortedImageUrls.count)")
+                .caption14Regular()
+                .foregroundStyle(.gray200)
+        }
+        .padding(.vertical, 3)
+        .padding(.horizontal, 13)
+        .background(
             Capsule()
-              .fill(Color.black.opacity(0.2))
-          )
-      }
-      .padding(.trailing, 16)
+                .fill(.statusOpacity20)
+        )
     }
-    .padding(.bottom, 16)
-  }
 }
