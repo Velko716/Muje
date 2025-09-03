@@ -8,9 +8,13 @@
 import SwiftUI
 
 struct TermsAndPrivacyView: View {
-    @EnvironmentObject private var router: NavigationRouter
     
     let legalDocumentType: LegalDocumentType
+    @Binding var termsAgreed: Bool
+    @Binding var privacyAgreed: Bool
+    @EnvironmentObject private var router: NavigationRouter
+    @Environment(\.dismiss) private var dismiss
+    
     
     var body: some View {
         ZStack {
@@ -32,7 +36,13 @@ struct TermsAndPrivacyView: View {
                     bgColor: Color.black, // FIXME: - 컬러 수정
                     enabled: true
                 ) {
-                    router.pop()
+                    switch legalDocumentType {
+                    case .termsOfService:
+                        self.termsAgreed = true
+                    case .privacyPolicy:
+                        self.privacyAgreed = true
+                    }
+                    dismiss()
                 }
             }
             .bottomBarBackground() // ViewModifier
@@ -46,6 +56,11 @@ struct TermsAndPrivacyView: View {
 
 #Preview {
     NavigationStack {
-        TermsAndPrivacyView(legalDocumentType: .privacyPolicy)
+        TermsAndPrivacyView(
+            legalDocumentType: .privacyPolicy,
+            termsAgreed: .constant(false),
+            privacyAgreed: .constant(false)
+        )
+        .environmentObject(NavigationRouter())
     }
 }
