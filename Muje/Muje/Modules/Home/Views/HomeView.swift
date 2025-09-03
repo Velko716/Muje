@@ -55,7 +55,7 @@ struct HomeView: View {
                 .contentMargins(.horizontal, 16, for: .scrollContent)
                 .contentMargins(.horizontal, 0, for: .scrollIndicators)
             } //: VSTACK
-            PostCreateButton()
+            PostCreateButton(action: {}) //TODO: 라우터 연결
                 .padding(.bottom, 24)
         } //: ZSTACK
         .task {
