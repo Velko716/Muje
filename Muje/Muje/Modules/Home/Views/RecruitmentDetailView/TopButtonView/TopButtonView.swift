@@ -34,7 +34,8 @@ struct TopButtonView: View {
     Button {
       showReportModal = true
     } label: {
-      Image(systemName: "text.append")
+        Image(.moreIcon)
+            .foregroundStyle(.gray700)
     }
     .sheet(isPresented: $showReportModal) {
       ReportModalView(
@@ -54,9 +55,8 @@ struct TopButtonView: View {
     Button {
       action()
     } label: {
-      Image(systemName: "chevron.left")
-        .font(.system(size: 20))
-        .foregroundStyle(.black)
+        Image(.chevronLeft)
+        .foregroundStyle(.gray700)
         .background(
           Rectangle()
             .fill(Color.clear)
