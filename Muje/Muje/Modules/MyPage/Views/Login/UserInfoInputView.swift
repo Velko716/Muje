@@ -10,6 +10,7 @@ import SwiftUI
 struct UserInfoInputView: View {
     
     @EnvironmentObject private var router: NavigationRouter
+    @State private var viewModel: UserInfoInputViewModel = .init()
     //    @Bindable var emailVerificationVM: EmailVerificationViewModel
     //    @Bindable var userInfoVM: UserInfoInputViewModel
     
@@ -24,6 +25,12 @@ struct UserInfoInputView: View {
     
     @State private var maleIsSelected: Bool = false
     @State private var femaleIsSelected: Bool = false
+    
+    
+    @State private var showTermsView: Bool = false // 시트 열기
+    @State private var showPrivacyView: Bool = false // 시트 열기
+    @State private var termsAgreed: Bool = false // 서비스 이용약관 여부
+    @State private var privacyAgreed: Bool = false // 개인정보 처리방침 여부
     
     var body: some View {
         ZStack {
@@ -74,6 +81,25 @@ struct UserInfoInputView: View {
         .toolbar {
             ToolbarLeadingBackButton()
             ToolbarCenterTitle(text: "회원가입")
+        }
+        // FIXME: - 툴 바를 위해 네비게이션 스택으로 구현했지만, 더 좋은 방법이 있는지 알아보고 수정하기
+        .sheet(isPresented: $showTermsView) {
+            NavigationStack {
+                TermsAndPrivacyView(
+                    legalDocumentType: .termsOfService,
+                    termsAgreed: $termsAgreed,
+                    privacyAgreed: $privacyAgreed
+                )
+            }
+        }
+        .sheet(isPresented: $showPrivacyView) {
+            NavigationStack {
+            TermsAndPrivacyView(
+                legalDocumentType: .privacyPolicy,
+                termsAgreed: $termsAgreed,
+                privacyAgreed: $privacyAgreed
+            )
+            }
         }
     }
     
@@ -194,37 +220,46 @@ struct UserInfoInputView: View {
                 .overlay {
                     VStack(spacing: 8) {
                         Button {
-                            router.push(to: .termsAndPrivacyView(type: .termsOfService))
+                            self.showTermsView = true
                         } label: {
                             HStack(spacing: .zero) {
                                 Text("[필수] 이용약관에 동의합니다.")
                                     .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
-                                    .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
+                                    .foregroundStyle(termsAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
                                 Image(.iconChevronRight)
-                                    .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
+                                    .foregroundStyle(termsAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
                                     .frame(width: 24, height: 24)
                                 Spacer()
-                                Circle()
-                                    .stroke(Color.gray, lineWidth: 1) // FIXME: - 테두리 색 수정
-                                    .fill(Color.white) // FIXME: - 컬러 수정
-                                    .frame(width: 26, height: 26) // FIXME: - 이미지로 수정
+                                if termsAgreed {
+                                    Image(.checkBox)
+                                } else {
+                                    Circle()
+                                        .stroke(Color.gray, lineWidth: 1) // FIXME: - 테두리 색 수정
+                                        .fill(Color.white) // FIXME: - 컬러 수정
+                                        .frame(width: 26, height: 26) // FIXME: - 이미지로 수정
+                                }
                             }
                         }
                         Button {
-                            router.push(to: .termsAndPrivacyView(type: .privacyPolicy))
+                            self.showPrivacyView = true
                         } label: {
                             HStack(spacing: .zero) {
                                 Text("[필수] 개인정보 처리방침에 동의합니다.")
                                     .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
-                                    .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
+                                    .foregroundStyle(privacyAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
                                 Image(.iconChevronRight)
-                                    .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
+                                    .foregroundStyle(privacyAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
                                     .frame(width: 24, height: 24)
                                 Spacer()
-                                Circle()
-                                    .stroke(Color.gray, lineWidth: 1) // FIXME: - 테두리 색 수정
-                                    .fill(Color.white) // FIXME: - 컬러 수정
-                                    .frame(width: 26, height: 26) // FIXME: - 이미지로 수정
+                                
+                                if privacyAgreed {
+                                    Image(.checkBox)
+                                } else {
+                                    Circle()
+                                        .stroke(Color.gray, lineWidth: 1) // FIXME: - 테두리 색 수정
+                                        .fill(Color.white) // FIXME: - 컬러 수정
+                                        .frame(width: 26, height: 26) // FIXME: - 이미지로 수정
+                                }
                             }
                         }
                     }
