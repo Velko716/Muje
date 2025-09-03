@@ -49,11 +49,12 @@ struct RecruitmentDetailView: View {
   
   private var contentView: some View {
     VStack {
-      ScrollView {
+        ScrollView {
         ImageView(
           viewModel: viewModel,
           postImage: viewModel.postImages
         )
+        .padding(.bottom, 24)
         RecruitmentDataView(postId: postId, viewModel: viewModel)
       }
       if !viewModel.isAuthor { // 작성자가 아닐때 하단 버튼 표시
