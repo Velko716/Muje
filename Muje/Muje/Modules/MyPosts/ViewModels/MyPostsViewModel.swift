@@ -103,8 +103,8 @@ extension MyPostsViewModel {
         for i in app {
           group.addTask {
             do {
-              guard let postId = UUID(uuidString: i.postId) else { return }
-              let post = try await self.fetchApplicationPost(for: postId)
+              let post = try await self.fetchApplicationPost(for: i.postId)
+              print("지원한 공고 갯수 \(post.count)개 로드 성공")
               
               await MainActor.run {
                 self.applicationPost = post
@@ -117,9 +117,11 @@ extension MyPostsViewModel {
           group.addTask {
             do {
               let slot = try await self.fetchInterviewSlot(for: i.postId)
+              print("지원한 공고의 인터뷰 슬롯 \(slot.count)개 로드 성공")
               
               await MainActor.run {
                 self.applicationSlot = self.mapDicSlot(for: slot)
+                print("\(self.applicationSlot.count)")
               }
               
             } catch {
@@ -134,6 +136,7 @@ extension MyPostsViewModel {
                 )
               }
               let thumb = try await self.firestoreManager.fetchThumbnailsForPost(for: postIds)
+              print("지원한 공고의 썸네일 \(thumb.count)개 로드 성공")
               
               await MainActor.run {
                 self.applicationThumbnail = thumb
@@ -154,6 +157,7 @@ extension MyPostsViewModel {
     
     do {
       let posts = try await fetchPost(for: userId)
+      print("내가 작성한 공고 \(posts.count)개 로드 성공")
       self.uploadPost = posts
       
       await withTaskGroup(of: Void.self) { group in
@@ -161,8 +165,10 @@ extension MyPostsViewModel {
           group.addTask {
             do {
               let slots = try await self.fetchInterviewSlot(for: post.postId.uuidString)
+              print("내가 작성한 공고 인터뷰 슬롯 \(slots.count)개 로드 성공")
               await MainActor.run {
                 self.uploadPostSlot = self.mapDicSlot(for: slots)
+                print("\(self.uploadPostSlot.count)")
               }
             } catch {
               print("\(post.postId)의 인터뷰 슬롯 불러오기 실패 \(error)")
@@ -172,6 +178,7 @@ extension MyPostsViewModel {
             do {
               let postId = posts.compactMap { $0.postId }
               let thumb = try await self.firestoreManager.fetchThumbnailsForPost(for: postId)
+              print("내가 작성한 공고 썸네일 \(thumb.count)개 로드 성공")
               
               await MainActor.run {
                 self.uploadThumbnail = thumb
@@ -223,7 +230,7 @@ private extension MyPostsViewModel {
     )
   }
   
-  func fetchApplicationPost(for postId: UUID) async throws -> [Post] {
+  func fetchApplicationPost(for postId: String) async throws -> [Post] {
     return try await firestoreManager.fetchWithCondition(
       from: .posts,
       whereField: "post_id",

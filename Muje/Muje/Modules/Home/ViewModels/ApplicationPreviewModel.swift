@@ -17,13 +17,13 @@ final class ApplicationPreviewModel {
   
   func loadUserData(userId: String) async {
     do {
-      guard let userID = UUID(uuidString: userId) else {
-        print("UUID 바꾸기 실패")
-        return
-      }
-      
+//      guard let userID = UUID(uuidString: userId) else {
+//        print("UUID 바꾸기 실패")
+//        return
+//      }
+//      let userID: String = "0062C371-34F5-470B-BFE1-F671E23C5C97"
       let info: User = try await firesotreManager.get(
-        userID.uuidString,
+        userId,
         from: .user
       )
       self.userInfo = info
