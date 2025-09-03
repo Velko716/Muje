@@ -10,7 +10,7 @@ import SwiftUI
 struct ApplyPostCard: View {
     @Bindable var selectViewModel: SelectViewModel
     
-    var item: PostModel
+    var item: Post
     var isPost: Bool
     var status: ApplicationStatus = .interviewWaiting //서버에서 어플리케이션 DTO 받아와서 패치
     var slotId: String? = nil //마찬가지로 어플리케이션 DTO 받아와서 패치
@@ -28,7 +28,7 @@ struct ApplyPostCard: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    DateBox(title: "모집 기간", startDate: item.recruitmentStart, endDate: item.recruitmentEnd, isPost: true)
+                  DateBox(title: "모집 기간", startDate: item.recruitmentStart.dateValue(), endDate: item.recruitmentEnd.dateValue(), isPost: true)
                     DateBox(title: "면접 일정", startDate: slot?.interviewDate ?? nil, isPost: isPost, hasInterview: item.hasInterview)
                 }
             }
@@ -55,6 +55,6 @@ struct ApplyPostCard: View {
     }
 }
 
-#Preview {
-    ApplyPostCard(selectViewModel: .init(), item: .init(authorUserId: "1234", title: "댄스동아리 모집", organization: "애플", content: "안녕안녕", recruitmentStart: Date(), recruitmentEnd: Date().addingTimeInterval(3600 * 24 * 5), hasInterview: true, interivewLocation: "도서관", status: "면접 중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "hi", authorOrganization: "aaa"), isPost: true)
-}
+//#Preview {
+//    ApplyPostCard(selectViewModel: .init(), item: .init(authorUserId: "1234", title: "댄스동아리 모집", organization: "애플", content: "안녕안녕", recruitmentStart: Date(), recruitmentEnd: Date().addingTimeInterval(3600 * 24 * 5), hasInterview: true, interivewLocation: "도서관", status: "면접 중", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "hi", authorOrganization: "aaa"), isPost: true)
+//}

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecruitPostCard: View {
-    var item: PostModel
+    var item: Post
     var isPost: Bool
     
     var tempLists: [InterviewSlotModel] = []
@@ -24,7 +24,7 @@ struct RecruitPostCard: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    DateBox(title: "모집 기간", startDate: item.recruitmentStart, endDate: item.recruitmentEnd, isPost: true)
+                  DateBox(title: "모집 기간", startDate: item.recruitmentStart.dateValue(), endDate: item.recruitmentEnd.dateValue(), isPost: true)
                     DateBox(title: "면접 일정", startDate: tempLists.first?.interviewDate, endDate: tempLists.last?.interviewDate, isPost: isPost, hasInterview: item.hasInterview)
                 }
             }
@@ -56,6 +56,6 @@ struct RecruitPostCard: View {
     }
 }
 
-#Preview {
-    RecruitPostCard(item: .init(authorUserId: "qwer1234", title: "qwer", organization: "apple", content: "하이하이", recruitmentStart: Date(), recruitmentEnd: Date().addingTimeInterval(3600 * 24 * 5), hasInterview: true, interivewLocation: "도서관", status: "면접 전", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "One", authorOrganization: "Apple"), isPost: false)
-}
+//#Preview {
+//    RecruitPostCard(item: .init(authorUserId: "qwer1234", title: "qwer", organization: "apple", content: "하이하이", recruitmentStart: Date(), recruitmentEnd: Date().addingTimeInterval(3600 * 24 * 5), hasInterview: true, interivewLocation: "도서관", status: "면접 전", requiresName: true, requiresStudentId: true, requiresDepartment: true, requiresGender: true, requiresAge: true, requiresPhone: true, authorName: "One", authorOrganization: "Apple"), isPost: false)
+//}

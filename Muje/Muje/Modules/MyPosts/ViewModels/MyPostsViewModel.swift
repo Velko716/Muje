@@ -25,11 +25,14 @@ class MyPostsViewModel {
   private let firestoreManager = FirestoreManager.shared
   
   // MARK: 현재 유저 ID
-  var currentUserId: String? {
-    guard let currentUser = firebaseAuthManager.currentUser else { return nil }
-    
-    return currentUser.userId
-  }
+//  var currentUserId: String? {
+//    guard let currentUser = firebaseAuthManager.currentUser else { return nil }
+//    
+//    return currentUser.userId
+//  }
+  
+  private let currentUserId: String? = "0062C371-34F5-470B-BFE1-F671E23C5C97"
+
   
   // MARK: 현재 유저의 지원 데이터
   var currentUserApplication: [UUID: Application] = [:]
