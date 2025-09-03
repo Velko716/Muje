@@ -69,7 +69,7 @@ struct RecruitmentDataView: View {
     }
     private var content: some View {
         Text(viewModel.post?.content ?? "")
-            .body2_16Regular()
+            .body2Regular16()
             .foregroundStyle(.gray700)
     }
     private var divider: some View {
