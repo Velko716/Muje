@@ -14,10 +14,13 @@ struct MyPostsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 56) {
-                topView
-                postView
-                applyView
-            }
+              topView
+              postView
+              applyView
+          }
+        }
+        .task {
+          await myPostsViewModel.loadAllData()
         }
         .safeAreaPadding(.horizontal, 16)
         .fullScreenCover(isPresented: $selectViewModel.isSetting) {
@@ -52,16 +55,16 @@ struct MyPostsView: View {
     
     private var postView: some View {
         VStack(alignment: .leading, spacing: 21) {
-            Text("내가 올린 공고 \(myPostsViewModel.recruitPosts.count)")
+            Text("내가 올린 공고 \(myPostsViewModel.uploadPost.count)")
                 .font(.title2)
                 .foregroundStyle(Color.black)
             
-            if myPostsViewModel.recruitPosts.isEmpty {
+            if myPostsViewModel.uploadPost.isEmpty {
                 emptyPost(title: "올린 공고가 없습니다")
             } else {
                 TabView(selection: $myPostsViewModel.currentRecruitPage) {
-                    ForEach(myPostsViewModel.recruitPosts.indices, id: \.self) { index in
-                        RecruitPostCard(item: myPostsViewModel.recruitPosts[index], isPost: true)
+                    ForEach(myPostsViewModel.uploadPost.indices, id: \.self) { index in
+                        RecruitPostCard(item: myPostsViewModel.uploadPost[index], isPost: true)
                             .tag(index)
                     }
                 }
@@ -69,24 +72,25 @@ struct MyPostsView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
             
-            if myPostsViewModel.recruitPosts.count > 1 {
-                PageController(pageCount: myPostsViewModel.recruitPosts.count, currentPage: $myPostsViewModel.currentRecruitPage)
-            }
+//            if myPostsViewModel.uploadPost.count > 1 {
+//                PageController(pageCount: myPostsViewModel.uploadPost.count, currentPage: $myPostsViewModel.currentRecruitPage)
+//                
+//            }
         }
     }
     
     private var applyView: some View {
         VStack(alignment: .leading, spacing: 21) {
-            Text("내가 지원한 공고 \(myPostsViewModel.applyPosts.count)")
+            Text("내가 지원한 공고 \(myPostsViewModel.applicationPost.count)")
                 .font(.title2)
                 .foregroundStyle(Color.black)
             
-            if myPostsViewModel.applyPosts.isEmpty {
+            if myPostsViewModel.applicationPost.isEmpty {
                 emptyPost(title: "지원한 공고가 없습니다")
             } else {
                 TabView(selection: $myPostsViewModel.currentApplyPage) {
-                    ForEach(myPostsViewModel.applyPosts.indices, id: \.self) { index in
-                        ApplyPostCard(selectViewModel: selectViewModel, item: myPostsViewModel.applyPosts[index], isPost: false)
+                    ForEach(myPostsViewModel.applicationPost.indices, id: \.self) { index in
+                        ApplyPostCard(selectViewModel: selectViewModel, item: myPostsViewModel.applicationPost[index], isPost: false)
                             .tag(index)
                     }
                 }
@@ -94,9 +98,9 @@ struct MyPostsView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
             
-            if myPostsViewModel.applyPosts.count > 1 {
-                PageController(pageCount: myPostsViewModel.applyPosts.count, currentPage: $myPostsViewModel.currentApplyPage)
-            }
+//            if myPostsViewModel.applicationPost.count > 1 {
+//                PageController(pageCount: myPostsViewModel.applicationPost.count, currentPage: $myPostsViewModel.currentApplyPage)
+//            }
         }
     }
     

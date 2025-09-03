@@ -11,8 +11,10 @@ import FirebaseFirestore
 struct ApplicantDetailModalView: View {
   
   @State var viewModel: ModalViewModel
+  @Binding var selectedApplicant: Application?
   
   @EnvironmentObject private var router: NavigationRouter
+  @Environment(\.dismiss) private var dismiss
   
   private var interviewSlot: InterviewSlot? {
     return viewModel.getInterviewSlot()
@@ -38,8 +40,7 @@ struct ApplicantDetailModalView: View {
       
       VStack {
         BottomNavigationSection(
-          viewModel: viewModel
-        )
+          viewModel: viewModel)
       }
     }
 //    .task {
@@ -49,7 +50,7 @@ struct ApplicantDetailModalView: View {
       ConfirmationModalView(type: type) {
         viewModel.Action(for: type)
         viewModel.confirmationType = nil
-      }
+      } exitSheet: { selectedApplicant = nil }
       .presentationDetents([.fraction(0.3)])
     }
   }
@@ -138,5 +139,19 @@ struct ApplicantDetailModalView: View {
 }
 
 #Preview {
-  ApplicantDetailModalView(viewModel: .preview)
+  ApplicantDetailModalView(
+    viewModel: .preview,
+    selectedApplicant: .constant(
+      Application(
+        applicationId: UUID(),
+        applicantUserId: "",
+        postId: "",
+        status: ApplicationStatus.submitted.rawValue,
+        applicantName: "",
+        postTitle: "",
+        postOrganization: "",
+        postAuthorUserId: ""
+      )
+    )
+  )
 }
