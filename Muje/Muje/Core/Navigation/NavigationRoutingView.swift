@@ -64,8 +64,6 @@ struct NavigationRoutingView: View {
                 TextView(viewModel: TextViewModel(type: type)) // 커뮤니티 이용 규칙, 서비스 이용약관, 개인정보 처리 방침, 청소년 보호 정책, 오픈 소스 라이선스
             case .startLoginView:
                 StartLoginView()
-            case .termsAndPrivacyView(let type):
-                TermsAndPrivacyView(legalDocumentType: type)
             }
         }
         .hideBackButton()
