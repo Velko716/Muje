@@ -29,7 +29,7 @@ struct ApplyPostCard: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                  DateBox(title: "모집 기간", startDate: item.recruitmentStart.dateValue(), endDate: item.recruitmentEnd.dateValue(), isPost: true)
+                    DateBox(title: "모집 기간", startDate: item.recruitmentStart.dateValue(), endDate: item.recruitmentEnd.dateValue(), isPost: true)
                     DateBox(title: "면접 일정", startDate: slot?.interviewDate ?? nil, isPost: isPost, hasInterview: item.hasInterview)
                 }
             }

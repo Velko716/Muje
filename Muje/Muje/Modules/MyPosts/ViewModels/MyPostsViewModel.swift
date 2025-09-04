@@ -8,10 +8,8 @@ import SwiftUI
 
 @Observable
 class MyPostsViewModel {
-    var recruitmentLists: [InterviewSlotModel] = [] //이후에 서버에서 받아오도록 변경_다가오는 일정에서 활용
+    var recruitmentLists: [InterviewSlot] = [] //이후에 서버에서 받아오도록 변경_다가오는 일정에서 활용
     var applicationLists: [InterviewSlotModel] = [] //이후에 서버에서 받아오도록 변경_다가오는 일정에서 활용
-    var recruitPosts: [PostModel] = [] //이후에 서버에서 받아오도록 변경_내가 올린 공고에 활용
-    var applyPosts: [PostModel] = [] //이후에 서버에서 받아오도록 변경_내가 지원한 공고에 활용
     var isRecruit: Bool = false //모달 시트_다가오는 일정
     var isApply: Bool = false //모달 시트_다가오는 일정
     var isLoading: Bool = false
@@ -93,19 +91,34 @@ class MyPostsViewModel {
     print("캐시 클리어 완료")
   }
     
-    func upcomingRecruitLists() -> [InterviewSlotModel] {
-        let upcomingDates = recruitmentLists.filter { slot in
-            return Date().addingTimeInterval(-60) <= slot.interviewDate && slot.interviewDate <= Date().addingTimeInterval(3600 * 24)
-        }.sorted(by: {$0.interviewDate < $1.interviewDate})
     
-        return upcomingDates
+    func tempString(postId: String, lists: [Post]) -> String? {
+        for item in lists {
+            if item.postId.uuidString == postId {
+                return item.title
+            }
+        }
+        return nil
     }
     
-    func upcomingApplyLists() -> [InterviewSlotModel] {
-        let upcomingDates = applicationLists.filter { slot in
-            return Date().addingTimeInterval(-60) <= slot.interviewTime && slot.interviewTime <= Date().addingTimeInterval(3600 * 24)
-        }.sorted(by: {$0.interviewTime < $1.interviewTime})
-        return upcomingDates
+    func upcomingRecruitLists() -> [InterviewSlot] {
+        let upcomingSlots = uploadPostSlot.values
+            .flatMap { $0 }
+            .filter { slot in
+                let slotDate = slot.interviewDate.dateValue()
+                return slotDate >= Date().addingTimeInterval(-60) && slotDate <= Date().addingTimeInterval(3600 * 24 * 200) //변경필요
+            }
+        return upcomingSlots
+    }
+    
+    func upcomingApplyLists() -> [InterviewSlot] {
+        let upcomingSlots = applicationSlot.values
+            .flatMap { $0 }
+            .filter { slot in
+                let slotDate = slot.interviewDate.dateValue()
+                return slotDate >= Date().addingTimeInterval(-3600 * 24 * 200) && slotDate <= Date().addingTimeInterval(3600 * 24 * 200) //변경필요
+            }
+        return upcomingSlots
     }
     
     //다가오는 일정에서 포맷 확인 함수
