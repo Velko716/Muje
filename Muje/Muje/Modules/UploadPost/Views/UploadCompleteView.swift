@@ -78,7 +78,6 @@ struct UploadCompleteView: View {
         .fill(Color.white)
         .shadow(radius: 3)
         .ignoresSafeArea(edges: .bottom)
-      
     )
     
   }
