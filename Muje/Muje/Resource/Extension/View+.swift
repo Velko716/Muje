@@ -37,6 +37,13 @@ extension View {
         ZStack {
             self
             Toast(isShown: isShown, message: message)
+            .opacity(
+              isShown.wrappedValue ? 1 : 0
+            )
+            .animation(
+              .easeInOut(duration: 0.3),
+              value: isShown.wrappedValue
+            )
         }
     }
     
