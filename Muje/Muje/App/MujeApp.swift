@@ -144,8 +144,9 @@ struct MujeApp: App {
                                 // 뷰 전환이 즉시 가능하도록 먼저 준비 완료 표시
                                 isReady = true
                                 // 회원정보 입력 화면으로 이동
-                                router.push(to: .userInfoInputView(uuid: uid, email: FirebaseAuthManager.shared.email))
+                                // router.push(to: .userInfoInputView(uuid: uid, email: FirebaseAuthManager.shared.email))
                                 // 싱글톤 이메일 초기화
+                                FirebaseAuthManager.shared.emailVerified = true
                                 FirebaseAuthManager.shared.email = ""
                             } else {
                                 print("[Auth] currentUser is nil. UID unavailable.")

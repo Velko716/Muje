@@ -88,6 +88,35 @@ final class FirebaseAuthManager: ObservableObject {
         }
     }
     
+    /// 이메일과 패스워드로 로그인을 처리하는 메서드입니다.
+    func signInWithEmailPassword(email: String, password: String) async throws {
+        do {
+            _ = try await Auth.auth().signIn(withEmail: email, password: password)
+            let uid = Auth.auth().currentUser?.uid ?? ""
+            let user: User = try await FirestoreManager.shared.get(uid, from: .user)
+            await MainActor.run { self.currentUser = user }
+        } catch let nsErr as NSError {
+            let code = AuthErrorCode(_bridgedNSError: nsErr)
+            switch code {
+            case .invalidEmail:
+                throw AppAuthError.invalidEmail
+            case .wrongPassword:
+                throw AppAuthError.wrongPassword
+            case .userNotFound:
+                throw AppAuthError.userNotFound
+            case .userDisabled:
+                throw AppAuthError.userDisabled
+            case .tooManyRequests:
+                throw AppAuthError.tooManyRequests
+            case .networkError:
+                throw AppAuthError.networkError
+            default:
+                throw AppAuthError.unknown(nsErr)
+            }
+        }
+    }
+    
+    
     /// 핸드폰 인증으로 로그인 하는 메서드입니다.
     func verifyPhoneNumberAsync(phoneNumber: String) async throws -> String {
         try await withCheckedThrowingContinuation { continuation in

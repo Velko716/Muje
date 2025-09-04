@@ -30,4 +30,14 @@ enum AppAuthError: Error {
     case operationNotAllowed // 콘솔에서 Email/Password 비활성화
     case requiresRecentLogin // 세션 오래됨 → 재인증 필요
     case weakPassword // 6자 미만 등
+
+    
+    // 이메일/비번 로그인용 에러
+    case invalidEmail
+    case wrongPassword
+    case userNotFound
+    case userDisabled
+    case tooManyRequests
+    case networkError
+    case unknown(Error)
 }
