@@ -15,6 +15,9 @@ struct LoginView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     
+    @State private var showToastMessage: Bool = false
+    @State private var toastText: String = "인증을 실패하였습니다.\n이메일과 비밀번호를 확인해주세요" // FIXME: - 현재는 에러메세지가 고정이지만, 추후 에러 타입에 맞게 토스트 메세지 문구를 수정하기
+    
     var body: some View {
         ZStack {
             VStack {
@@ -36,13 +39,20 @@ struct LoginView: View {
                     enabled: email.isEmpty == false && password.isEmpty == false
                 ) {
                     Task {
-                        await viewModel.signInWithEmailPassword(
-                            email: email,
-                            password: password
-                        )
+                        do {
+                            try await viewModel.signInWithEmailPassword(email: email, password: password)
+                            router.popToRootView()
+                        } catch { // 아이디 패스워드 오류 or 다른 이슈
+                            await MainActor.run {
+                                showToastMessage = true
+                            }
+                        }
                     }
-                    router.popToRootView()
                 }
+            }
+            .toast(isPresented: $showToastMessage, duration: 2, position: .bottom) {
+                ToastView(text: toastText)
+                    .offset(y: -60)
             }
             .bottomBarBackground()
         }
