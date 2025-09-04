@@ -13,6 +13,8 @@ struct ForgotPasswordView: View {
     @State private var viewModel: ForgotPasswordViewModel = .init()
     @State private var email: String = ""
     
+    @State var showToastMessage: Bool = false
+    
     var body: some View {
         ZStack {
             VStack(spacing: 48) {
@@ -36,15 +38,27 @@ struct ForgotPasswordView: View {
                     enabled: !email.isEmpty
                 ) {
                     Task {
-                        try await viewModel.sendPasswordReset(email: email)
-                        router.pop()
+                        do {
+                            try await viewModel.sendPasswordReset(email: email)
+                            await MainActor.run { showToastMessage = true }
+                            try? await Task.sleep(for: .seconds(1)) // FIXME: - 토스트 메세지를 띄우기 위한 임시 초 맞추기
+                            await MainActor.run { router.pop() }
+                        } catch {
+                            await MainActor.run {
+                                showToastMessage = true
+                            }
+                        }
                     }
                 }
+            }
+            .toast(isPresented: $showToastMessage, duration: 2, position: .bottom) {
+                ToastView(text: "비밀번호 재설정 링크를 보냈어요.\n메일함을 확인해 주세요.")
+                    .offset(y: -60)
             }
             .bottomBarBackground()
         }
         .paddingH16()
-   }
+    }
     
     // MARK: - 탑 타이틀 뷰
     private var topTitleView: some View {
