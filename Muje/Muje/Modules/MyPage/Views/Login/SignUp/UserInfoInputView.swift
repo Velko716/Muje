@@ -32,6 +32,7 @@ struct UserInfoInputView: View {
     @State private var showPrivacyView: Bool = false // 시트 열기
     @State private var termsAgreed: Bool = false // 서비스 이용약관 여부
     @State private var privacyAgreed: Bool = false // 개인정보 처리방침 여부
+    @State private var showToastMessage: Bool = true // 인증을 완료하면 토스트 메세지는 항시 뜨게
     
     /// 모든 텍스트 입력 여부와 약관에 대한 동의에 대한 허용을 해야 계정이 성공적으로 만들어집니다.
     private var isSubmitEnabled: Bool {
@@ -91,6 +92,10 @@ struct UserInfoInputView: View {
                     router.push(to: .registrationCompleteView(userName: name))
                     
                 }
+            }
+            .toast(isPresented: $showToastMessage, duration: 2, position: .bottom) {
+                ToastView(text: "인증을 성공하였습니다.")
+                    .offset(y: -60)
             }
             .bottomBarBackground()
         }
