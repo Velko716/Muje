@@ -13,6 +13,7 @@ struct ForgotPasswordView: View {
     @State private var viewModel: ForgotPasswordViewModel = .init()
     @State private var email: String = ""
     
+    @State private var showErrorMessage: Bool = false
     @State var showToastMessage: Bool = false
     
     var body: some View {
@@ -41,11 +42,11 @@ struct ForgotPasswordView: View {
                         do {
                             try await viewModel.sendPasswordReset(email: email)
                             await MainActor.run { showToastMessage = true }
-                            try? await Task.sleep(for: .seconds(1)) // FIXME: - 토스트 메세지를 띄우기 위한 임시 초 맞추기
+                            try? await Task.sleep(for: .seconds(1.5)) // FIXME: - 토스트 메세지를 띄우기 위한 임시 초 맞추기
                             await MainActor.run { router.pop() }
                         } catch {
                             await MainActor.run {
-                                showToastMessage = true
+                                self.showErrorMessage = true
                             }
                         }
                     }
@@ -74,11 +75,24 @@ struct ForgotPasswordView: View {
     
     // MARK: - 미들 이메일 주소 입력 창 뷰
     private var middleEmailInputView: some View {
-        RoundedTextField(
-            text: $email,
-            placeholder: "이메일 주소",
-            keyboard: .emailAddress
-        )
+        VStack(alignment: .leading, spacing: 4) {
+            RoundedTextField(
+                text: $email,
+                placeholder: "이메일 주소",
+                keyboard: .emailAddress
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(showErrorMessage ? Color.red : .clear, lineWidth: 1)
+            }
+            
+            if showErrorMessage {
+                Text("존재하지 않는 이메일이에요")
+                    .font(Font.system(size: 14, weight: .medium))
+                    .foregroundStyle(Color.red) // FIXME: - 컬러 수정
+                    .offset(x: 7)
+            }
+        }
     }
     
 }
