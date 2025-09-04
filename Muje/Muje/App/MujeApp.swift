@@ -155,6 +155,7 @@ struct MujeApp: App {
                             print("이메일 새유저")
                         } else {
                             if let uid = Auth.auth().currentUser?.uid {
+                                FirebaseAuthManager.shared.existedEmail = true
                                 do {
                                     let user: User = try await FirestoreManager.shared.get(uid, from: .user)
                                     await MainActor.run {

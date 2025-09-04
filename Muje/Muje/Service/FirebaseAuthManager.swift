@@ -15,10 +15,11 @@ final class FirebaseAuthManager: ObservableObject {
     
     var email: String = ""
     
-    
     /// 파이어베이스 이메일 인증 여부 확인 변수입니다. (딥 링크로 앱에 다시 들어올 때, UI 갱신을 위해서 구현)  🤔 여기 한 번 살펴보기...! (DI, Actor 등등)
     @Published var emailVerified: Bool = false
     
+    /// 이미 존재하는 이메일인지에 대한 여부 (회원 가입 시, 사용자가 적은 이메일이 기존 데이터베이스에 저장되어 있는지에 대한 여부)
+    @Published var existedEmail: Bool = false
     
     /// 현재 로그인 유저 이메일 조회
     var currentEmail: String {
