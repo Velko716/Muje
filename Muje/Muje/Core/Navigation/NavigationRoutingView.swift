@@ -68,6 +68,8 @@ struct NavigationRoutingView: View {
                 RegistrationCompleteView(userName: userName)
             case .loginView:
                 LoginView()
+            case .forgotPasswordView:
+                ForgotPasswordView() // 비밀번호 찾기 뷰
             }
         }
         .hideBackButton()
