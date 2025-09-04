@@ -10,6 +10,7 @@ import SwiftUI
 struct ForgotPasswordView: View {
     @EnvironmentObject private var router: NavigationRouter
     
+    @State private var viewModel: ForgotPasswordViewModel = .init()
     @State private var email: String = ""
     
     var body: some View {
@@ -32,15 +33,12 @@ struct ForgotPasswordView: View {
                     text: "비밀번호 초기화",
                     textColor: .white,
                     bgColor: .black,
-                    enabled: true
+                    enabled: !email.isEmpty
                 ) {
-//                    Task {
-//                        await viewModel.signInWithEmailPassword(
-//                            email: email,
-//                            password: password
-//                        )
-//                    }
-                    router.popToRootView()
+                    Task {
+                        try await viewModel.sendPasswordReset(email: email)
+                        router.pop()
+                    }
                 }
             }
             .bottomBarBackground()
