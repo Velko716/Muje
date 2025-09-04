@@ -35,8 +35,7 @@ struct StartLoginView: View {
                 Spacer().frame(height: 4)
                 
                 Button {
-                    // TODO: 로그인 네비게이션 이동 추가하기
-                    print("로그인하기")
+                    router.push(to: .loginView)
                 } label: {
                     Text("로그인하기")
                         .font(Font.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정

@@ -8,12 +8,17 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject private var router: NavigationRouter
+    
+    @State private var viewModel: LoginViewModel = .init()
+    
     @State private var email: String = ""
     @State private var password: String = ""
     
     var body: some View {
         ZStack {
             VStack {
+                Spacer().frame(height: 24)
                 emailPasswordInputView
                 Spacer().frame(height: 32)
                 findPasswordView
@@ -28,9 +33,15 @@ struct LoginView: View {
                     text: "로그인",
                     textColor: .white,
                     bgColor: .black,
-                    enabled: true
+                    enabled: email.isEmpty == false && password.isEmpty == false
                 ) {
-                    
+                    Task {
+                        await viewModel.signInWithEmailPassword(
+                            email: email,
+                            password: password
+                        )
+                    }
+                    router.popToRootView()
                 }
             }
             .bottomBarBackground()
@@ -90,5 +101,6 @@ struct LoginView: View {
 #Preview {
     NavigationStack {
         LoginView()
+            .environmentObject(NavigationRouter())
     }
 }

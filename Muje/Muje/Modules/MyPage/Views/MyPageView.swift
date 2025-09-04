@@ -108,7 +108,7 @@ struct MyPageView: View {
     private var topUserInfoView: some View {
         // 로그인 여부에 대한 분기 처리
         VStack(alignment: .leading) {
-            if let user = FirebaseAuthManager.shared.currentUser {
+            if let user = auth.currentUser {
                 Button {
                     
                 } label: {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UserInfoInputView: View {
     
+    @EnvironmentObject private var auth: FirebaseAuthManager
     @EnvironmentObject private var router: NavigationRouter
     @State private var viewModel: UserInfoInputViewModel = .init()
     //    @Bindable var emailVerificationVM: EmailVerificationViewModel
@@ -65,27 +66,28 @@ struct UserInfoInputView: View {
                     bgColor: .black,
                     enabled: isSubmitEnabled
                 ) {
-//                    let user = User(
-//                        userId: self.uuid,
-//                        email: self.email,
-//                        name: name,
-//                        birthYear: Int(birthYear) ?? 0,
-//                        gender: gender,
-//                        department: department,
-//                        studentId: studentId,
-//                        emailVerified: true,
-//                        termsAgreed: true,
-//                        privacyAgreed: true
-//                    )
-//                    
-//                    Task {
-//                        do {
-//                            let _ = try await FirestoreManager.shared.update(user)
-//                        } catch {
-//                            print("error : \(error.localizedDescription)")
-//                        }
-//                        router.popToRootView() // FIXME: - 임시
-//                    }
+                    let user = User(
+                        userId: self.uuid,
+                        email: self.email,
+                        name: name,
+                        birthYear: Int(birthYear) ?? 0,
+                        gender: gender,
+                        department: department,
+                        studentId: studentId,
+                        emailVerified: true,
+                        termsAgreed: true,
+                        privacyAgreed: true
+                    )
+                    
+                    // MARK: - 유저정보 업데이트
+                    Task {
+                        do {
+                            let user = try await FirestoreManager.shared.update(user)
+                            FirebaseAuthManager.shared.currentUser = user
+                        } catch {
+                            print("error : \(error.localizedDescription)")
+                        }
+                    }
                     router.push(to: .registrationCompleteView(userName: name))
                     
                 }

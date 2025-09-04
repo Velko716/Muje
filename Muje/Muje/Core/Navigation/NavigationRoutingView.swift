@@ -66,6 +66,8 @@ struct NavigationRoutingView: View {
                 StartLoginView()
             case .registrationCompleteView(let userName):
                 RegistrationCompleteView(userName: userName)
+            case .loginView:
+                LoginView()
             }
         }
         .hideBackButton()
