@@ -40,7 +40,7 @@ struct UpcomingCard: View {
                     ForEach(lists.indices, id: \.self) { idx in
                         if checkFirst(index: idx) {
                             HStack(spacing: 16) {
-                                Text(myPostsViewModel.tempString(postId: lists[idx].postId, lists: checkLists()) ?? "오류")
+                                Text(myPostsViewModel.titleString(postId: lists[idx].postId, lists: checkLists()) ?? "오류")
                                     .foregroundStyle(Color.black)
                                 Spacer()
                                 Text(lists[idx].interviewDate.dateValue().listDateString)

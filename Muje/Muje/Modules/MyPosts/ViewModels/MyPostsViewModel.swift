@@ -92,7 +92,7 @@ class MyPostsViewModel {
   }
     
     
-    func tempString(postId: String, lists: [Post]) -> String? {
+    func titleString(postId: String, lists: [Post]) -> String? {
         for item in lists {
             if item.postId.uuidString == postId {
                 return item.title
