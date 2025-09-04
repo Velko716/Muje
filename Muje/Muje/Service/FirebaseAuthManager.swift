@@ -116,6 +116,29 @@ final class FirebaseAuthManager: ObservableObject {
         }
     }
     
+    /// 비밀번호 재설정 이메일을 발송하는 메서드입니다.
+    func sendPasswordReset(to email: String) async throws {
+        do {
+            try await Auth.auth().sendPasswordReset(withEmail: email)
+        } catch let nsErr as NSError {
+            let code = AuthErrorCode(_bridgedNSError: nsErr)
+            switch code {
+            case .invalidEmail:
+                throw AppAuthError.invalidEmail
+            case .userNotFound:
+                throw AppAuthError.userNotFound
+            case .tooManyRequests:
+                throw AppAuthError.tooManyRequests
+            case .networkError:
+                throw AppAuthError.networkError
+            case .operationNotAllowed:
+                // 콘솔에서 Email/Password 로그인 비활성화 시 발생 가능
+                throw AppAuthError.operationNotAllowed
+            default:
+                throw AppAuthError.unknown(nsErr)
+            }
+        }
+    }
     
     /// 핸드폰 인증으로 로그인 하는 메서드입니다.
     func verifyPhoneNumberAsync(phoneNumber: String) async throws -> String {
