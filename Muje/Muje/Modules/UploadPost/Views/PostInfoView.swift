@@ -28,33 +28,9 @@ struct PostInfoView: View {
                 
             }
             .padding(.bottom, 160)
-            .onChange(of: postInfoViewModel.selectedItems) { old, new in
-                postInfoViewModel.selectedImagesData.removeAll()
-                if new.count == 5 {
-                    postInfoViewModel.showToast = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                        postInfoViewModel.showToast = false
-                    }
-                }
-                Task {
-                    let loadingTasks = new.map { item in
-                        Task {
-                            try? await item.loadTransferable(type: Data.self)
-                        }
-                    }
-                    var imageData: [Data] = []
-                    for task in loadingTasks {
-                        if let data = await task.value {
-                            imageData.append(data)
-                        }
-                    }
-                    await MainActor.run {
-                        postInfoViewModel.selectedImagesData = imageData
-                    }
-                }
-            }
-            .toast(isShown: $postInfoViewModel.showToast, message: "사진은 최대 5장까지만 업로드할 수 있어요", alignment: .bottom)
+
         }
+        
     }
     
     
