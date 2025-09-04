@@ -99,6 +99,7 @@ struct MujeApp: App {
     @StateObject var push = NotificationCoordinator()
     @StateObject private var deepLink = DeepLinkController.shared
     @StateObject private var unreadBadge = UnreadBadgeStore()
+    @StateObject private var globalUIState = GlobalUIState()
     
     @State private var isReady = false
     @State private var bootError: String?
@@ -194,6 +195,7 @@ struct MujeApp: App {
             .environmentObject(unreadBadge)
             .environmentObject(deepLink)
             .environmentObject(FirebaseAuthManager.shared) // 파이어베이스 Auth 의존성 주입
+            .environmentObject(globalUIState)
         }
     }
     
