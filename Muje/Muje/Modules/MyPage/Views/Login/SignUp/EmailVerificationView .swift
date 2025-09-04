@@ -27,6 +27,9 @@ struct EmailVerificationView: View {
     // 단계는 emailVerified로 파생
     private var isPasswordStep: Bool { auth.emailVerified }
     
+    // 이미 파이어베이스에 존재하는 이메일에 대한 검증 (openURL 부분에 true 변경 로직이 있음)
+    private var existedEmail: Bool { auth.existedEmail }
+    
     // 라벨/유효성
     private var bottomLabel: String { isPasswordStep ? "다음" : "인증 요청" }
     private var isPasswordValid: Bool { passwordText.trimmingCharacters(in: .whitespacesAndNewlines).count >= 6 }
@@ -57,6 +60,13 @@ struct EmailVerificationView: View {
         }
         .onDisappear { FirebaseAuthManager.shared.emailVerified = false }
         .onChange(of: auth.emailVerified) { withAnimation(.easeInOut) {} }
+        .onChange(of: auth.existedEmail) {
+            // 이미 가입되어 있는 유저라면, 패스워드 입력창이 아닌, 초기화면으로 이동
+            if existedEmail {
+                router.popToRootView()
+                FirebaseAuthManager.shared.existedEmail = false
+            }
+        }
         .safeAreaInset(edge: .bottom) {
             VStack {
                 BottomBar(
