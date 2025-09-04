@@ -9,6 +9,8 @@ import SwiftUI
 import FirebaseFirestore
 
 struct EditContentView: View {
+  @EnvironmentObject private var globalUIState: GlobalUIState
+  @EnvironmentObject private var router: NavigationRouter
   @State private var viewModel: EditPostViewModel
   
   init(post: Post, postImages: [PostImage]) {
@@ -23,13 +25,15 @@ struct EditContentView: View {
         }
         .safeAreaPadding(.horizontal, 16)
       }
-      bottomButton
       
       if viewModel.isPicker {
         dateView
       }
+      
     }
-    .ignoresSafeArea(edges: .bottom)
+    .safeAreaInset(edge: .bottom) {
+      bottomButton
+    }
   }
   
   private var dateView: some View {
@@ -57,23 +61,32 @@ struct EditContentView: View {
   
   private var bottomButton: some View {
     VStack {
-      Spacer()
       Button {
         Task {
           await viewModel.updatedPost()
+          router.pop()
+          globalUIState.showEditToast = true
         }
       } label: {
         Text("수정 저장하기")
-          .font(.system(size: 18))
-          .foregroundStyle(.white)
+          .body1SemiBold18()
+          .foregroundStyle(.white01)
+          .padding()
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 20)
-          .background(Color.black)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
+          .background(
+            RoundedRectangle(cornerRadius: 10)
+              .fill(Color.primaryBlack)
+          )
       }
     }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 20)
+    .hvPadding(16, 20)
+    .frame(maxWidth: .infinity)
+    .background(
+      Rectangle()
+        .fill(Color.white)
+        .shadow(radius: 3)
+        .ignoresSafeArea(edges: .bottom)
+    )
   }
 }
 
@@ -99,4 +112,5 @@ struct EditContentView: View {
       createdAt: Timestamp(date: Date())
     )]
   )
+  .environmentObject(GlobalUIState())
 }

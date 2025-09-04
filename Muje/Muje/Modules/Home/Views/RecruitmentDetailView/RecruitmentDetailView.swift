@@ -11,6 +11,7 @@ struct RecruitmentDetailView: View {
   
   @State private var viewModel = RecruitmentViewModel()
   @EnvironmentObject private var router: NavigationRouter
+  @EnvironmentObject private var globalUIState: GlobalUIState
   
   let postId: String
   
@@ -26,7 +27,9 @@ struct RecruitmentDetailView: View {
         action: { router.pop() },
         fixAction: {
           guard let post = viewModel.post else { return }
-          router.push(to: .editContentView(post: post, postImages: viewModel.postImages))},
+          router.push(to: .editContentView(post: post, postImages: viewModel.postImages))
+          
+        },
         reportAction: {}, // 신고하기 화면 이동
         deleteAction: { Task { await viewModel.deletePostInfo(for: postId) } }
       )
@@ -36,10 +39,22 @@ struct RecruitmentDetailView: View {
         router.popToRootView()
       }
     }
+    .onChange(of: globalUIState.showEditToast, { oldValue, newValue in
+      if newValue {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+          globalUIState.showEditToast = false
+        }
+      }
+    })
     .task {
       await viewModel.loadPostDetail(for: postId)
       await viewModel.preloadImageURL()
     }
+    .toast(
+      isShown: $globalUIState.showEditToast,
+      message: "공고가 수정 되었어요",
+      alignment: .bottom
+    )
     .navigationBarBackButtonHidden()
     .ignoresSafeArea(.all, edges: .top)
   }
@@ -108,4 +123,5 @@ enum loadingCase {
 #Preview {
   RecruitmentDetailView(postId: "mock_id")
     .environmentObject(NavigationRouter())
+    .environmentObject(GlobalUIState())
 }
