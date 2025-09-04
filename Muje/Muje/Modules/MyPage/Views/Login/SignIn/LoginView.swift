@@ -86,7 +86,7 @@ struct LoginView: View {
                 .font(Font.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정
                 .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
             Button {
-                // TODO: 계정 찾기 뷰로 이동하기
+                router.push(to: .forgotPasswordView)
             } label: {
                 Text("내 계정찾기")
                     .font(Font.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정

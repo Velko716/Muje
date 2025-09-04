@@ -41,5 +41,6 @@ enum NavigationDestination: Equatable, Hashable {
     case textView(type: TextViewType) // 커뮤니티 이용 규칙, 서비스 이용약관, 개인정보 처리 방침, 청소년 보호 정책, 오픈 소스 라이선스
     case startLoginView // 로그인 시작화면
     case loginView // 로그인 뷰 (기존 유저)
+    case forgotPasswordView // 비밀번호 찾기 뷰
     case registrationCompleteView(userName: String) // 회원가입 완료 뷰
 }
