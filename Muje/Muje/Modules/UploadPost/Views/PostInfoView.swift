@@ -27,7 +27,6 @@ struct PostInfoView: View {
             }
             .padding(.bottom, 160)
         }
-        
     }
     
     private var imageView: some View {
