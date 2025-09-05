@@ -9,6 +9,7 @@ import SwiftUI
 
 struct UploadCompleteView: View {
   @EnvironmentObject private var router: NavigationRouter
+  @EnvironmentObject private var tabSelection: TabSelection
   
   var body: some View {
     VStack(alignment: .leading) {
@@ -23,8 +24,9 @@ struct UploadCompleteView: View {
     .safeAreaInset(edge: .bottom, content: {
       bottomButton
     })
-    .navigationTitle("모임 올리기")
-    .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      ToolbarCenterTitle(text: "모임 올리기")
+    }
   }
   
   private var title: some View {
@@ -49,7 +51,8 @@ struct UploadCompleteView: View {
   private var bottomButton: some View {
     HStack {
       Button {
-        router.push(to: .myPostView)
+        router.popToRootView()
+        tabSelection.tabCase = .myPosts
       } label: {
         Text("나의 모임 페이지")
           .padding()
@@ -84,5 +87,8 @@ struct UploadCompleteView: View {
 }
 
 #Preview {
-  UploadCompleteView()
+  NavigationStack {
+    UploadCompleteView()
+  }
+  .environmentObject(NavigationRouter())
 }
