@@ -39,12 +39,13 @@ struct InboxView: View {
         ZStack {
             VStack() {
                 topCurrentPostView
+                    .paddingH16()
                 Spacer().frame(height: 20)
                 Divider()
                 //Spacer()
                 middleInboxContentView
+                    .paddingH16()
             }
-            .paddingH16()
         }
         .task {
             Task {
@@ -207,6 +208,8 @@ struct InboxView: View {
             ZStack(alignment: .trailing) {
                 VStack(spacing: 0) {
                     TextField("메세지를 입력하세요", text: $text, axis: .vertical)
+                        .font(Font.pretendard(type: .medium, size: 16))
+                        .foregroundStyle(Color.gray700)
                         .focused($isFocused)
                         .textInputAutocapitalization(.sentences)
                         .autocorrectionDisabled(false)
@@ -216,9 +219,8 @@ struct InboxView: View {
                         .padding(.trailing, buttonSize + 12)
                 }
                 .background(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .fill(Color(uiColor: .secondarySystemBackground))
-                        .stroke(.secondary.opacity(0.12), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 100)
+                        .fill(Color.gray50)
                 )
                 .frame(minHeight: 44)
             
