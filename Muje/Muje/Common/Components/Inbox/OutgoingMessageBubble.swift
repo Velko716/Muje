@@ -15,13 +15,13 @@ struct OutgoingMessageBubble: View {
         HStack(alignment: .bottom, spacing: 4) {
             if let time {
                 Text(time.hourMinute24)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(Font.pretendard(type: .regular, size: 12))
+                    .foregroundStyle(Color.gray400)
                     .padding(.trailing, 8)
             }
             HStack {
                 Text(text)
-                    .bubble(color: Color.blue.opacity(0.12), isBorder: false) // FIXME: - 컬러 수정
+                    .bubble(color: Color.gray50, isBorder: false)
             }
         }
         .frame(maxWidth: .infinity, alignment: .trailing)

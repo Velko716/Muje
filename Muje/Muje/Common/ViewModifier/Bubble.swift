@@ -14,7 +14,10 @@ struct Bubble: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .font(.body)
+            .font(Font.pretendard(type: .medium, size: 16))
+            .foregroundStyle(Color.gray700)
+            .lineSpacing(16 * 0.85)
+            .tracking(16 * -0.01)
             .padding(.horizontal, 18)
             .padding(.vertical, 12)
             .background(color)
@@ -22,7 +25,7 @@ struct Bubble: ViewModifier {
             .overlay {
                 if isBorder {
                     RoundedRectangle(cornerRadius: 10)
-                        .strokeBorder(.secondary.opacity(0.15), lineWidth: 1)
+                        .strokeBorder(Color.gray200, lineWidth: 0.5)
                 }
             }
     }
