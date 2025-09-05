@@ -109,6 +109,8 @@ class MyPostsViewModel {
         return applicationSlot.values.first { $0.first?.postId == postId } ?? []
     }
     
+    
+    //다가오는 일정_모집공고
     func upcomingRecruitLists() -> [InterviewSlot] {
         let upcomingSlots = uploadPostSlot.values
             .flatMap { $0 }
@@ -119,6 +121,19 @@ class MyPostsViewModel {
         return upcomingSlots
     }
     
+    func tempLists() -> [InterviewSlot] {
+        var slots: [InterviewSlot] = []
+        for application in currentUserApplication.values {
+            for slot in getSlotApplications(forPostId: application.postId) {
+                if slot.slotId.uuidString == application.interviewSlotId {
+                    slots.append(slot)
+                }
+            }
+        }
+        return slots
+    }
+    
+    //다가오는 일정_지원공고
     func upcomingApplyLists() -> [InterviewSlot] {
         let upcomingSlots = applicationSlot.values
             .flatMap { $0 }
@@ -128,20 +143,8 @@ class MyPostsViewModel {
             }
         return upcomingSlots
     }
-    
-    //다가오는 일정에서 포맷 확인 함수
-    func checkFirst(lists: [InterviewSlotModel], index: Int) -> Bool {
-        if index < 1 {
-            return true
-        } else {
-            if lists[index - 1].interviewDate.dateString == lists[index].interviewDate.dateString {
-                return false
-            } else {
-                return true
-            }
-        }
-    }
 }
+
 // MARK: - 파이어베이스 로직
 extension MyPostsViewModel {
   func loadAllDataIfNeed(forceReload: Bool = false) async {

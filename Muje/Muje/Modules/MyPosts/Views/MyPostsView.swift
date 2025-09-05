@@ -56,7 +56,7 @@ struct MyPostsView: View {
                 Button(action: {
                     myPostsViewModel.isApply.toggle()
                 }, label: {
-                    UpcomingCard(myPostsViewModel: $myPostsViewModel, title: "지원 면접", codition: myPostsViewModel.isApply, lists: myPostsViewModel.upcomingApplyLists(), isRecruitment: false)
+                    UpcomingCard(myPostsViewModel: $myPostsViewModel, title: "지원 면접", codition: myPostsViewModel.isApply, lists: myPostsViewModel.tempLists(), isRecruitment: false)
                 })
                 
             }
