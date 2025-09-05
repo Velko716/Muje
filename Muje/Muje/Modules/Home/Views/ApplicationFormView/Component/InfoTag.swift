@@ -8,37 +8,28 @@
 import SwiftUI
 
 struct InfoTag: View {
-  let title: String
-  let isActive: Bool
-  
-  var body: some View {
-    Text(title)
-      .fontWeight(.medium)
-      .foregroundStyle(isActive ? .primary : .secondary)
-      .padding(.vertical, 9)
-      .padding(.horizontal, 15)
-      .background(
-        RoundedRectangle(
-          cornerRadius: 100
-        )
-        .stroke(
-          isActive ? Color.primary : Color.secondary.opacity(0.3),
-          lineWidth: 1
-        )
-        .background(
-          RoundedRectangle(
-            cornerRadius: 100
-          )
-          .fill(
-            isActive ? Color.gray.opacity(0.4) : Color(
-              Color.clear
+    let title: String
+    let isActive: Bool
+    
+    var body: some View {
+        Text(title)
+            .caption14Medium()
+            .foregroundStyle(isActive ? .pointSkyBlue : .gray500)
+            .padding(.vertical, 6.5)
+            .padding(.horizontal, 15)
+            .background(
+                RoundedRectangle(
+                    cornerRadius: 100
+                )
+                .stroke(
+                    isActive ? Color.pointSkyBlue : Color.gray200,
+                    lineWidth: 1
+                )
+                .fill(isActive ? .pointSkyBlueTinted : .clear)
             )
-          )
-        )
-      )
-  }
+    }
 }
 
 #Preview {
-  InfoTag(title: "학과 / 전공", isActive: true)
+    InfoTag(title: "학과 / 전공", isActive: true)
 }
