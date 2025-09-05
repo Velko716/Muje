@@ -106,6 +106,7 @@ struct ApplicationPreview: View {
             customQuestion: customQuestion
           )
         }
+        router.push(to: .applicationCompleteView)
       } label: {
         Text("확인")
           .foregroundStyle(.white)
