@@ -16,8 +16,8 @@ struct ToolbarLeadingBackButton: ToolbarContent {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "chevron.left") // FIXME: - 이미지 열거형으로 만들기
-                    .foregroundStyle(Color.black)
+                Image(.chevronLeft) // FIXME: - 이미지 열거형으로 만들기
+                    .foregroundStyle(Color.gray700)
                     .frame(width: 24, height: 24)
             }
         }
