@@ -19,16 +19,19 @@ struct MyPostsView: View {
               applyView
           }
         }
-        .onAppear {
-          Task {
-            await myPostsViewModel.loadAllDataIfNeed()
-          }
+        .task {
+          await myPostsViewModel.loadAllData()
         }
-        .refreshable {
-          Task {
-            await myPostsViewModel.forceRefresh()
-          }
-        }
+//        .onAppear {
+//          Task {
+//            await myPostsViewModel.loadAllDataIfNeed()
+//          }
+//        }
+//        .refreshable {
+//          Task {
+//            await myPostsViewModel.forceRefresh()
+//          }
+//        }
         .safeAreaPadding(.horizontal, 16)
         .fullScreenCover(isPresented: $selectViewModel.isSetting) {
             SelectView(selectViewModel: selectViewModel)
