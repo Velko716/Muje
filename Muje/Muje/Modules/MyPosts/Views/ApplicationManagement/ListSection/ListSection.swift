@@ -56,7 +56,8 @@ extension ApplicationManagementView {
               .multilineTextAlignment(.center)
               .foregroundStyle(.gray)
           } else {
-            Text("\(viewModel.selectedManagementStage.displayName) 단계에\n지원자가 없습니다.")
+//            Text("\(viewModel.selectedManagementStage.displayName) 단계에\n지원자가 없습니다.")
+            Text("지원자가 없습니다.")
               .multilineTextAlignment(.center)
           }
         }
