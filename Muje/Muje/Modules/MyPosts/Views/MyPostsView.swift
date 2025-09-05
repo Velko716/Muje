@@ -19,15 +19,8 @@ struct MyPostsView: View {
               applyView
           }
         }
-        .onAppear {
-          Task {
-            await myPostsViewModel.loadAllDataIfNeed()
-          }
-        }
-        .refreshable {
-          Task {
-            await myPostsViewModel.forceRefresh()
-          }
+        .task {
+          await myPostsViewModel.loadAllData()
         }
 //        .onAppear {
 //          Task {
