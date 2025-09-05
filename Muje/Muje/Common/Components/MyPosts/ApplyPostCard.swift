@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ApplyPostCard: View {
+    @EnvironmentObject private var router: NavigationRouter
     @Bindable var selectViewModel: SelectViewModel
     
     var item: Post
@@ -43,7 +44,7 @@ struct ApplyPostCard: View {
                 
                 Divider()
                 ButtonBox(title: "공고글 보기", action: {
-                    print("공고 상세보기로 이동")
+                  router.push(to: .RecruitmentDetailView(postId: item.postId.uuidString))
                 })
             }
         }
