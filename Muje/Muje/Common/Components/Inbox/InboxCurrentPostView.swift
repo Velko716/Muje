@@ -14,16 +14,16 @@ struct InboxCurrentPostView: View {
     var body: some View {
         HStack(alignment: .top) {
             RoundedRectangle(cornerRadius: 4) // FIXME: - 공고 이미지로 수정
-                .fill(Color.gray)
+                .fill(Color.gray200)
                 .frame(width: 40, height: 40)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("동아리명")
-                    .font(Font.system(size: 14))
-                    .foregroundStyle(Color.gray)
+                    .font(Font.pretendard(type: .medium, size: 14))
+                    .foregroundStyle(Color.gray500)
                 Text(title)
-                    .font(Font.system(size: 14))
-                    .foregroundStyle(Color.black)
+                    .font(Font.pretendard(type: .semiBold, size: 14))
+                    .foregroundStyle(Color.gray700)
             }
         }
     }
