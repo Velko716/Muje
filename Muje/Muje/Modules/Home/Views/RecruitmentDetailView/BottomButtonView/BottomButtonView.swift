@@ -19,27 +19,35 @@ struct BottomButtonView: View {
         contactAction()
       } label: {
         Text("문의하기")
-          .font(.system(size: 18))
+          .body1SemiBold18()
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 16)
-          .background(Color.black)
-          .foregroundStyle(.white)
+          .padding(.vertical, 14.5)
+          .padding(.horizontal, 55)
+          .background(.gray50)
+          .foregroundStyle(.gray700)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       Button {
         applicationAction()
       } label: {
-        Text(hasApplied ? "지원완료" : "지원하기")
-          .font(.system(size: 18))
+        Text(hasApplied ? "지원완료" : "신청하기")
+          .body1SemiBold18()
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 16)
-          .background(hasApplied ? Color.gray.opacity(0.5) : Color.black)
-          .foregroundStyle(hasApplied ? .gray : .white)
+          .padding(.vertical, 14.5)
+          .padding(.horizontal, 55)
+          .background(hasApplied ? .gray200 : .primaryBlack)
+          .foregroundStyle(hasApplied ? .gray400 : .graywhite)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       .disabled(hasApplied)
     }
-    .padding(.vertical, 53)
+    .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
+    .background(
+        Rectangle()
+            .fill(.white)
+            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
+            .ignoresSafeArea(.all, edges: .bottom)
+    )
   }
 }
 
