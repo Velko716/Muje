@@ -11,6 +11,7 @@ import Foundation
 final class EmailVerificationViewModel {
     
     
+    /// 이메일 인증 메일을 보내는 메서드를 싱글톤에서 받아 실행시키는 메서드입니다.
     func sendVerificationEmail(emailText: String) {
         Task {
             do {
@@ -22,4 +23,17 @@ final class EmailVerificationViewModel {
             }
         }
     }
+    
+    
+    /// 패스워드를 설정하는 메서드를 싱글톤에서 받아 실행시키는 메서드입니다.
+    func setPassword(newPassword: String, email: String) {
+        Task {
+            do {
+                try await FirebaseAuthManager.shared.setInitialPassword(newPassword, email: email)
+            } catch {
+                print("error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
 }

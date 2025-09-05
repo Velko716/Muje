@@ -15,6 +15,12 @@ final class FirebaseAuthManager: ObservableObject {
     
     var email: String = ""
     
+    /// 파이어베이스 이메일 인증 여부 확인 변수입니다. (딥 링크로 앱에 다시 들어올 때, UI 갱신을 위해서 구현)  🤔 여기 한 번 살펴보기...! (DI, Actor 등등)
+    @Published var emailVerified: Bool = false
+    
+    /// 이미 존재하는 이메일인지에 대한 여부 (회원 가입 시, 사용자가 적은 이메일이 기존 데이터베이스에 저장되어 있는지에 대한 여부)
+    @Published var existedEmail: Bool = false
+    
     /// 현재 로그인 유저 이메일 조회
     var currentEmail: String {
         guard let currentUserEmail = Auth.auth().currentUser?.email else { return "" }
@@ -22,7 +28,7 @@ final class FirebaseAuthManager: ObservableObject {
         return currentUserEmail
     }
     
-    /// 현재 로그인 유저 입니다.
+    /// 현재 로그인 유저 입니다. 🤔 여기 한 번 살펴보기...! (DI, Actor 등등)
     @Published var currentUser: User?
     
     
@@ -50,7 +56,6 @@ final class FirebaseAuthManager: ObservableObject {
         
         try await Auth.auth().sendSignInLink(toEmail: email, actionCodeSettings: actionCodeSettings)
     }
-    
     
     /// 딥 링크 로그인 인증 로직을 처리하는 메서드입니다.
     func handleEmailSignInLink(url: URL, inputEmail: String) async throws -> Bool {
@@ -84,6 +89,57 @@ final class FirebaseAuthManager: ObservableObject {
         }
     }
     
+    /// 이메일과 패스워드로 로그인을 처리하는 메서드입니다.
+    func signInWithEmailPassword(email: String, password: String) async throws {
+        do {
+            _ = try await Auth.auth().signIn(withEmail: email, password: password)
+            let uid = Auth.auth().currentUser?.uid ?? ""
+            let user: User = try await FirestoreManager.shared.get(uid, from: .user)
+            await MainActor.run { self.currentUser = user }
+        } catch let nsErr as NSError {
+            let code = AuthErrorCode(_bridgedNSError: nsErr)
+            switch code {
+            case .invalidEmail:
+                throw AppAuthError.invalidEmail
+            case .wrongPassword:
+                throw AppAuthError.wrongPassword
+            case .userNotFound:
+                throw AppAuthError.userNotFound
+            case .userDisabled:
+                throw AppAuthError.userDisabled
+            case .tooManyRequests:
+                throw AppAuthError.tooManyRequests
+            case .networkError:
+                throw AppAuthError.networkError
+            default:
+                throw AppAuthError.unknown(nsErr)
+            }
+        }
+    }
+    
+    /// 비밀번호 재설정 이메일을 발송하는 메서드입니다.
+    func sendPasswordReset(to email: String) async throws {
+        do {
+            try await Auth.auth().sendPasswordReset(withEmail: email)
+        } catch let nsErr as NSError {
+            let code = AuthErrorCode(_bridgedNSError: nsErr)
+            switch code {
+            case .invalidEmail:
+                throw AppAuthError.invalidEmail
+            case .userNotFound:
+                throw AppAuthError.userNotFound
+            case .tooManyRequests:
+                throw AppAuthError.tooManyRequests
+            case .networkError:
+                throw AppAuthError.networkError
+            case .operationNotAllowed:
+                // 콘솔에서 Email/Password 로그인 비활성화 시 발생 가능
+                throw AppAuthError.operationNotAllowed
+            default:
+                throw AppAuthError.unknown(nsErr)
+            }
+        }
+    }
     
     /// 핸드폰 인증으로 로그인 하는 메서드입니다.
     func verifyPhoneNumberAsync(phoneNumber: String) async throws -> String {
@@ -107,7 +163,6 @@ final class FirebaseAuthManager: ObservableObject {
                 }
         }
     }
-    
     
     /// 전화번호 인증 코드 검증 후, 성공 시 true / 실패 시 false 반환
     func verifyPhoneCodeAndSignOut(id verificationID: String, code verificationCode: String) async throws -> Bool {
@@ -166,6 +221,47 @@ final class FirebaseAuthManager: ObservableObject {
             self.currentUser = nil
         } catch {
             print("error: \(error.localizedDescription)")
+        }
+    }
+    
+    
+    /// Firebase Auth 패스워드를 설정하는 메서드 입니다. (회원 가입 뷰 사용)
+    func setInitialPassword(_ newPassword: String, email: String) async throws {
+        guard let user = Auth.auth().currentUser else { throw AppAuthError.notLoggedIn }
+        
+        do {
+            // 1) 가장 단순: 이미 email provider가 붙어있다면 비번을 업데이트
+            try await user.updatePassword(to: newPassword)
+            try? await user.reload()
+            return
+        } catch let nsErr as NSError {
+            // 일부 케이스는 link 로 해결
+            let code = AuthErrorCode(_bridgedNSError: nsErr)
+            
+            if code == .operationNotAllowed {
+                // Firebase Console > Authentication > Sign-in method 에서
+                // Email/Password 를 활성화해야 로그인에 비번 사용 가능
+                throw AppAuthError.operationNotAllowed
+            }
+            if code == .requiresRecentLogin {
+                throw AppAuthError.requiresRecentLogin
+            }
+            if code == .weakPassword {
+                throw AppAuthError.weakPassword
+            }
+            
+            // 2) provider 상태에 따라 link 시도 (Apple/Google만 있던 계정에 비번 추가하는 시나리오 등)
+            do {
+                let credential = EmailAuthProvider.credential(withEmail: email, password: newPassword)
+                _ = try await user.link(with: credential)
+                try? await user.reload()
+            } catch let linkErr as NSError {
+                let linkCode = AuthErrorCode(_bridgedNSError: linkErr)
+                if linkCode == .credentialAlreadyInUse {
+                    // 이미 비번이 설정된 계정일 수 있음 → updatePassword 로 재시도 유도
+                }
+                throw linkErr
+            }
         }
     }
     

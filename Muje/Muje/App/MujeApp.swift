@@ -144,8 +144,9 @@ struct MujeApp: App {
                                 // 뷰 전환이 즉시 가능하도록 먼저 준비 완료 표시
                                 isReady = true
                                 // 회원정보 입력 화면으로 이동
-                                router.push(to: .userInfoInputView(uuid: uid, email: FirebaseAuthManager.shared.email))
+                                // router.push(to: .userInfoInputView(uuid: uid, email: FirebaseAuthManager.shared.email))
                                 // 싱글톤 이메일 초기화
+                                FirebaseAuthManager.shared.emailVerified = true
                                 FirebaseAuthManager.shared.email = ""
                             } else {
                                 print("[Auth] currentUser is nil. UID unavailable.")
@@ -154,6 +155,7 @@ struct MujeApp: App {
                             print("이메일 새유저")
                         } else {
                             if let uid = Auth.auth().currentUser?.uid {
+                                FirebaseAuthManager.shared.existedEmail = true
                                 do {
                                     let user: User = try await FirestoreManager.shared.get(uid, from: .user)
                                     await MainActor.run {
@@ -161,7 +163,8 @@ struct MujeApp: App {
                                         unreadBadge.start(for: uid) // 뱃지 초기화
                                         self.isReady = true
                                         FirebaseAuthManager.shared.email = ""
-                                        router.popToRootView() // FIXME: - 팝 루트가 되니까 쪽지 리스트쪽이 안채워짐. 풀 스크린 스택 교체 필요
+                                        FirebaseAuthManager.shared.emailVerified = true // 이메일 검증 완료 (추후 DI로 구현 할 수 있을듯..?)
+                                        // router.popToRootView() // FIXME: - 팝 루트가 되니까 쪽지 리스트쪽이 안채워짐. 풀 스크린 스택 교체 필요
                                     }
                                 } catch {
                                     // 문서가 없거나 에러여도 앱은 열 수 있게 처리
@@ -169,14 +172,15 @@ struct MujeApp: App {
                                     await MainActor.run {
                                         self.isReady = true
                                         FirebaseAuthManager.shared.email = ""
-                                        router.popToRootView()
+                                        // router.popToRootView()
                                     }
                                 }
                             } else {
                                 await MainActor.run {
                                     self.isReady = true
                                     FirebaseAuthManager.shared.email = ""
-                                    router.popToRootView()
+                                    
+                                    // router.popToRootView()
                                 }
                             }
                             FirebaseAuthManager.shared.email = ""

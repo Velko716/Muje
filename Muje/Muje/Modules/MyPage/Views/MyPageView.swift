@@ -108,7 +108,7 @@ struct MyPageView: View {
     private var topUserInfoView: some View {
         // 로그인 여부에 대한 분기 처리
         VStack(alignment: .leading) {
-            if let user = FirebaseAuthManager.shared.currentUser {
+            if let user = auth.currentUser {
                 Button {
                     
                 } label: {
@@ -128,75 +128,75 @@ struct MyPageView: View {
                 }
                 .buttonStyle(.plain)// List에서 안전하게 동작
             } else {
-                Button {
-                    print("로그인")
-                    router.push(to: .emailVerificationView)
-                } label: {
-                    HStack(spacing: .zero) {
-                        Text("로그인 해주세요")
-                            .font(Font.system(size: 24, weight: .semibold))
-                            .foregroundStyle(Color.black)
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(Color.black)
-                            .frame(width: 24, height: 24)
+                HStack(spacing: .zero) {
+                    Text("로그인 해주세요")
+                        .font(Font.system(size: 24, weight: .semibold))
+                        .foregroundStyle(Color.black)
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(Color.black)
+                        .frame(width: 24, height: 24)
+                }
+                .contentShape(Rectangle()) // 전체 폭 터치
+                .highPriorityGesture(
+                    TapGesture().onEnded {
+                        router.push(to: .startLoginView)
                     }
-                    .contentShape(Rectangle()) // 전체 폭 터치
-                }
-                .buttonStyle(.plain)// List에서 안전하게 동작
+                )
             }
-        }
-    }
-    
-    
-    // MARK: - 리스트 header 아이템
-    @ViewBuilder
-    private func headerView(_ headerText: String) -> some View {
-        if headerText == "" {
-            EmptyView()
-        } else {
-            VStack {
-                Text(headerText)
-                    .font(Font.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
-                    .foregroundStyle(Color.black) // FIXME: - Gray 700 수정
-                Spacer().frame(height: 8)
-            }
-        }
-    }
-    
-    
-    // MARK: - 리스트 row 아이템
-    @ViewBuilder
-    private func rowView(_ row: MyPageRow) -> some View {
-        switch row.kind {
-        case .value(let title, let value):
-            LabeledContent {
-                Text(value)
-                    .foregroundStyle(.secondary) // FIXME: - 컬러 수정
-            } label: {
-                Text(title)
-                    .settingListItem(color: Color.black) // FIXME: - Gray700 수정
-            }
-        case .action(_, let title, let action):
-            LabeledContent {
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(.gray)
-                    .frame(width: 24, height: 24)
-            } label: {
-                Text(title)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(title == "회원 탈퇴" ? .red : .primary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 20)
-            .contentShape(Rectangle())
-            .highPriorityGesture(
-                TapGesture().onEnded {
-                    action()
-                }
-            )
         }
     }
 }
+
+
+// MARK: - 리스트 header 아이템
+@ViewBuilder
+private func headerView(_ headerText: String) -> some View {
+    if headerText == "" {
+        EmptyView()
+    } else {
+        VStack {
+            Text(headerText)
+                .font(Font.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
+                .foregroundStyle(Color.black) // FIXME: - Gray 700 수정
+            Spacer().frame(height: 8)
+        }
+    }
+}
+
+
+// MARK: - 리스트 row 아이템
+@ViewBuilder
+private func rowView(_ row: MyPageRow) -> some View {
+    switch row.kind {
+    case .value(let title, let value):
+        LabeledContent {
+            Text(value)
+                .foregroundStyle(.secondary) // FIXME: - 컬러 수정
+        } label: {
+            Text(title)
+                .settingListItem(color: Color.black) // FIXME: - Gray700 수정
+        }
+    case .action(_, let title, let action):
+        LabeledContent {
+            Image(systemName: "chevron.right")
+                .foregroundStyle(.gray)
+                .frame(width: 24, height: 24)
+        } label: {
+            Text(title)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(title == "회원 탈퇴" ? .red : .primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 20)
+        .contentShape(Rectangle())
+        .highPriorityGesture(
+            TapGesture().onEnded {
+                action()
+            }
+        )
+    }
+}
+
 
 //#Preview {
 //    NavigationStack {
