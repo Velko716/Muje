@@ -23,17 +23,11 @@ struct PostInfoView: View {
                 })
                 
                 imageView
-                
                 contentView
-                
             }
             .padding(.bottom, 160)
-
         }
-        
     }
-    
-    
     
     private var imageView: some View {
         VStack(alignment: .leading) {
