@@ -17,7 +17,7 @@ struct RecruitmentDataView: View {
             postTitle
             postDate
             interviewDate
-            divider
+            divider()
             content
         }
         .padding(.horizontal, 16)
@@ -71,13 +71,6 @@ struct RecruitmentDataView: View {
         Text(viewModel.post?.content ?? "")
             .body2Regular16()
             .foregroundStyle(.gray700)
-    }
-    private var divider: some View {
-        Rectangle()
-            .fill(.gray50)
-            .frame(maxWidth: .infinity)
-            .frame(height: 12)
-            .padding(.horizontal, -16)
     }
 }
 #Preview {
