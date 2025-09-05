@@ -15,11 +15,11 @@ struct InboxSendButton: View {
         Button {
             action()
         } label: {
-            Image(systemName: "paperplane.fill")
+            Image(systemName: "paperplane.fill") // FIXME: - 이미지 수정하기
                 .padding(10)
-                .foregroundStyle(sendEnabled ? Color.white : .secondary)
+                .foregroundStyle(Color.gray50)
                 .imageScale(.medium)
-                .background(sendEnabled ? Color.accentColor : Color.secondary.opacity(0.2))
+                .background(sendEnabled ? Color.pointSkyBlue : Color.gray200 )
                 .clipShape(Circle())
         }
     }
