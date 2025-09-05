@@ -143,8 +143,8 @@ extension MyPostsViewModel {
     isLoading = true
     defer {
       isLoading = false
-      lastLoadTime = Date()
-      isDataLoaded = true
+//      lastLoadTime = Date()
+//      isDataLoaded = true
     }
     
     print("서버 로딩 시작")
