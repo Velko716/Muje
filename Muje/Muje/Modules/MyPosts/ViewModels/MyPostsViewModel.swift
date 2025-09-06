@@ -91,7 +91,6 @@ class MyPostsViewModel {
     print("캐시 클리어 완료")
   }
     
-    
     func titleString(postId: String, lists: [Post]) -> String? {
         for item in lists {
             if item.postId.uuidString == postId {
@@ -109,7 +108,6 @@ class MyPostsViewModel {
         return applicationSlot.values.first { $0.first?.postId == postId } ?? []
     }
     
-    
     //다가오는 일정_모집공고
     func upcomingRecruitLists() -> [InterviewSlot] {
         let upcomingSlots = uploadPostSlot.values
@@ -121,18 +119,6 @@ class MyPostsViewModel {
         return upcomingSlots
     }
     
-    func tempLists() -> [InterviewSlot] {
-        var slots: [InterviewSlot] = []
-        for application in currentUserApplication.values {
-            for slot in getSlotApplications(forPostId: application.postId) {
-                if slot.slotId.uuidString == application.interviewSlotId {
-                    slots.append(slot)
-                }
-            }
-        }
-        return slots
-    }
-    
     //다가오는 일정_지원공고
     func upcomingApplyLists() -> [InterviewSlot] {
         let upcomingSlots = applicationSlot.values
@@ -142,6 +128,23 @@ class MyPostsViewModel {
                 return slotDate >= Date().addingTimeInterval(-3600 * 24 * 200) && slotDate <= Date().addingTimeInterval(3600 * 24 * 200) //변경필요
             }
         return upcomingSlots
+    }
+    
+    //내가 지원한 공고
+    func tempLists() -> [InterviewSlot] {
+        var slots: [InterviewSlot] = []
+        for application in currentUserApplication.values {
+            print(application.postId)
+            if let slotId = application.interviewSlotId {
+                for slot in getSlotApplications(forPostId: application.postId) {
+                    print("슬롯 : \(slot.slotId) - 지원 : \(slotId)")
+                    if slot.slotId.uuidString == slotId {
+                        slots.append(slot)
+                    }
+                }
+            }
+        }
+        return slots
     }
 }
 
