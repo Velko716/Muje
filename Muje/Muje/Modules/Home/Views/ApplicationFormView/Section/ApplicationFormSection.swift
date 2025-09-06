@@ -109,7 +109,7 @@ extension ApplicationFormView {
       )
       .font(.pretendard(type: .medium, size: 16))
       .padding(.vertical, config.verticalPadding)
-      .kerning(config.letterSpacing)
+      .tracking(config.letterSpacing)
       .foregroundStyle(.gray700, .gray500) //첫번째는 텍스트, 두번째는 플레이스 홀더 컬러
     }
     .padding(.horizontal, 16)
