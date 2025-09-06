@@ -9,7 +9,6 @@ import SwiftUI
 
 struct RecruitmentDataView: View {
     let postId: String
-    
     @Bindable var viewModel: RecruitmentViewModel
     
     var body: some View {
@@ -19,6 +18,8 @@ struct RecruitmentDataView: View {
             interviewDate
             divider()
             content
+            divider()
+            //TODO: infoSection 공통으로 관리할 수 있도록 추가하기
         }
         .padding(.horizontal, 16)
     }
@@ -73,6 +74,6 @@ struct RecruitmentDataView: View {
             .foregroundStyle(.gray700)
     }
 }
-#Preview {
-    RecruitmentDataView(postId: "", viewModel: RecruitmentViewModel())
-}
+//#Preview {
+//    RecruitmentDataView(postId: "", viewModel: RecruitmentViewModel())
+//}
