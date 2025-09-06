@@ -83,7 +83,7 @@ struct ApplicationPreview: View {
         .padding(.horizontal, 16)
         .padding(.top, 16)
     }
-    
+    //TODO: 디자인 반영 되면 폰트 수정
     private var userInfoDetailSection: some View {
         VStack(spacing: 5) {
             if requirementFlags.requiresStudentId {
@@ -107,13 +107,27 @@ struct ApplicationPreview: View {
                     Divider()
                         .foregroundStyle(.gray50)
                         .padding(.horizontal, 16)
+                        .padding(.vertical, 24)
                 }
             }
         }
     }
     
     private var bottomButtonSection: some View {
-        VStack {
+        HStack(spacing: 17) {
+            Button {
+                router.pop()
+            } label: {
+                Text("수정하기")
+                    .body1SemiBold18()
+                    .foregroundStyle(.gray700)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14.5)
+                    .padding(.horizontal, 45)
+                    .background(.gray50)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            
             Button {
                 Task {
                     try await viewModel.submitApplication(
@@ -125,15 +139,22 @@ struct ApplicationPreview: View {
                     )
                 }
             } label: {
-                Text("확인")
-                    .foregroundStyle(.white)
+                Text("신청서 제출")
+                    .body1SemiBold18()
+                    .foregroundStyle(.white01)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 18)
-                    .background(Color.gray)
+                    .padding(.vertical, 14.5)
+                    .padding(.horizontal, 45)
+                    .background(.primaryBlack)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
-        .padding(.vertical, 32)
-        .padding(.horizontal, 16)
+        .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
+        .background(
+                Rectangle()
+                    .fill(.white01)
+                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: -4)
+                    .ignoresSafeArea(.all, edges: .bottom)
+            )
     }
 }
