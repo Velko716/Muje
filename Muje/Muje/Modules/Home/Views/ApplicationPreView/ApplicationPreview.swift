@@ -23,10 +23,6 @@ struct ApplicationPreview: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            CustomNavigationBar(
-                title: "신청서 미리보기") {
-                    router.pop()
-                }
             ScrollView {
                 
                 userInfoSection
@@ -44,6 +40,10 @@ struct ApplicationPreview: View {
         }
         .task {
             await viewModel.loadUserData(userId: postId)
+        }
+        .toolbar {
+            ToolbarLeadingBackButton()
+            ToolbarCenterTitle(text: "신청서 미리보기")
         }
         
         bottomButtonSection
