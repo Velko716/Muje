@@ -9,7 +9,6 @@ import SwiftUI
 import FirebaseFirestore
 
 struct ApplicationPreview: View {
-    
     @EnvironmentObject private var router: NavigationRouter
     
     let postId: String // 키체인 구현전까지 테스트용으로 userId로 같이 씀.
@@ -19,7 +18,6 @@ struct ApplicationPreview: View {
     @Binding var questionAnswer: [String: String]
     
     @State private var viewModel = ApplicationPreviewModel()
-    
     
     var body: some View {
         VStack(spacing: 0) {
