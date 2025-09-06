@@ -20,10 +20,10 @@ struct TwoActionBottomButton: View {
                 leftAction()
             } label: {
                 Text(leftText)
-                    .font(.system(size: 18))
+                    .body1SemiBold18()
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.black)
+                    .background(leftBGColor)
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
@@ -31,7 +31,7 @@ struct TwoActionBottomButton: View {
                 rightAction()
             } label: {
                 Text(rightText)
-                    .font(.system(size: 18))
+                    .body1SemiBold18()
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(rightBGColor)
