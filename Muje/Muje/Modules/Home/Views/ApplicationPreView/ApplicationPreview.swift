@@ -20,6 +20,7 @@ struct ApplicationPreview: View {
   
   @State private var viewModel = ApplicationPreviewModel()
   
+  private let userId: String = "0062C371-34F5-470B-BFE1-F671E23C5C97"
   
   var body: some View {
     VStack(spacing: 0) {
@@ -43,7 +44,7 @@ struct ApplicationPreview: View {
     }
   }
     .task {
-      await viewModel.loadUserData(userId: postId)
+      await viewModel.loadUserData(userId: userId)
     }
     
     bottomButtonSection
@@ -105,6 +106,7 @@ struct ApplicationPreview: View {
             customQuestion: customQuestion
           )
         }
+        router.push(to: .applicationCompleteView)
       } label: {
         Text("확인")
           .foregroundStyle(.white)

@@ -41,7 +41,10 @@ struct TopButtonView: View {
       ReportModalView(
         showReportModal: $showReportModal,
         isAuthor: isAuthor,
-        fixAction: fixAction,
+        fixAction: {
+          fixAction()
+          showReportModal = false
+        },
         reportAction: reportAction,
         deleteAction: deleteAction
       )

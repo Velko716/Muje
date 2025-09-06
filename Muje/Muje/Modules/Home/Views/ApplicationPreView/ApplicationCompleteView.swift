@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct UploadCompleteView: View {
+struct ApplicationCompleteView: View {
   @EnvironmentObject private var router: NavigationRouter
   @EnvironmentObject private var tabSelection: TabSelection
   
@@ -18,24 +18,26 @@ struct UploadCompleteView: View {
       grapics
       Spacer()
     }
+    .toolbar {
+      ToolbarCenterTitle(text: "신청서 작성")
+    }
     .padding(.top, 32)
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, 16)
     .safeAreaInset(edge: .bottom, content: {
       bottomButton
     })
-    .toolbar {
-      ToolbarCenterTitle(text: "모임 올리기")
-    }
+    .navigationTitle("모임 올리기")
+    .navigationBarTitleDisplayMode(.inline)
   }
   
   private var title: some View {
     VStack(alignment: .leading, spacing: 10) {
-      Text("모임이 등록되었어요!")
+      Text("신청서가 제출되었어요!")
         .font(.title2)
         .foregroundStyle(Color.black)
         .bold()
-      Text("모집 기간동안 공고가 노출돼요\n작성한 내용은 공고 현황 탭에서 관리할 수 있어요")
+      Text("모집자에게 신청이 전달되었어요\n합격 발표 알림을 기다려주세요")
         .font(.system(size: 14))
         .foregroundStyle(.gray)
         .lineSpacing(3)
@@ -88,7 +90,7 @@ struct UploadCompleteView: View {
 
 #Preview {
   NavigationStack {
-    UploadCompleteView()
+    ApplicationCompleteView()
   }
   .environmentObject(NavigationRouter())
 }

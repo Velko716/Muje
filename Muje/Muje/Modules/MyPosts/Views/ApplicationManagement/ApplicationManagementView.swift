@@ -10,6 +10,8 @@ import FirebaseFirestore
 
 struct ApplicationManagementView: View {
   
+  @EnvironmentObject private var router: NavigationRouter
+  
   @State var viewModel: ApplicationManagementViewModel = .init()
   @FocusState var isSearchFieldFocused: Bool
   
@@ -23,7 +25,7 @@ struct ApplicationManagementView: View {
     VStack(spacing: 0) {
       CustomNavigationBar(
         title: "내가 올린 공고") {
-          // 네비게이션 연결
+          router.pop()
         }
       ScrollViewReader { proxy in
         ScrollView {

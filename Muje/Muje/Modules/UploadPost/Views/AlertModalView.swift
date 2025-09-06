@@ -9,6 +9,8 @@ import SwiftUI
 
 struct AlertModalView: View {
     @Binding var uploadPostViewModel: UploadPostViewModel
+  
+    let action: () -> Void
     
     var body: some View {
         VStack(spacing: 24) {
@@ -22,6 +24,7 @@ struct AlertModalView: View {
             Button(action: {
                 print(uploadPostViewModel.alertContents[1])
                 uploadPostViewModel.isQuit = false
+                action()
             }, label: {
                 ActionButton(title: uploadPostViewModel.alertContents[1], condition: false)
             })
@@ -40,5 +43,5 @@ struct AlertModalView: View {
 }
 
 #Preview {
-    AlertModalView(uploadPostViewModel: .constant(.init()))
+  AlertModalView(uploadPostViewModel: .constant(.init()), action: {})
 }

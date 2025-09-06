@@ -46,6 +46,52 @@ class MyPostsViewModel {
   var applicationPost: [Post] = []
   var applicationSlot: [UUID: [InterviewSlot]] = [:]
   var applicationThumbnail: [UUID: PostImage] = [:]
+  
+  // MARK: 캐싱 관련
+  private var lastLoadTime: Date?
+  private var isDataLoaded: Bool = false
+  private let cacheValidDuration: TimeInterval = 300
+  
+  
+  // MARK: - 캐시 함수
+  // 캐시 유효한지 확인 (기준 5분)
+  private var isCacheValid: Bool {
+    guard let lastLoadTime = lastLoadTime else { return false }
+    return Date().timeIntervalSince(lastLoadTime) < cacheValidDuration
+  }
+  // 캐시 상태 확인
+  private func logCacheStatus() {
+    if let lastLoadTime = lastLoadTime {
+      let timeSinceLoad = Date().timeIntervalSince(lastLoadTime)
+      print("마지막 로드: \(Int(timeSinceLoad))초 전, 캐시 유효함")
+    } else {
+      print("첫 로드")
+    }
+  }
+  @MainActor
+  func forceRefresh() async {
+    print("새로 고침")
+    currentRecruitPage = 0
+    currentApplyPage = 0
+    
+    clearCache()
+    await loadAllDataIfNeed(forceReload: true)
+  }
+  
+  private func clearCache() {
+    lastLoadTime = nil
+    isDataLoaded = false
+    
+    currentUserApplication.removeAll()
+    uploadPost.removeAll()
+    uploadPostSlot.removeAll()
+    uploadThumbnail.removeAll()
+    applicationPost.removeAll()
+    applicationSlot.removeAll()
+    applicationThumbnail.removeAll()
+    
+    print("캐시 클리어 완료")
+  }
     
     func upcomingRecruitLists() -> [InterviewSlotModel] {
         let upcomingDates = recruitmentLists.filter { slot in
@@ -77,10 +123,31 @@ class MyPostsViewModel {
 }
 // MARK: - 파이어베이스 로직
 extension MyPostsViewModel {
+  func loadAllDataIfNeed(forceReload: Bool = false) async {
+    guard !isLoading else {
+      print("이미 로딩 중")
+      return
+    }
+    logCacheStatus()
+    
+    if !forceReload && isCacheValid && isDataLoaded {
+      print("캐시 데이터 사용하여 서버 호출 스킵")
+      return
+    }
+    
+    await loadAllData()
+  }
+  
   // MARK: 모든 데이터 병렬 함수
   func loadAllData() async {
     isLoading = true
-    defer { isLoading = false }
+    defer {
+      isLoading = false
+//      lastLoadTime = Date()
+//      isDataLoaded = true
+    }
+    
+    print("서버 로딩 시작")
     
     await withTaskGroup(of: Void.self) { group in
       group.addTask {
@@ -98,53 +165,21 @@ extension MyPostsViewModel {
     do {
       let app = try await currentUserApplication(for: userId)
       self.currentUserApplication = mapDicApp(for: app)
+      print("현재 유저의 지원서\(app.count)개 로드")
+      
+      let uniquePostIds = Set(app.compactMap { $0.postId })
+      let uniquePostUUIDs =
+      uniquePostIds.compactMap { UUID(uuidString:  $0)}
       
       await withTaskGroup(of: Void.self) { group in
-        for i in app {
-          group.addTask {
-            do {
-              let post = try await self.fetchApplicationPost(for: i.postId)
-              print("지원한 공고 갯수 \(post.count)개 로드 성공")
-              
-              await MainActor.run {
-                self.applicationPost = post
-              }
-              
-            } catch {
-              print("\(userId)가 지원한 공고 정보 불러오기 실패")
-            }
-          }
-          group.addTask {
-            do {
-              let slot = try await self.fetchInterviewSlot(for: i.postId)
-              print("지원한 공고의 인터뷰 슬롯 \(slot.count)개 로드 성공")
-              
-              await MainActor.run {
-                self.applicationSlot = self.mapDicSlot(for: slot)
-                print("\(self.applicationSlot.count)")
-              }
-              
-            } catch {
-              print("\(userId)가 지원한 인터뷰 슬롯 불러오기 실패")
-            }
-          }
-          group.addTask {
-            do {
-              let postIds: [UUID] = app.compactMap {
-                UUID(
-                  uuidString: $0.postId
-                )
-              }
-              let thumb = try await self.firestoreManager.fetchThumbnailsForPost(for: postIds)
-              print("지원한 공고의 썸네일 \(thumb.count)개 로드 성공")
-              
-              await MainActor.run {
-                self.applicationThumbnail = thumb
-              }
-            } catch {
-              print("\(userId)가 지원한 공고의 썸네일 불러오기 실패 \(error)")
-            }
-          }
+        group.addTask {
+          await self.loadApplicationPosts(postIds: Array(uniquePostIds))
+        }
+        group.addTask {
+          await self.loadApplicationSlots(postIds: Array(uniquePostIds))
+        }
+        group.addTask {
+          await self.loadApplicationThumbnails(postUUIDs: uniquePostUUIDs)
         }
       }
     } catch {
@@ -160,38 +195,160 @@ extension MyPostsViewModel {
       print("내가 작성한 공고 \(posts.count)개 로드 성공")
       self.uploadPost = posts
       
+      let postIds = posts.map { $0.postId.uuidString }
+      let postUUIDs = posts.map { $0.postId }
+      
       await withTaskGroup(of: Void.self) { group in
-        for post in posts {
-          group.addTask {
-            do {
-              let slots = try await self.fetchInterviewSlot(for: post.postId.uuidString)
-              print("내가 작성한 공고 인터뷰 슬롯 \(slots.count)개 로드 성공")
-              await MainActor.run {
-                self.uploadPostSlot = self.mapDicSlot(for: slots)
-                print("\(self.uploadPostSlot.count)")
-              }
-            } catch {
-              print("\(post.postId)의 인터뷰 슬롯 불러오기 실패 \(error)")
-            }
-          }
-          group.addTask {
-            do {
-              let postId = posts.compactMap { $0.postId }
-              let thumb = try await self.firestoreManager.fetchThumbnailsForPost(for: postId)
-              print("내가 작성한 공고 썸네일 \(thumb.count)개 로드 성공")
-              
-              await MainActor.run {
-                self.uploadThumbnail = thumb
-              }
-              
-            } catch {
-              print("썸네일 불러오기 실패: \(error)")
-            }
-          }
+        group.addTask {
+          await self.loadUploadSlots(postIds: postIds)
+        }
+        group.addTask {
+          await self.loadUploadThumbnails(postUUIDs: postUUIDs)
         }
       }
     } catch {
       print("내가 올린 공고 로드 실패 \(error)")
+    }
+  }
+}
+// MARK: - 개별 데이터 로딩 함수
+private extension MyPostsViewModel {
+  func loadApplicationPosts(postIds: [String]) async {
+    do {
+      let allPosts = await withTaskGroup(of: [Post].self, returning: [Post].self) { group in
+        for postId in postIds {
+          group.addTask {
+            do {
+              return try await self.fetchApplicationPost(for: postId)
+            } catch {
+              print("\(postId) 공고 불러오기 실패")
+              return []
+            }
+          }
+        }
+        // 전체 데이터 결과
+        var results: [Post] = []
+        for await posts in group {
+          results.append(contentsOf: posts)
+        }
+        return results
+      }
+      // 실제 변수에 담은 (UI 업데이트)
+      await MainActor.run {
+        for post in allPosts {
+          if !self.applicationPost.contains(where: { $0.postId == post.postId }) {
+            self.applicationPost.append(post)
+          }
+        }
+      }
+      print("지원한 공고 정보 \(allPosts.count)개 로드 성공")
+    }
+  }
+  
+  func loadApplicationSlots(postIds: [String]) async {
+    do {
+      let allSlots = await withTaskGroup(of: [InterviewSlot].self, returning: [InterviewSlot].self) { group in
+        for postId in postIds {
+          group.addTask {
+            do {
+              return try await self.fetchInterviewSlot(for: postId)
+            } catch {
+              print("\(postId)의 인터뷰 슬롯 로딩 실패")
+              return []
+            }
+          }
+        }
+        
+        var results: [InterviewSlot] = []
+        for await slots in group {
+          results.append(contentsOf: slots)
+        }
+        return results
+      }
+      
+      await MainActor.run {
+        let newSlotDic = self.mapDicSlot(for: allSlots)
+        
+        for (key, value) in newSlotDic {
+          if self.applicationSlot[key] != nil {
+            let existingSlotIds = Set(self.applicationSlot[key]?.map { $0.slotId } ?? [])
+            let newSlots = value.filter { !existingSlotIds.contains($0.slotId) }
+            self.applicationSlot[key]?.append(contentsOf: newSlots)
+          } else {
+            self.applicationSlot[key] = value
+          }
+        }
+      }
+      print("지원한 공고의 면접 슬롯 \(allSlots.count)개 로드 완료")
+    }
+  }
+  
+  func loadApplicationThumbnails(postUUIDs: [UUID]) async {
+    guard !postUUIDs.isEmpty else { return }
+    
+    do {
+      let thumbnails = try await firestoreManager.fetchThumbnailsForPost(for: postUUIDs)
+      
+      await MainActor.run {
+        self.applicationThumbnail.merge(thumbnails) { _, new in new }
+      }
+      print("지원한 공고의 썸네일 \(thumbnails.count)개 로드 완료")
+    } catch {
+      print("지원한 공고 썸네일 로딩 실패 \(error)")
+    }
+  }
+  
+  func loadUploadSlots(postIds: [String]) async {
+    do {
+      let allSlots = await withTaskGroup(of: [InterviewSlot].self, returning: [InterviewSlot].self) { group in
+        for postId in postIds {
+          group.addTask {
+            do {
+              return try await self.fetchInterviewSlot(for: postId)
+            } catch {
+              print("\(postId)의 모집한 인터뷰 슬롯 로드 실패")
+              return []
+            }
+          }
+        }
+        
+        var results: [InterviewSlot] = []
+        for await slots in group {
+          results.append(contentsOf: slots)
+        }
+        return results
+      }
+      
+      await MainActor.run {
+        let newSlotDic = self.mapDicSlot(for: allSlots)
+        
+        for (key, value) in newSlotDic {
+          if self.uploadPostSlot[key] != nil {
+            let existingSlotIds = Set(self.uploadPostSlot[key]?.map { $0.slotId } ?? [] )
+            let newSlots = value.filter { !existingSlotIds.contains($0.slotId) }
+            self.uploadPostSlot[key]?.append(contentsOf: newSlots)
+          } else {
+            self.uploadPostSlot[key] = value
+          }
+        }
+      }
+      
+      print("내가 올린 공고 면접 슬롯 \(allSlots.count)개 로드 완료")
+    }
+  }
+  
+  func loadUploadThumbnails(postUUIDs: [UUID]) async {
+    guard !postUUIDs.isEmpty else { return }
+    
+    do {
+      let thumbnails = try await firestoreManager.fetchThumbnailsForPost(for: postUUIDs)
+      
+      await MainActor.run {
+        self.uploadThumbnail.merge(thumbnails) { _, new in new }
+      }
+      print("내가 올린 공고 썸네일 \(thumbnails.count)개 로드 완료")
+    } catch {
+      print("내가 올린 공고 썸네일 로딩 실패 \(error)")
     }
   }
 }
