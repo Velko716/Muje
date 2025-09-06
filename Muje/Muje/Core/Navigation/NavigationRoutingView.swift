@@ -45,6 +45,7 @@ struct NavigationRoutingView: View {
                 customQuestion: customQuestion,
                 questionAnswer: .constant(questionAnswer)
               )
+            case .applicationSubmitCompleteView: ApplicationSubmitCompleteView()
             case .applicationManagementView(let postId, let postInfo):
               ApplicationManagementView(
                 postId: postId,
