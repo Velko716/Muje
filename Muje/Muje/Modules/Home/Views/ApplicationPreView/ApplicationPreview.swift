@@ -184,6 +184,7 @@ struct ApplicationPreview: View {
                         customQuestion: customQuestion
                     )
                 }
+                router.push(to: .applicationSubmitCompleteView)
             } label: {
                 Text("신청서 제출")
                     .body1SemiBold18()
