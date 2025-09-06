@@ -56,6 +56,7 @@ struct ApplicationFormView: View {
     .task {
       await viewModel.loadCustomQuestion(for: postId)
     }
+    .dismissKeyboardOnTap()
     bottomButtonSection
   }
 }
