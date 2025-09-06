@@ -48,6 +48,7 @@ struct NavigationRoutingView: View {
             case .applicationSubmitCompleteView: ApplicationSubmitCompleteView()
             case .applicationCompleteView:
               ApplicationCompleteView()
+            case .applicationSubmitCompleteView: ApplicationSubmitCompleteView()
             case .applicationManagementView(let postId, let postInfo):
               ApplicationManagementView(
                 postId: postId,
