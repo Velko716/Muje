@@ -57,7 +57,6 @@ struct ApplicationPreview: View {
     
     @State private var viewModel = ApplicationPreviewModel()
     
-    
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
