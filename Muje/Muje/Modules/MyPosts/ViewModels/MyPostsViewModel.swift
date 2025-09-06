@@ -101,12 +101,20 @@ class MyPostsViewModel {
         return nil
     }
     
+    func getSlotsPosts(forPostId postId: String) -> [InterviewSlot] {
+        return uploadPostSlot.values.first { $0.first?.postId == postId } ?? []
+    }
+    
+    func getSlotApplications(forPostId postId: String) -> [InterviewSlot] {
+        return applicationSlot.values.first { $0.first?.postId == postId } ?? []
+    }
+    
     func upcomingRecruitLists() -> [InterviewSlot] {
         let upcomingSlots = uploadPostSlot.values
             .flatMap { $0 }
             .filter { slot in
                 let slotDate = slot.interviewDate.dateValue()
-                return slotDate >= Date().addingTimeInterval(-60) && slotDate <= Date().addingTimeInterval(3600 * 24 * 200) //변경필요
+                return slotDate >= Date().addingTimeInterval(-3600 * 24 * 200) && slotDate <= Date().addingTimeInterval(3600 * 24 * 200) //변경필요
             }
         return upcomingSlots
     }
@@ -191,9 +199,9 @@ extension MyPostsViewModel {
         group.addTask {
           await self.loadApplicationSlots(postIds: Array(uniquePostIds))
         }
-        group.addTask {
-          await self.loadApplicationThumbnails(postUUIDs: uniquePostUUIDs)
-        }
+          group.addTask {
+              await self.loadApplicationThumbnails(postUUIDs: uniquePostUUIDs)
+          }
       }
     } catch {
       print("현재 \(userId)의 Application 정보 불러오기 실패")

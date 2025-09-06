@@ -10,6 +10,7 @@ import SwiftUI
 struct ApplyPostCard: View {
     @EnvironmentObject private var router: NavigationRouter
     @Bindable var selectViewModel: SelectViewModel
+    @Bindable var myPostsViewModel: MyPostsViewModel
     
     var item: Post
     var isPost: Bool
@@ -38,6 +39,7 @@ struct ApplyPostCard: View {
                 .padding(.bottom, 6)
             HStack {
                 ButtonBox(title: status.buttonString(slotId: slotId), action: {
+                    selectViewModel.lists = myPostsViewModel.getSlotApplications(forPostId: item.postId.uuidString)
                     selectViewModel.isSetting = true
                 }, condition: status.buttonStatus)
                 .disabled(status.buttonStatus)

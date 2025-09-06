@@ -74,7 +74,7 @@ struct MyPostsView: View {
             } else {
                 TabView(selection: $myPostsViewModel.currentRecruitPage) {
                     ForEach(myPostsViewModel.uploadPost.indices, id: \.self) { index in
-                        RecruitPostCard(item: myPostsViewModel.uploadPost[index], isPost: true)
+                        RecruitPostCard(item: myPostsViewModel.uploadPost[index], isPost: true, tempLists: myPostsViewModel.getSlotsPosts(forPostId: myPostsViewModel.uploadPost[index].postId.uuidString))
                             .tag(index)
                     }
                 }
@@ -100,7 +100,7 @@ struct MyPostsView: View {
             } else {
                 TabView(selection: $myPostsViewModel.currentApplyPage) {
                     ForEach(myPostsViewModel.applicationPost.indices, id: \.self) { index in
-                        ApplyPostCard(selectViewModel: selectViewModel, item: myPostsViewModel.applicationPost[index], isPost: false)
+                        ApplyPostCard(selectViewModel: selectViewModel, myPostsViewModel: myPostsViewModel, item: myPostsViewModel.applicationPost[index], isPost: false)
                             .tag(index)
                     }
                 }
