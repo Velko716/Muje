@@ -39,7 +39,7 @@ struct QuestionAnswerToggle: View {
                     .rotationEffect(.degrees(isExpanded ? 180 : 0))
                     .animation(.easeInOut(duration: 0.3), value: isExpanded)
             }
-            .padding(EdgeInsets(top: 24, leading: 16, bottom: 0, trailing: 16))
+            .padding(.horizontal, 16)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -48,12 +48,10 @@ struct QuestionAnswerToggle: View {
         Text(answer)
             .body2SemiBold16()
             .foregroundStyle(.gray700)
-            .lineLimit(isExpanded ? nil : 1)
+            .lineLimit(isExpanded ? nil : 2)
             .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
-            .padding(.bottom, 20)
-            .background(Color.white)
     }
 }
 
