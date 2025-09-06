@@ -13,6 +13,7 @@ struct Toast: View {
     
     var body: some View {
         VStack {
+          Spacer()
             if isShown {
                 HStack(spacing: 16) {
                     Text(message)
@@ -23,6 +24,7 @@ struct Toast: View {
                 .transition(.move(edge: .bottom))
             }
         }
+        .padding(.bottom, 150)
     }
 }
 

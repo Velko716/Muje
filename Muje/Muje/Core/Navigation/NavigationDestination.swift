@@ -27,6 +27,7 @@ enum NavigationDestination: Equatable, Hashable {
       questionAnswer: [String: String]
   )
     case applicationSubmitCompleteView
+    case applicationCompleteView
     case editContentView(post: Post, postImages: [PostImage])
     case applicationManagementView(
       postId: String,

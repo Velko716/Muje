@@ -12,6 +12,8 @@ struct RecruitPostCard: View {
     var isPost: Bool
     
     var tempLists: [InterviewSlotModel] = []
+  
+  @EnvironmentObject private var router: NavigationRouter
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -39,12 +41,21 @@ struct RecruitPostCard: View {
                 })
                 
                 Divider()
-                ButtonBox(title: "지원자 관리", action: {
-                    print("지원자 관리로 이동")
+              ButtonBox(
+                title: "지원자 관리",
+                action: {
+                  print("지원자 관리로 이동")
+                  router.push(
+                    to: .applicationManagementView(
+                      postId: item.postId.uuidString,
+                      postInfo: ApplicationManagementPostInfo(from: item)
+                    )
+                  )
                 })
                 Divider()
                 ButtonBox(title: "작성글 관리", action: {
                     print("공고 상세보기로 이동")
+                  router.push(to: .RecruitmentDetailView(postId: item.postId.uuidString))
                 })
             }
         }

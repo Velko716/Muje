@@ -14,27 +14,30 @@ struct EditPostView: View {
   
   var body: some View {
     ZStack {
-        VStack(spacing: 32) {
-          CustomTextField(
-            title: "공고제목",
-            tempTitle: "공고 제목을 적어주세요",
-            textValue: $viewModel.title, maxLength: 100
-          )
-          CustomTextField(
-            title: "단체명",
-            tempTitle: "단체명을 적어주세요",
-            textValue: $viewModel.organization, maxLength: 50
-          )
-          PickerView(
-            title: "모집 마감일",
-            content: viewModel.endDateString,
-            function: {
-              viewModel.isPicker = true
-            })
-          imageView
-          contentView
-        }
-        .padding(.bottom, 100)
+      VStack(spacing: 32) {
+        CustomTextField(
+          title: "공고제목",
+          tempTitle: "공고 제목을 적어주세요",
+          textValue: $viewModel.title, maxLength: 100
+        )
+        CustomTextField(
+          title: "단체명",
+          tempTitle: "단체명을 적어주세요",
+          textValue: $viewModel.organization, maxLength: 50
+        )
+        PickerView(
+          title: "모집 마감일",
+          content: viewModel.endDateString,
+          function: {
+            viewModel.isPicker = true
+          })
+        imageView
+        contentView
+      }
+      .padding(.bottom, 100)
+//      .safeAreaInset(edge: .bottom) {
+//        bottomButton
+//      }
     }
   }
   
@@ -58,7 +61,7 @@ struct EditPostView: View {
           
           // 새 이미지들 표시
           selectedImageView
-
+          
         }
         .animation(.spring(), value: viewModel.selectedImagesData)
       }
@@ -99,9 +102,9 @@ struct EditPostView: View {
         onDelete: { viewModel.removeExistingImage(at: index) },
         cachedURL: (viewModel.imageURLCache[postImage.imageId]) ?? ""
       )
-//            ExistingImageCard(postImage: postImage) {
-//              viewModel.removeExistingImage(at: index)
-//            }
+      //            ExistingImageCard(postImage: postImage) {
+      //              viewModel.removeExistingImage(at: index)
+      //            }
     }
   }
   // MARK: - PhotosPicker에서 선택된 이미지
@@ -145,9 +148,33 @@ struct EditPostView: View {
     }
   }
   
-
-  
-
+  private var bottomButton: some View {
+    VStack {
+      Button {
+        Task {
+          await viewModel.updatedPost()
+        }
+      } label: {
+        Text("수정 저장하기")
+          .body1SemiBold18()
+          .foregroundStyle(.white01)
+          .padding()
+          .frame(maxWidth: .infinity)
+          .background(
+            RoundedRectangle(cornerRadius: 10)
+              .fill(Color.primaryBlack)
+          )
+      }
+    }
+    .hvPadding(16, 20)
+    .frame(maxWidth: .infinity)
+    .background(
+      Rectangle()
+        .fill(Color.white)
+        .shadow(radius: 3)
+        .ignoresSafeArea(edges: .bottom)
+    )
+  }
 }
 
 // MARK: - 기존 이미지 카드 (getDownloadURL 사용)
@@ -177,7 +204,7 @@ struct ExistingImageCard: View {
             .frame(width: 84, height: 84)
             .overlay(
               ProgressView().scaleEffect(0.8)
-              )
+            )
         } else {
           if let downloadURL = downloadURL {
             AsyncImage(url: URL(string: downloadURL)) { image in
@@ -199,9 +226,9 @@ struct ExistingImageCard: View {
           .padding(5)
       }
     }
-      .task(id: postImage.imageId) {
-        await loadDownloadURL()
-      }
+    .task(id: postImage.imageId) {
+      await loadDownloadURL()
+    }
     
   }
   
@@ -225,4 +252,29 @@ struct ExistingImageCard: View {
       }
     }
   }
+}
+
+#Preview {
+  EditPostView(
+    viewModel: EditPostViewModel.init(
+      post: Post(
+        postId: UUID(),
+        authorUserId: "",
+        title: "",
+        organization: "",
+        content: "",
+        recruitmentStart: Timestamp(date: Date()),
+        recruitmentEnd: Timestamp(date: Date()),
+        status: PostStatus.recruiting.rawValue,
+        authorName: "",
+        authorOrganization: ""
+      ),
+      postImages: [PostImage(
+        imageId: UUID(),
+        postId: "",
+        imageUrl: "",
+        imageOrder: 0
+      )]
+    )
+  )
 }

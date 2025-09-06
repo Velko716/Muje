@@ -12,13 +12,13 @@ struct RootView: View {
     @EnvironmentObject private var router: NavigationRouter
     @EnvironmentObject private var unreadBadge: UnreadBadgeStore
     @EnvironmentObject private var deepLink: DeepLinkController
-    
-    @State private var tabcase: TabCase = .home
+    @EnvironmentObject private var tabSelection: TabSelection
+//    @State private var tabcase: TabCase = .home
     
     
     var body: some View {
         NavigationStack(path: $router.destination) {
-            TabView(selection: $tabcase, content: {
+          TabView(selection: $tabSelection.tabCase, content: {
                 ForEach(TabCase.allCases, id: \.rawValue) { tab in
                     Tab(
                         value: tab,
@@ -54,7 +54,7 @@ struct RootView: View {
     }
     
     private func tabLabel(_ tab: TabCase) -> some View {
-        let isSelected = tabcase == tab
+      let isSelected = tabSelection.tabCase == tab
         return VStack(spacing: 12) {
             Image(tab.icon)
                 .renderingMode(.template)
@@ -63,7 +63,7 @@ struct RootView: View {
                 .font(.caption)
                 .foregroundStyle(Color.black) // FIXME: - 컬러 수정
         }
-        .animation(.snappy, value: tabcase) // 애니메이션 추가
+        .animation(.snappy, value: tabSelection.tabCase) // 애니메이션 추가
     }
     
     @ViewBuilder
