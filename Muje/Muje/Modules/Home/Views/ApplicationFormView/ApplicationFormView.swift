@@ -30,7 +30,7 @@ struct ApplicationFormView: View {
           showExitsheet = true
         }
       
-        ScrollView() {
+        ScrollView {
         infoSection
         Spacer().frame(height: 32)
         divider()
