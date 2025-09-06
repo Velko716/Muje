@@ -115,7 +115,7 @@ final class InboxViewModel {
     }
    
     
-    /// 대화 문서에서 상대방 UID를 확보 (participant1/2 혹은 participants 배열 지원)
+    /// 대화 문서에서 상대방 UID를 확보 (participant1/2 혹은 participants 배열 지원) + 차단
     func ensureOtherUserId(conversationId: String) async throws {
         let conversation: Conversation = try await FirestoreManager.shared.get(
             conversationId,

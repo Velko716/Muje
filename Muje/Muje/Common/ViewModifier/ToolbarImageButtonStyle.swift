@@ -10,8 +10,8 @@ import SwiftUI
 struct ToolbarImageButtonStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .foregroundStyle(Color.black) // FIXME: - 컬러 수정
-            .frame(width: 24, height: 24) // TODO: 아이콘 크기 논의
+            .foregroundStyle(Color.gray700)
+            .frame(width: 24, height: 24)
     }
 }
 

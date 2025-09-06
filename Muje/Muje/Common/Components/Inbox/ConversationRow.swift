@@ -36,12 +36,12 @@ struct ConversationRow: View {
             HStack(spacing: 8) {
                 
                 Text(otherName)
-                    .font(Font.system(size: 18))
-                    .foregroundStyle(Color.black)
+                    .font(Font.pretendard(type: .semiBold, size: 18))
+                    .foregroundStyle(Color.gray700)
                 
                 Text(conversation.postTitle)
-                    .font(Font.system(size: 14))
-                    .foregroundStyle(.secondary)
+                    .font(Font.pretendard(type: .medium, size: 14))
+                    .foregroundStyle(Color.gray400)
                     .lineLimit(1)
                 
                 Spacer()
@@ -50,15 +50,15 @@ struct ConversationRow: View {
                 let time = conversation.updatedAt?.dateValue() ?? conversation.createdAt?.dateValue()
                 if let date = time {
                     Text(date.listTimeLabel())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(Font.pretendard(type: .medium, size: 14))
+                        .foregroundStyle(Color.gray400)
                 }
             }
             
             HStack {
                 Text(lastLine)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(Font.pretendard(type: .medium, size: 16))
+                    .foregroundStyle(Color.gray700)
                     .lineLimit(1)
                     .truncationMode(.tail)
                 
@@ -68,18 +68,18 @@ struct ConversationRow: View {
                 if unreadCount > 0 {
                     if unreadCount > 99 {
                         Text("+99")
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.white)
+                            .font(Font.pretendard(type: .bold, size: 12))
+                            .foregroundStyle(Color.white01)
                             .padding(.vertical, 0.73)
                             .padding(.horizontal, 6.56)
-                            .background(Capsule().fill(Color.blue))
+                            .background(Capsule().fill(Color.pointSkyBlue))
                     } else {
                         Text("\(unreadCount)")
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.white)
+                            .font(Font.pretendard(type: .bold, size: 12))
+                            .foregroundStyle(Color.white01)
                             .padding(.vertical, 0.73)
                             .padding(.horizontal, 6.56)
-                            .background(Capsule().fill(Color.blue))
+                            .background(Capsule().fill(Color.pointSkyBlue))
                     }
                 }
             }
@@ -104,4 +104,5 @@ struct ConversationRow: View {
         currentUserId: "",
         unreadCount: 300
     )
+    .padding(.horizontal, 16)
 }

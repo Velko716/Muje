@@ -15,9 +15,12 @@ struct InboxView: View {
     @State private var viewModel: InboxViewModel
     @State private var text: String = ""
     
-    @State private var showReportSheet = false
     @State private var showActionSheet = false
     @State private var showLeaveAlert = false
+
+    @State private var showReportSheet = false
+    @State private var showConfirmBlock = false
+    @State private var showConfirmLeave = false
     
     @FocusState private var isFocused: Bool
     private let buttonSize: CGFloat = 40 // SendButton 버튼 사이즈 비교
@@ -39,12 +42,13 @@ struct InboxView: View {
         ZStack {
             VStack() {
                 topCurrentPostView
+                    .paddingH16()
                 Spacer().frame(height: 20)
                 Divider()
                 //Spacer()
                 middleInboxContentView
+                    .paddingH16()
             }
-            .paddingH16()
         }
         .task {
             Task {
@@ -94,10 +98,11 @@ struct InboxView: View {
                             }
                         }
                         showActionSheet = false
+                        showConfirmBlock = true
                     },
                     onLeave: {
                         showActionSheet = false
-                        showLeaveAlert = true
+                        showConfirmLeave = true
                     },
                     onClose: {
                         showActionSheet = false
@@ -107,27 +112,49 @@ struct InboxView: View {
                 .animation(.easeInOut(duration: 0.22), value: showActionSheet)
             }
         }
-        .background(InteractivePopGesture()) // 오른쪽 뒤로가기 제스처
-        .alert("채팅방 나가기", isPresented: $showLeaveAlert) {
-            Button("나가기", role: .destructive) {
-                Task {
-                    await viewModel.leave()
-                    rotuer.pop()
+        .overlay(alignment: .bottom) {
+            Group {
+                /// 차단
+                if showConfirmBlock {
+                    BottomConfirmSheet(
+                        title: "차단하면 메세지를 받을 수 없어요\n사용자를 차단하시겠어요?",
+                        primaryTitle: "차단하기",
+                        onPrimary: {
+                            Task {
+                                do {
+                                    try await viewModel.ensureOtherUserId(
+                                        conversationId: viewModel.conversationId.uuidString
+                                    )
+                                    showConfirmBlock = false
+                                    rotuer.pop()
+                                } catch {
+                                    showConfirmBlock = false
+                                }
+                            }
+                        },
+                        onCancel: { showConfirmBlock = false }
+                    )
+                }
+                
+                /// 채팅방 나가기
+                if showConfirmLeave {
+                    BottomConfirmSheet(
+                        title: "채팅방을 나가면 대화내용이\n삭제됩니다. 채팅방을 나가시겠어요?",
+                        primaryTitle: "나가기",
+                        onPrimary: {
+                            Task {
+                                await viewModel.leave()
+                                showConfirmLeave = false
+                                rotuer.pop()
+                            }
+                        },
+                        onCancel: { showConfirmLeave = false }
+                    )
                 }
             }
-            Button("취소", role: .cancel) { }
-        } message: {
-            Text("채팅방을 나가면 대화내용이 삭제됩니다.")
+            .animation(.easeInOut(duration: 0.22), value: showConfirmBlock || showConfirmLeave)
         }
-        // FIXME: - 디자인 수정하기
-        .alert("차단하기 완료", isPresented: $viewModel.showBlockedAlert) {
-            Button {
-                viewModel.showBlockedAlert = false
-                rotuer.pop()
-            } label: {
-                Text("닫기")
-            }
-        }
+        .background(InteractivePopGesture()) // 오른쪽 뒤로가기 제스처
         // MARK: - 신고하기 시트
         .sheet(isPresented: $showReportSheet) {
             ReportView(
@@ -149,7 +176,7 @@ struct InboxView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 12) {
-                
+                    
                     if viewModel.messages.count >= 20, viewModel.oldestCursor != nil {
                         Color.clear
                             .frame(height: 1)
@@ -207,6 +234,8 @@ struct InboxView: View {
             ZStack(alignment: .trailing) {
                 VStack(spacing: 0) {
                     TextField("메세지를 입력하세요", text: $text, axis: .vertical)
+                        .font(Font.pretendard(type: .medium, size: 16))
+                        .foregroundStyle(Color.gray700)
                         .focused($isFocused)
                         .textInputAutocapitalization(.sentences)
                         .autocorrectionDisabled(false)
@@ -216,20 +245,19 @@ struct InboxView: View {
                         .padding(.trailing, buttonSize + 12)
                 }
                 .background(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .fill(Color(uiColor: .secondarySystemBackground))
-                        .stroke(.secondary.opacity(0.12), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 100)
+                        .fill(Color.gray50)
                 )
                 .frame(minHeight: 44)
-            
+                
                 InboxSendButton(sendEnabled: sendEnabled) {
                     let msg = text
                     text = ""
                     Task { await viewModel.send(text: msg) }
                 }
-                    .frame(width: buttonSize, height: buttonSize)
-                    .padding(.trailing, 8)
-                    .disabled(!sendEnabled)
+                .frame(width: buttonSize, height: buttonSize)
+                .padding(.trailing, 8)
+                .disabled(!sendEnabled)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
