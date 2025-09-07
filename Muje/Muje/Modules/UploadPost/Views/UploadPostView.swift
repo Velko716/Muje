@@ -19,83 +19,85 @@ struct UploadPostView: View {
   
     
     var body: some View {
-        
-            ZStack(alignment: .bottom) {
-                ScrollView {
-                    VStack(alignment: .leading) {
-                        StatusView(uploadPostViewModel: $uploadPostViewModel)
-                        
-                        Spacer()
-                        
-                        if uploadPostViewModel.currentStatus == .input {
-                          PostInfoView(
-                            postInfoViewModel: postInfoViewModel
-                          )
-                        } else if uploadPostViewModel.currentStatus == .interview {
-                          PostInterviewView(
-                            postInfoViewModel: postInfoViewModel,
-                            postInterviewViewModel: postInterviewViewModel, interviewSlotViewModel: interviewSlotViewModel
-                          )
-                        } else {
-                          RecruitmentPostView(
-                            viewModel: recruitmentPostViewModel
-                          )
-                        }
-                        
-                    }
-                    .safeAreaPadding(.horizontal, 16)
-                }
-                .onChange(of: postInfoViewModel.selectedItems) { old, new in
-                    postInfoViewModel.selectedImagesData.removeAll()
-                    if new.count == 5 {
-                        postInfoViewModel.showToast = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            postInfoViewModel.showToast = false
-                        }
-                    }
-                    Task {
-                        let loadingTasks = new.map { item in
-                            Task {
-                                try? await item.loadTransferable(type: Data.self)
-                            }
-                        }
-                        var imageData: [Data] = []
-                        for task in loadingTasks {
-                            if let data = await task.value {
-                                imageData.append(data)
-                            }
-                        }
-                        await MainActor.run {
-                            postInfoViewModel.selectedImagesData = imageData
-                        }
-                    }
-                }
-                .toast(isShown: $postInfoViewModel.showToast, message: "사진은 최대 5장까지만 업로드할 수 있어요", alignment: .bottom)
-                nextButtonView
-                
-                if postInfoViewModel.isPicker {
-                    dateView
-                }
-            }
-            .ignoresSafeArea(edges: .bottom)
-            .navigationTitle("모임 올리기")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading, content: {
-                    Button(action: {
-                        uploadPostViewModel.isQuit = true
-                    }, label: {
-                        Image(systemName: "chevron.left")
-                            .foregroundStyle(Color.gray)
-                    })
-                })
-            }
-            .sheet(isPresented: $uploadPostViewModel.isQuit) {
-              AlertModalView(uploadPostViewModel: $uploadPostViewModel) {
-                router.pop()
+      
+      if uploadPostViewModel.isLoading {
+        ProgressView()
+      } else {
+        ZStack(alignment: .bottom) {
+          ScrollView {
+            VStack(alignment: .leading) {
+              StatusView(uploadPostViewModel: $uploadPostViewModel)
+              
+              Spacer()
+              
+              if uploadPostViewModel.currentStatus == .input {
+                PostInfoView(
+                  postInfoViewModel: postInfoViewModel
+                )
+              } else if uploadPostViewModel.currentStatus == .interview {
+                PostInterviewView(
+                  postInfoViewModel: postInfoViewModel,
+                  postInterviewViewModel: postInterviewViewModel, interviewSlotViewModel: interviewSlotViewModel
+                )
+              } else {
+                RecruitmentPostView(
+                  viewModel: recruitmentPostViewModel
+                )
               }
             }
-        
+            .safeAreaPadding(.horizontal, 16)
+          }
+          .onChange(of: postInfoViewModel.selectedItems) { old, new in
+            postInfoViewModel.selectedImagesData.removeAll()
+            if new.count == 5 {
+              postInfoViewModel.showToast = true
+              DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                postInfoViewModel.showToast = false
+              }
+            }
+            Task {
+              let loadingTasks = new.map { item in
+                Task {
+                  try? await item.loadTransferable(type: Data.self)
+                }
+              }
+              var imageData: [Data] = []
+              for task in loadingTasks {
+                if let data = await task.value {
+                  imageData.append(data)
+                }
+              }
+              await MainActor.run {
+                postInfoViewModel.selectedImagesData = imageData
+              }
+            }
+          }
+          .toast(isShown: $postInfoViewModel.showToast, message: "사진은 최대 5장까지만 업로드할 수 있어요", alignment: .bottom)
+          nextButtonView
+          
+          if postInfoViewModel.isPicker {
+            dateView
+          }
+        }
+        .ignoresSafeArea(edges: .bottom)
+        .navigationTitle("모임 올리기")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+          ToolbarItem(placement: .topBarLeading, content: {
+            Button(action: {
+              uploadPostViewModel.isQuit = true
+            }, label: {
+              Image(systemName: "chevron.left")
+                .foregroundStyle(Color.gray)
+            })
+          })
+        }
+        .sheet(isPresented: $uploadPostViewModel.isQuit) {
+          AlertModalView(uploadPostViewModel: $uploadPostViewModel) {
+            router.pop()
+          }
+        }
+      }
     }
     
     private var nextButtonView: some View {
@@ -139,12 +141,19 @@ struct UploadPostView: View {
                       ActionButton(title: "이전", condition: true)
                   })
                   Spacer()
-                  Button(action: {
+                Button(
+                  action: {
                     Task {
-                      try await uploadPostViewModel.submit(postInfo: postInfoViewModel, requireInfo: recruitmentPostViewModel, postInterviewViewModel: postInterviewViewModel, interviewSlotViewModel: interviewSlotViewModel)
+                      try await uploadPostViewModel.submit(
+                        postInfo: postInfoViewModel,
+                        requireInfo: recruitmentPostViewModel,
+                        postInterviewViewModel: postInterviewViewModel,
+                        interviewSlotViewModel: interviewSlotViewModel
+                      )
+                      router.push(to: .uploadCompleteView)
                     }
-                    router.push(to: .uploadCompleteView)
-                  }, label: {
+                  },
+                  label: {
                       ActionButton(title: "모집글 올리기", condition: true)
                   })
               }
