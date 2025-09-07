@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ApplicationSubmitCompleteView: View {
     @EnvironmentObject private var router: NavigationRouter
+    @EnvironmentObject private var tabSelection: TabSelection
     var body: some View {
         VStack {
             TopTextView
@@ -17,13 +18,15 @@ struct ApplicationSubmitCompleteView: View {
             Spacer()
         }
         .toolbar {
-            ToolbarLeadingBackButton()
             ToolbarCenterTitle(text: "신청서 작성")
         }
         TwoActionBottomButton(
-            leftAction: { router.push(to: .myPostView) } ,
+            leftAction: {
+                router.popToRootView()
+                tabSelection.tabCase = .myPosts
+            } ,
             leftText: "나의 모임페이지",
-            rightAction: { router.push(to: .contentView) },
+            rightAction: { router.popToRootView() },
             rightText: "홈으로"
         )
     }
