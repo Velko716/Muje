@@ -15,6 +15,7 @@ struct ReportReasonView: View {
     var body: some View {
         VStack {
             topTitle
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .paddingH16()
             Spacer().frame(height: 32)
             middleListView
@@ -24,8 +25,8 @@ struct ReportReasonView: View {
     // MARK: - 탑 타이틀
     private var topTitle: some View {
         Text("신고사유를 선택해주세요")
-            .font(Font.system(size: 22, weight: .semibold)) // FIXME: - 폰트 수정
-            .foregroundStyle(Color.black) // FIXME: - 컬러 수정
+            .font(Font.pretendard(type: .semiBold, size: 22))
+            .foregroundStyle(Color.gray700)
     }
     
     // MARK: - 중간 리스트
@@ -41,6 +42,8 @@ struct ReportReasonView: View {
                         .onAppear { viewModel.selectedReason = row.content }
                 } label: {
                     Text(row.title)
+                        .font(Font.pretendard(type: .medium, size: 16))
+                        .foregroundStyle(Color.gray700)
                         .padding(.vertical, 16)
                 }
             }
