@@ -72,6 +72,12 @@ class InterviewSlotViewModel {
         }
     }
     
+    func removeItem(withId id: UUID) {
+        if let index = selectedSlots.firstIndex(where: { $0.id == id }) {
+            selectedSlots.remove(at: index)
+        }
+    }
+    
     //선택된 캘린더 슬롯에서 모든 시간 당 인터뷰 슬롯 생성하는 함수 -> 인터뷰 슬롯 리스트에 저장됨
   func updateAllSlot(postId: String) -> [InterviewSlot] {
         for list in selectedSlots {
