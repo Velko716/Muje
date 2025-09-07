@@ -9,11 +9,14 @@ import SwiftUI
 
 struct divider: View {
     var body: some View {
-        Rectangle()
-            .fill(.gray50)
-            .frame(maxWidth: .infinity)
-            .frame(height: 12)
-            .padding(.horizontal, -16)
+        VStack {
+            Rectangle()
+                .fill(.gray50)
+                .frame(maxWidth: .infinity)
+                .frame(height: 12)
+                .padding(.horizontal, -16)
+        }
+        .padding(.vertical, 24)
     }
 }
 
