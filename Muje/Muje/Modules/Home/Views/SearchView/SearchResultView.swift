@@ -30,7 +30,8 @@ struct SearchResultView: View {
           ForEach(viewModel.searchResults, id: \.postId) { post in
             PostListItem(
               post: post,
-              thumbnailImage: viewModel.thumbnailImages[post.postId]
+              thumbnailImage: viewModel.thumbnailImages[post.postId],
+              cachedURL: viewModel.imageURLCache[post.postId]
             )
             .frame(maxWidth: .infinity, alignment: .leading)
             .listRowInsets(EdgeInsets())

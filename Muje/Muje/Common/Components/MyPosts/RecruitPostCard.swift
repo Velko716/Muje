@@ -16,6 +16,7 @@ struct RecruitPostCard: View {
     var tempLists: [InterviewSlotModel] = []
   
     let thumbnailImage: PostImage?
+    let cachedURL: String?
   
     
     var body: some View {
@@ -24,7 +25,8 @@ struct RecruitPostCard: View {
               InfoBox(
                 name: item.title,
                 title: item.content,
-                thumbnailImage: thumbnailImage
+                thumbnailImage: thumbnailImage,
+                cachedURL: cachedURL
               )
                 HStack {
                     StatusCard(title: "모집 중", color: Color.green)

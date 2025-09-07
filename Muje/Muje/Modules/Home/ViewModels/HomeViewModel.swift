@@ -27,6 +27,8 @@ final class HomeViewModel {
   var hasMoreData: Bool = true
   var isLoadingMore: Bool = false
   
+  @MainActor var imageURLCache: [UUID: String] = [:]
+  
   // MARK: - 페이징 관련 로직
   
   @MainActor
@@ -45,6 +47,8 @@ final class HomeViewModel {
       self.thumbnailImages = thumbnails
       self.lastDocument = lastDoc
       self.hasMoreData = posts.count == pageSize
+      
+      await preloadImageURL()
       
       isLoading = false
       
@@ -71,11 +75,37 @@ final class HomeViewModel {
       self.lastDocument = newLastDoc
       self.hasMoreData = newPosts.count == pageSize
       
+      await preloadImageURL()
+      
       isLoadingMore = false
       
     } catch {
       print("추가 로딩 실패 \(error)")
       isLoadingMore = false
+    }
+  }
+  
+  @MainActor
+  func preloadImageURL() async {
+    await withTaskGroup(of: (UUID, String?).self) { group in
+      for (postId, image) in thumbnailImages {
+        if imageURLCache[postId] == nil {
+          group.addTask {
+            do {
+              let url = try await image.getDownloadURL()
+              return (postId, url)
+            } catch {
+              print("이미지 url 로드 실패")
+              return (postId, nil)
+            }
+          }
+        }
+      }
+      for await (postId, url) in group {
+        if let url = url {
+          imageURLCache[postId] = url
+        }
+      }
     }
   }
 }

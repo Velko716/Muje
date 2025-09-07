@@ -20,6 +20,7 @@ struct ApplyPostCard: View {
     var slot: InterviewSlotModel? //서버에서 인터뷰 슬롯 DTO들 받아와서 패치(어플리케이션 DTO에서 interviewSlotId를 찾은 후에 서버에서 동일한 id의 InterviewSlot DTO 받아오기)
   
     let thumbnailImage: PostImage?
+    let cachedURL: String?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -27,7 +28,8 @@ struct ApplyPostCard: View {
               InfoBox(
                 name: item.title,
                 title: item.content,
-                thumbnailImage: thumbnailImage
+                thumbnailImage: thumbnailImage,
+                cachedURL: cachedURL
               )
                 HStack {
                     StatusCard(title: "모집 중", color: Color.green)

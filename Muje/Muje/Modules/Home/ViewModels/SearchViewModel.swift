@@ -26,6 +26,8 @@ final class SearchViewModel {
     var suggestions: [PostSuggestion] = []
     var isSuggestionsLoading: Bool = false
     var isSearching: Bool = false
+  
+    @MainActor var imageURLCache: [UUID: String] = [:]
     
     @MainActor
     func updateSuggestions() {
@@ -74,14 +76,29 @@ final class SearchViewModel {
                 await MainActor.run { self.isSearching = true }
                 
                 let(posts, thum) = try await FirestoreManager.shared.searchPosts(query: query)
-                
-                await MainActor.run {
+              
+              await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                  await MainActor.run {
                     if !Task.isCancelled {
-                        self.searchResults = posts
-                        self.thumbnailImages = thum
+                      self.searchResults = posts
+                      self.thumbnailImages = thum
                     }
                     self.isSearching = false
+                  }
                 }
+                group.addTask {
+                  await self.preloadImageURL()
+                }
+              }
+                
+//                await MainActor.run {
+//                    if !Task.isCancelled {
+//                        self.searchResults = posts
+//                        self.thumbnailImages = thum
+//                    }
+//                    self.isSearching = false
+//                }
             } catch {
                 await MainActor.run {
                     print("상세 검색 실패 \(error)")
@@ -90,6 +107,30 @@ final class SearchViewModel {
             }
         }
     }
+  
+  @MainActor
+  func preloadImageURL() async {
+    await withTaskGroup(of: (UUID, String?).self) { group in
+      for (postId, image) in thumbnailImages {
+        if imageURLCache[postId] == nil {
+          group.addTask {
+            do {
+              let url = try await image.getDownloadURL()
+              return (postId, url)
+            } catch {
+              print("이미지 url 로드 실패")
+              return (postId, nil)
+            }
+          }
+        }
+      }
+      for await (postId, url) in group {
+        if let url = url {
+          imageURLCache[postId] = url
+        }
+      }
+    }
+  }
     
     func highlightedOrgText(_ text: String, keyword: String) -> AttributedString {
         return createHighlightedText(

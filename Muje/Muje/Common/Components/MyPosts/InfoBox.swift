@@ -12,13 +12,17 @@ struct InfoBox: View {
     var title: String
   
     let thumbnailImage: PostImage?
+    let cachedURL: String?
     
     var body: some View {
         HStack(spacing: 8) {
-          ThumbnailAsyncImage(
-            postImage: thumbnailImage,
-            size: 54
-          )
+          if let thumbnailImage = thumbnailImage {
+            ThumbnailAsyncImage(
+              postImage: thumbnailImage,
+              cachedURL: cachedURL,
+              size: 54
+            )            
+          }
             VStack(alignment: .leading) {
                 Text(name)
                     .foregroundStyle(Color.gray)
@@ -41,6 +45,6 @@ struct InfoBox: View {
       postId: "",
       imageUrl: "",
       imageOrder: 0
-    )
+    ), cachedURL: ""
   )
 }

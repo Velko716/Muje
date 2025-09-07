@@ -12,6 +12,7 @@ import FirebaseFirestore
 struct PostListItem: View {
     let post: Post
     let thumbnailImage: PostImage?
+    let cachedURL: String?
     
     var body: some View {
         HStack {
@@ -35,7 +36,13 @@ struct PostListItem: View {
             .padding(.vertical, 20)
             Spacer(minLength: 16)
             // MARK: 우측 - 사진 (썸네일)
-            ThumbnailAsyncImage(postImage: thumbnailImage)
+          if let thumbnailImage = thumbnailImage {
+            ThumbnailAsyncImage(
+              postImage: thumbnailImage,
+              cachedURL: cachedURL
+            )
+            .id(thumbnailImage.imageId)
+          }
         } //: HSTACK
         .contentShape(Rectangle())
         .frame(maxWidth: .infinity)
@@ -61,6 +68,6 @@ struct PostListItem: View {
       postId: "",
       imageUrl: "",
       imageOrder: 0
-    )
+    ), cachedURL: ""
   )
 }

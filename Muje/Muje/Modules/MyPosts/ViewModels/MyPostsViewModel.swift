@@ -50,6 +50,9 @@ class MyPostsViewModel {
   private var isDataLoaded: Bool = false
   private let cacheValidDuration: TimeInterval = 300
   
+  // MARK: 썸네일 캐싱
+  @MainActor var imageURLCache: [UUID: String] = [:]
+  
   
   // MARK: - 캐시 함수
   // 캐시 유효한지 확인 (기준 5분)
@@ -183,9 +186,15 @@ extension MyPostsViewModel {
     await withTaskGroup(of: Void.self) { group in
       group.addTask {
         await self.loadApplicationData()
+        await self.preloadImageURL(
+          thumbnailImages: self.applicationThumbnail
+        )
       }
       group.addTask {
         await self.loadUploadData()
+        await self.preloadImageURL(
+          thumbnailImages: self.uploadThumbnail
+        )
       }
     }
   }
@@ -380,6 +389,30 @@ private extension MyPostsViewModel {
       print("내가 올린 공고 썸네일 \(thumbnails.count)개 로드 완료")
     } catch {
       print("내가 올린 공고 썸네일 로딩 실패 \(error)")
+    }
+  }
+  
+  @MainActor
+  func preloadImageURL(thumbnailImages: [UUID: PostImage]) async {
+    await withTaskGroup(of: (UUID, String?).self) { group in
+      for (postId, image) in thumbnailImages {
+        if imageURLCache[postId] == nil {
+          group.addTask {
+            do {
+              let url = try await image.getDownloadURL()
+              return (postId, url)
+            } catch {
+              print("이미지 url 로드 실패")
+              return (postId, nil)
+            }
+          }
+        }
+      }
+      for await (postId, url) in group {
+        if let url = url {
+          imageURLCache[postId] = url
+        }
+      }
     }
   }
 }

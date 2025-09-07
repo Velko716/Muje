@@ -78,7 +78,8 @@ struct MyPostsView: View {
                       RecruitPostCard(
                         item: post,
                         isPost: true,
-                        thumbnailImage: myPostsViewModel.uploadThumbnail[post.postId]
+                        thumbnailImage: myPostsViewModel.uploadThumbnail[post.postId],
+                        cachedURL: myPostsViewModel.imageURLCache[post.postId]
                       )
                             .tag(index)
                     }
@@ -110,7 +111,8 @@ struct MyPostsView: View {
                         selectViewModel: selectViewModel,
                         item: post,
                         isPost: false,
-                        thumbnailImage: myPostsViewModel.applicationThumbnail[post.postId]
+                        thumbnailImage: myPostsViewModel.applicationThumbnail[post.postId],
+                        cachedURL: myPostsViewModel.imageURLCache[post.postId]
                       )
                             .tag(index)
                     }
