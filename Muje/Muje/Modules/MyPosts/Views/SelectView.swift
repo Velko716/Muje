@@ -24,13 +24,15 @@ struct SelectView: View {
             }
             .padding(.horizontal, 16)
             
-            Button(action: {
-                print("면접 일정")
-                selectViewModel.isSelected = true
-                if let idx = selectViewModel.currentIndex {
-                    selectViewModel.lists[idx].currentReservations += 1
-                }
-            }, label: {
+          Button(
+            action: {
+              print("면접 일정")
+              selectViewModel.isSelected = true
+              Task {
+                await selectViewModel.updated()
+              }
+            },
+            label: {
                 ActionButton(title: selectViewModel.str, condition: selectViewModel.currentIndex == nil)
                     .padding(.horizontal, 16)
             })

@@ -109,8 +109,10 @@ struct MyPostsView: View {
                       let post = myPostsViewModel.applicationPost[index]
                       ApplyPostCard(
                         selectViewModel: selectViewModel,
+                        myPostsViewModel: myPostsViewModel,
                         item: post,
                         isPost: false,
+                        slotId: myPostsViewModel.getSlotId(postId: myPostsViewModel.applicationPost[index].postId),
                         thumbnailImage: myPostsViewModel.applicationThumbnail[post.postId],
                         cachedURL: myPostsViewModel.imageURLCache[post.postId]
                       )

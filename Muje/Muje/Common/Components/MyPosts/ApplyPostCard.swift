@@ -39,17 +39,34 @@ struct ApplyPostCard: View {
                 }
                 VStack(alignment: .leading, spacing: 8) {
                     DateBox(title: "모집 기간", startDate: item.recruitmentStart.dateValue(), endDate: item.recruitmentEnd.dateValue(), isPost: true)
-                    DateBox(title: "면접 일정", startDate: myPostsViewModel.getDateSlot(postId: item.postId.uuidString, slotId: slotId ?? "")?.interviewDate.dateValue() ?? nil, isPost: isPost, hasInterview: item.hasInterview, slotString: myPostsViewModel.getDateSlot(postId: item.postId.uuidString, slotId: slotId ?? "")?.interviewTime)
+                  DateBox(
+                    title: "면접 일정",
+                    startDate: myPostsViewModel.getDateSlot(postId: item.postId.uuidString, slotId: slotId ?? "")?.interviewDate.dateValue() ?? nil,
+                    isPost: isPost,
+                    hasInterview: item.hasInterview,
+                    slotString: myPostsViewModel.getDateSlot(postId: item.postId.uuidString, slotId: slotId ?? "")?.interviewTime
+                  )
                 }
             }
             .padding(16)
             Divider()
                 .padding(.bottom, 6)
             HStack {
-                ButtonBox(title: status.buttonString(slotId: slotId), action: {
-                    selectViewModel.lists = myPostsViewModel.getSlotApplications(forPostId: item.postId.uuidString)
-                    selectViewModel.isSetting = true
-                }, condition: status.buttonStatus)
+              ButtonBox(
+                title: status.buttonString(slotId: slotId),
+                action: {
+                  selectViewModel.lists = myPostsViewModel.getSlotApplications(forPostId: item.postId.uuidString)
+                  if let application = myPostsViewModel.currentUserApplication[item.postId] {
+//                    selectViewModel.lists = myPostsViewModel.getSlotApplications(forPostId: item.postId.uuidString)
+                    
+                    selectViewModel.prepareForInterview(
+                      postId: item.postId,
+                      application: application
+                    )
+                  }
+                  selectViewModel.isSetting = true
+                },
+                condition: status.buttonStatus)
                 .disabled(status.buttonStatus)
                 
                 Divider()
