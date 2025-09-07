@@ -13,31 +13,36 @@ struct EditPostView: View {
   @Bindable var viewModel: EditPostViewModel
   
   var body: some View {
-    ZStack {
-      VStack(spacing: 32) {
-        CustomTextField(
-          title: "공고제목",
-          tempTitle: "공고 제목을 적어주세요",
-          textValue: $viewModel.title, maxLength: 100
-        )
-        CustomTextField(
-          title: "단체명",
-          tempTitle: "단체명을 적어주세요",
-          textValue: $viewModel.organization, maxLength: 50
-        )
-        PickerView(
-          title: "모집 마감일",
-          content: viewModel.endDateString,
-          function: {
-            viewModel.isPicker = true
-          })
-        imageView
-        contentView
+    if viewModel.isLoading {
+      ProgressView()
+    } else {
+      ZStack {
+        VStack(spacing: 32) {
+          CustomTextField(
+            title: "공고제목",
+            tempTitle: "공고 제목을 적어주세요",
+            textValue: $viewModel.title, maxLength: 100
+          )
+          CustomTextField(
+            title: "단체명",
+            tempTitle: "단체명을 적어주세요",
+            textValue: $viewModel.organization, maxLength: 50
+          )
+          PickerView(
+            title: "모집 마감일",
+            content: viewModel.endDateString,
+            function: {
+              viewModel.isPicker = true
+            })
+          imageView
+          contentView
+        }
+        .padding(.bottom, 100)
       }
-      .padding(.bottom, 100)
-//      .safeAreaInset(edge: .bottom) {
-//        bottomButton
-//      }
+      .toolbar {
+        ToolbarLeadingBackButton()
+        ToolbarCenterTitle(text: "수정하기")
+      }
     }
   }
   
@@ -102,9 +107,6 @@ struct EditPostView: View {
         onDelete: { viewModel.removeExistingImage(at: index) },
         cachedURL: (viewModel.imageURLCache[postImage.imageId]) ?? ""
       )
-      //            ExistingImageCard(postImage: postImage) {
-      //              viewModel.removeExistingImage(at: index)
-      //            }
     }
   }
   // MARK: - PhotosPicker에서 선택된 이미지
@@ -118,6 +120,7 @@ struct EditPostView: View {
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .frame(width: 84, height: 84)
             .scaledToFill()
+            .clipped()
           
           Button(action: {
             viewModel.removeNewImage(at: index)
@@ -194,7 +197,9 @@ struct ExistingImageCard: View {
             image
               .resizable()
               .clipShape(RoundedRectangle(cornerRadius: 10))
+              .frame(width: 84, height: 84)
               .scaledToFill()
+              .clipped()
           } placeholder: {
             ProgressView()
           }
@@ -211,7 +216,9 @@ struct ExistingImageCard: View {
               image
                 .resizable()
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                .frame(width: 84, height: 84)
                 .scaledToFill()
+                .clipped()
             } placeholder: {
               ProgressView()
             }
