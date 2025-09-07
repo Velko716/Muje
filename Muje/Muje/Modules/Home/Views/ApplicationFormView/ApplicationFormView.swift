@@ -13,6 +13,8 @@ struct ApplicationFormView: View {
   
   @State var viewModel = ApplicationFormViewModel()
   
+  @FocusState var focusedQuestionId: String?
+  @State var isAnswerFilled: [String: Bool] = [:]
   @State var questionAnswer: [String: String] = [:]
   @State private var isLoading: Bool =  true
   @State private var showExitsheet: Bool = false
@@ -28,13 +30,14 @@ struct ApplicationFormView: View {
           showExitsheet = true
         }
       
-      ScrollView {
+        ScrollView {
         infoSection
+        Spacer().frame(height: 32)
+        divider()
+        Spacer().frame(height: 32)
         customQuestionSection
       }
-      //.contentMargins(.vertical, 20)
       .navigationBarBackButtonHidden()
-      //.ignoresSafeArea(.all, edges: .top)
       .sheet(isPresented: $showExitsheet) {
         ExitSheetView(
           exitAction: {
@@ -53,6 +56,7 @@ struct ApplicationFormView: View {
     .task {
       await viewModel.loadCustomQuestion(for: postId)
     }
+    .dismissKeyboardOnTap()
     bottomButtonSection
   }
 }

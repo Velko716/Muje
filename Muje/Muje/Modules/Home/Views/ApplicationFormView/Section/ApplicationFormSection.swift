@@ -8,37 +8,31 @@
 import SwiftUI
 
 extension ApplicationFormView {
-  var infoSection: some View {
-    VStack {
-      HStack {
-        Image(systemName: "doc.text")
-          .font(.headline)
-          .fontWeight(.semibold)
-        Text("아래 정보가 함께 제출돼요!")
-          .font(.headline)
-          .fontWeight(.semibold)
-      }
-      LazyVGrid(columns: [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible())
-      ], spacing: 12) {
-        InfoTag(title: "이름", isActive: requirementFlags.requiresName)
-        InfoTag(title: "학과 / 전공", isActive: requirementFlags.requiresDepartment)
-        InfoTag(title: "나이", isActive: requirementFlags.requiresAge)
-        InfoTag(title: "연락처", isActive: requirementFlags.requiresPhone)
-        InfoTag(title: "학번", isActive: requirementFlags.requiresDepartment)
-        InfoTag(title: "성별", isActive: requirementFlags.requiresGender)
-        //        InfoTag(title: "이름", isActive: true)
-        //        InfoTag(title: "학과 / 전공", isActive: true)
-        //        InfoTag(title: "나이", isActive: true)
-        //        InfoTag(title: "연락처", isActive: true)
-        //        InfoTag(title: "학번", isActive: true)
-        //        InfoTag(title: "성별", isActive: false)
-      }
+    var infoSection: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Image(.checkbox)
+                Text("아래 정보가 함께 제출돼요")
+                    .body2SemiBold16()
+                    .foregroundStyle(.pointSkyBlue)
+                Spacer()
+            }
+            HStack(spacing: 6) {
+                InfoTag(title: "이름", isActive: requirementFlags.requiresName)
+                InfoTag(title: "나이", isActive: requirementFlags.requiresAge)
+                InfoTag(title: "성별", isActive: requirementFlags.requiresGender)
+                Spacer()
+            }
+            Spacer().frame(height: 8)
+            HStack(spacing: 6) {
+                InfoTag(title: "학과 / 전공", isActive: requirementFlags.requiresDepartment)
+                InfoTag(title: "학번", isActive: requirementFlags.requiresDepartment)
+                Spacer()
+            }
+        }
+        .padding(.top, 24)
+        .padding(.horizontal, 16)
     }
-    .padding(.vertical, 30)
-  }
   
   var customQuestionSection: some View {
     VStack(alignment: .leading, spacing: 24) {
@@ -51,48 +45,79 @@ extension ApplicationFormView {
   var bottomButtonSection: some View {
     VStack {
       Button {
-        router.push(
-          to: .applicationPreview(
-            postId: postId,
-            requirementFlags: requirementFlags,
-            postBasicInfo: postBasicInfo,
-            customQuestion: viewModel.customQuestion,
-            questionAnswer: questionAnswer,
-          )
-        )
+          if allAnswersFilled {
+              router.push(
+                to: .applicationPreview(
+                  postId: postId,
+                  requirementFlags: requirementFlags,
+                  postBasicInfo: postBasicInfo,
+                  customQuestion: viewModel.customQuestion,
+                  questionAnswer: questionAnswer,
+                )
+              )
+          }
       } label: {
-        Text("지원서 작성 완료")
-          .foregroundStyle(.white)
+        Text("신청서 작성 완료")
+              .foregroundStyle(allAnswersFilled ? .graywhite : .gray400)
           .frame(maxWidth: .infinity)
           .padding(.vertical, 18)
-          .background(Color.gray)
+          .background(allAnswersFilled ? .grayblack : .gray300)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
     }
-    .padding(.vertical, 32)
-    .padding(.horizontal, 16)
+    .padding(EdgeInsets(.init(top: 20, leading: 16, bottom: 43, trailing: 16)))
   }
   
+    //Binding get set 수정
   func questionAnswerView(_ question: CustomQuestion) -> some View {
     let questionIdString = question.questionId.uuidString
-    
+      let config = Font.lineHeight(
+          type: .medium,
+          fontSize: 16,
+          lineHeightPercent: 1.85,
+          letterSpacingPercent: -1
+      )
     return VStack(alignment: .leading, spacing: 12) {
       Text(question.questionText)
-        .fontWeight(.medium)
+        .body1SemiBold18()
+        .foregroundStyle(.gray700)
         .lineLimit(nil)
-      TextField("내용을 입력해 주세요.", text: Binding(
-          get: { questionAnswer[questionIdString] ?? "" },
-          set: { questionAnswer[questionIdString] = $0 }
-        ), axis: .vertical)
-      .frame(maxWidth: .infinity)
-      .frame(minHeight: 90, alignment: .topLeading)
+        TextField(
+            "",
+            text: Binding(
+                get: { questionAnswer[questionIdString] ?? ""
+                },
+                set: { newValue in
+                    questionAnswer[questionIdString] = newValue
+                    isAnswerFilled[questionIdString] = !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                }
+            ),
+            prompt: Text("내용을 입력해주세요")
+            ,
+            axis: .vertical
+        )
       .padding(16)
+      .focused($focusedQuestionId, equals: questionIdString)
+      .frame(maxWidth: .infinity)
+      .frame(minHeight: 108, alignment: .topLeading)
+    
       .background(
         RoundedRectangle(cornerRadius: 10)
           .fill(Color.clear)
-          .stroke(Color.gray, lineWidth: 1)
+          .stroke(focusedQuestionId == questionIdString ? .pointSkyBlue : Color.gray, lineWidth: 1)
       )
+      .font(.pretendard(type: .medium, size: 16))
+      .padding(.vertical, config.verticalPadding)
+      .tracking(config.letterSpacing)
+      .foregroundStyle(.gray700, .gray500) //첫번째는 텍스트, 두번째는 플레이스 홀더 컬러
     }
     .padding(.horizontal, 16)
   }
+    private var allAnswersFilled: Bool {
+        guard !isAnswerFilled.isEmpty,
+              isAnswerFilled.count == viewModel.customQuestion.count else {
+            return false
+        }
+        return isAnswerFilled.values.allSatisfy { $0 }
+    }
 }

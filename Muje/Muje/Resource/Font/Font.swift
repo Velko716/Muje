@@ -63,7 +63,7 @@ extension Text {
         return self
             .font(.pretendard(type: .bold, size: 28))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func headline24Bold() -> some View {
         let config = Font.lineHeight(
@@ -75,7 +75,7 @@ extension Text {
         return self
             .font(.pretendard(type: .bold, size: 24))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func headline24SemiBold() -> some View {
         let config = Font.lineHeight(
@@ -87,7 +87,7 @@ extension Text {
         return self
             .font(.pretendard(type: .semiBold, size: 24))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     //MARK: SubHeadline
     func subheadline22Bold() -> some View {
@@ -100,7 +100,7 @@ extension Text {
         return self
             .font(.pretendard(type: .bold, size: 22))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func subheadline22semibold() -> some View {
         let config = Font.lineHeight(
@@ -112,7 +112,7 @@ extension Text {
         return self
             .font(.pretendard(type: .semiBold, size: 22))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func subheadline20medium() -> some View {
         let config = Font.lineHeight(
@@ -124,7 +124,7 @@ extension Text {
         return self
             .font(.pretendard(type: .medium, size: 20))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func subheadline20SemiBold() -> some View {
         let config = Font.lineHeight(
@@ -136,7 +136,7 @@ extension Text {
         return self
             .font(.pretendard(type: .semiBold, size: 20))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     //MARK: Body1
     func body1SemiBold18() -> some View {
@@ -149,7 +149,7 @@ extension Text {
         return self
             .font(.pretendard(type: .semiBold, size: 18))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func body1Medium18() -> some View {
         let config = Font.lineHeight(
@@ -161,7 +161,7 @@ extension Text {
         return self
             .font(.pretendard(type: .medium, size: 18))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func body1Regular18() -> some View {
         let config = Font.lineHeight(
@@ -173,7 +173,7 @@ extension Text {
         return self
             .font(.pretendard(type: .regular, size: 18))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func body1SemiBold16() -> some View {
         let config = Font.lineHeight(
@@ -185,7 +185,7 @@ extension Text {
         return self
             .font(.pretendard(type: .semiBold, size: 16))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func body1Medium16() -> some View {
         let config = Font.lineHeight(
@@ -197,7 +197,7 @@ extension Text {
         return self
             .font(.pretendard(type: .medium, size: 16))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func body1Regular16() -> some View {
         let config = Font.lineHeight(
@@ -209,7 +209,7 @@ extension Text {
         return self
             .font(.pretendard(type: .regular, size: 16))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     //MARK: Body2
     func body2SemiBold16() -> some View {
@@ -222,7 +222,7 @@ extension Text {
         return self
             .font(.pretendard(type: .semiBold, size: 16))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func body2Medium16() -> some View {
         let config = Font.lineHeight(
@@ -234,7 +234,7 @@ extension Text {
         return self
             .font(.pretendard(type: .medium, size: 16))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
         
     }
     func body2Regular16() -> some View {
@@ -247,7 +247,7 @@ extension Text {
         return self
             .font(.pretendard(type: .regular, size: 16))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
         
     }
     //MARK: Caption
@@ -261,7 +261,7 @@ extension Text {
         return self
             .font(.pretendard(type: .semiBold, size: 14))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func caption14Medium() -> some View {
         let config = Font.lineHeight(
@@ -273,7 +273,7 @@ extension Text {
         return self
             .font(.pretendard(type: .medium, size: 14))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
         
     }
     func caption14Regular() -> some View {
@@ -286,7 +286,7 @@ extension Text {
         return self
             .font(.pretendard(type: .regular, size: 14))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func caption12Bold() -> some View {
         let config = Font.lineHeight(
@@ -298,7 +298,7 @@ extension Text {
         return self
             .font(.pretendard(type: .bold, size: 12))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
     func caption12Regular() -> some View {
         let config = Font.lineHeight(
@@ -310,6 +310,6 @@ extension Text {
         return self
             .font(.pretendard(type: .regular, size: 12))
             .padding(.vertical, config.verticalPadding)
-            .kerning(config.letterSpacing)
+            .tracking(config.letterSpacing)
     }
 }

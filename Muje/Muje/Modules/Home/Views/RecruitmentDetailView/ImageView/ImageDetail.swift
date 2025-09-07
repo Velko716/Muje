@@ -45,16 +45,11 @@ struct ImageDetail: View {
       
       VStack {
         Spacer()
-          HStack {
-              DetailIndicator
-              Spacer()
-              ImageOrderIndicator
-              Spacer()
-          }
+          DetailIndicator
       }
       .padding(.leading, 16)
       
-      BackButton
+        BackButton
     }
     .gesture(
       DragGesture()
@@ -91,6 +86,8 @@ struct ImageDetail: View {
           Image(systemName: "xmark")
         }
         Spacer()
+          ImageOrderIndicator
+          Spacer()
       }
       Spacer()
     }
@@ -98,8 +95,8 @@ struct ImageDetail: View {
     .padding(.top, 16)
   }
     private var ImageOrderIndicator: some View {
-        VStack {
-            Text("\(selectedIndex) + 1")
+        HStack(spacing: 0) {
+            Text("\(selectedIndex+1)")
                 .body1SemiBold18()
                 .foregroundStyle(.gray50)
             Text("/\(postImage.count)")

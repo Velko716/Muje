@@ -24,35 +24,38 @@ struct DeleteConfirmModal: View {
   }
   
   private var textView: some View {
-    Text("정말 공고를 삭제하시겠어요?\n삭제한 뒤에는 되돌릴 수 없어요.")
-      .multilineTextAlignment(.center)
+      VStack {
+          Text("정말 공고를 삭제하시겠어요?")
+              .subheadline20SemiBold()
+              .foregroundStyle(.gray700)
+          Text("삭제한 뒤에는 되돌릴 수 없어요.")
+              .subheadline20SemiBold()
+              .foregroundStyle(.gray700)
+      }
   }
   
   private var deletebuttonView: some View {
-    VStack {
+      VStack(spacing: 24) {
       Button {
         showReportModal = false
         deleteAciton()
-        
-        
       } label: {
         Text("삭제")
-          .font(.system(size: 18))
-          .foregroundStyle(.white)
+          .body1SemiBold18()
+          .foregroundStyle(.graywhite)
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 18)
-          .background(Color.red)
+          .padding(.vertical, 14.5)
+          .background(.accentRed)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
-      
+    
       Button {
         dismiss()
       } label: {
         Text("취소")
-          .font(.system(size: 18))
-          .foregroundStyle(.black)
+          .body1SemiBold18()
+          .foregroundStyle(.gray600)
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 18)
           .background(Color.clear)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }

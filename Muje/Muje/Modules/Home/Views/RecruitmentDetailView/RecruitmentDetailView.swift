@@ -22,9 +22,6 @@ struct RecruitmentDetailView: View {
       } else {
         contentView
       }
-//      TopButtonView(isAuthor: viewModel.isAuthor) {
-//        router.pop()
-//      }
       TopButtonView(
         isAuthor: viewModel.isAuthor,
         action: { router.pop() },

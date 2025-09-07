@@ -22,8 +22,18 @@ struct ReportModalView: View {
   var body: some View {
     VStack {
       if isAuthor {
-        postFixButton
-        deleteButton
+          VStack(alignment: .center, spacing: 16) {
+              postFixButton
+              Divider()
+                  .padding(.horizontal, 18.5)
+                  .foregroundStyle(.gray300)
+              deleteButton
+          }
+          .padding(.vertical, 18)
+          .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(.gray50)
+          )
         dismissButton
       } else {
         reportButton
@@ -43,14 +53,15 @@ struct ReportModalView: View {
     Button {
       fixAction()
     } label: {
-      HStack {
-        Image(systemName: "pencil")
+        HStack(spacing: 3.5) {
+        Image(.penIcon)
+            .resizable()
+            .frame(width: 20, height: 20)
         Text("수정하기")
+            .body1SemiBold18()
+            .foregroundStyle(.gray700)
       }
-      .padding(.vertical, 18)
       .frame(maxWidth: .infinity)
-      .foregroundStyle(.red)
-      .background(Color.gray.opacity(0.2))
       .clipShape(RoundedRectangle(cornerRadius: 10))
     }
   }
@@ -59,14 +70,16 @@ struct ReportModalView: View {
     Button {
       showDeleteModal = true
     } label: {
-      HStack {
-        Image(systemName: "light.beacon.min.fill")
+        HStack(spacing: 3.5) {
+        Image(.trashIcon)
+            .resizable()
+            .frame(width: 20, height: 20)
+            .foregroundStyle(.accentRed)
         Text("삭제하기")
+          .body1SemiBold18()
+          .foregroundStyle(.accentRed)
       }
-      .padding(.vertical, 18)
       .frame(maxWidth: .infinity)
-      .foregroundStyle(.red)
-      .background(Color.gray.opacity(0.2))
       .clipShape(RoundedRectangle(cornerRadius: 10))
     }
   }

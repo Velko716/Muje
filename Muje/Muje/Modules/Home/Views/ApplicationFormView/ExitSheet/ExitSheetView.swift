@@ -13,41 +13,47 @@ struct ExitSheetView: View {
   let keepAction: () -> Void
   
   var body: some View {
-    VStack {
+  VStack(alignment: .center) {
       content
-      Spacer()
+        Spacer().frame(height: 40)
       ButtonView
     }
-    .padding(.horizontal, 16)
+    .padding(.horizontal, 16.5)
   }
   
   private var content: some View {
-    Text("지금까지 작성한 내용이 \n 저장되지 않습니다. \n 나가시겠습니까?")
-      .font(.system(size: 24))
-      .multilineTextAlignment(.center)
-      .padding(.top, 44)
+      VStack {
+          Text("지금까지 작성한 내용이 저장되지 않습니다.")
+            .subheadline20SemiBold()
+            .foregroundStyle(.grayblack)
+            .padding(.top, 48)
+          Text("나가시겠어요?")
+            .subheadline20SemiBold()
+            .foregroundStyle(.grayblack)
+      }
   }
   
   private var ButtonView: some View {
-    VStack(spacing: 12) {
+    VStack(spacing: 24) {
       Button {
         exitAction()
       } label: {
         Text("제출하지 않고 나가기")
-          .foregroundStyle(.white)
+          .body1SemiBold18()
+          .foregroundStyle(.graywhite)
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 21)
-          .background(Color.gray)
+          .padding(.vertical, 14.5)
+          .background(.primaryBlack)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       Button {
         keepAction()
       } label: {
         Text("계속 작성하기")
-          .foregroundStyle(.white)
+          .body1Medium18()
+          .foregroundStyle(.gray600)
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 21)
-          .background(Color.gray)
+          .background(.graywhite)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
     }

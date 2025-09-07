@@ -9,7 +9,6 @@ import SwiftUI
 
 struct RecruitmentDataView: View {
     let postId: String
-    
     @Bindable var viewModel: RecruitmentViewModel
     
     var body: some View {
@@ -17,8 +16,10 @@ struct RecruitmentDataView: View {
             postTitle
             postDate
             interviewDate
-            divider
+            divider()
             content
+            divider()
+            infoTags
         }
         .padding(.horizontal, 16)
     }
@@ -35,8 +36,8 @@ struct RecruitmentDataView: View {
             Spacer().frame(height: 8)
             HStack {
                 (viewModel.post?.status == "모집중")
-                    ? StatusChip(status: .recruiting)
-                    : StatusChip(status: .completed)
+                ? StatusChip(status: .recruiting)
+                : StatusChip(status: .completed)
                 if viewModel.post?.hasInterview == true {
                     StatusChip(status: .hasInterview)
                 }
@@ -46,8 +47,8 @@ struct RecruitmentDataView: View {
     }
     private var postDate: some View {
         RecruitmentInfo(
-         info: "모집 기간",
-         content: viewModel.post?.recruitmentStart.dateValue().shortDateString ?? "" + " ~ " + (viewModel.post?.recruitmentEnd.dateValue().shortDateString ?? "")
+            info: "모집 기간",
+            content: viewModel.post?.recruitmentStart.dateValue().shortDateString ?? "" + " ~ " + (viewModel.post?.recruitmentEnd.dateValue().shortDateString ?? "")
         )
     }
     private var interviewDate: some View {
@@ -72,14 +73,32 @@ struct RecruitmentDataView: View {
             .body2Regular16()
             .foregroundStyle(.gray700)
     }
-    private var divider: some View {
-        Rectangle()
-            .fill(.gray50)
-            .frame(maxWidth: .infinity)
-            .frame(height: 12)
-            .padding(.horizontal, -16)
+    private var infoTags: some View {
+        VStack(alignment: .leading) {
+            if let post = viewModel.post {
+                HStack {
+                    Image(.checkbox)
+                    Text("아래 정보가 함께 제출돼요")
+                        .body2SemiBold16()
+                        .foregroundStyle(.pointSkyBlue)
+                    Spacer()
+                }
+                HStack(spacing: 6) {
+                    InfoTag(title: "이름", isActive: post.requiresName)
+                    InfoTag(title: "나이", isActive: post.requiresAge)
+                    InfoTag(title: "성별", isActive: post.requiresGender)
+                    Spacer()
+                }
+                Spacer().frame(height: 8)
+                HStack(spacing: 6) {
+                    InfoTag(title: "학과 / 전공", isActive: post.requiresDepartment)
+                    InfoTag(title: "학번", isActive: post.requiresStudentId)
+                    Spacer()
+                }
+            }
+        }
     }
 }
-#Preview {
-    RecruitmentDataView(postId: "", viewModel: RecruitmentViewModel())
-}
+//#Preview {
+//    RecruitmentDataView(postId: "", viewModel: RecruitmentViewModel())
+//}
