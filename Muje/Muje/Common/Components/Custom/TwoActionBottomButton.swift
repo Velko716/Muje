@@ -35,7 +35,7 @@ struct TwoActionBottomButton: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(rightBGColor)
-                    .foregroundStyle(.white01)
+                    .foregroundStyle(.graywhite)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }

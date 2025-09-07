@@ -140,7 +140,7 @@ struct ApplicationPreview: View {
             } label: {
                 Text("신청서 제출")
                     .body1SemiBold18()
-                    .foregroundStyle(.white01)
+                    .foregroundStyle(.graywhite)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14.5)
                     .padding(.horizontal, 45)
@@ -151,7 +151,7 @@ struct ApplicationPreview: View {
         .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
         .background(
                 Rectangle()
-                    .fill(.white01)
+                    .fill(.graywhite)
                     .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: -4)
                     .ignoresSafeArea(.all, edges: .bottom)
             )
