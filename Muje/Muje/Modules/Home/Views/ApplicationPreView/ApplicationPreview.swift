@@ -9,44 +9,6 @@ import SwiftUI
 import FirebaseFirestore
 
 struct ApplicationPreview: View {
-  
-  @EnvironmentObject private var router: NavigationRouter
-  
-  let postId: String // 키체인 구현전까지 테스트용으로 userId로 같이 씀.
-  let requirementFlags: RequirementFlags
-  let postBasicInfo: PostBasicInfo
-  let customQuestion: [CustomQuestion]
-  @Binding var questionAnswer: [String: String]
-  
-  @State private var viewModel = ApplicationPreviewModel()
-  
-  private let userId: String = "0062C371-34F5-470B-BFE1-F671E23C5C97"
-  
-  var body: some View {
-    VStack(spacing: 0) {
-      CustomNavigationBar(
-        title: "지원서 미리보기") {
-          router.pop()
-        }
-    ScrollView {
-      
-      userInfoSection
-      
-      userInfoDetailSection
-      
-      Rectangle()
-        .frame(maxWidth: .infinity)
-        .frame(height: 12)
-        .foregroundStyle(Color.gray.opacity(0.2))
-      
-      customQuestionSection
-      
-    }
-  }
-    .task {
-      await viewModel.loadUserData(userId: userId)
-    }
-    
     @EnvironmentObject private var router: NavigationRouter
     
     let postId: String // 키체인 구현전까지 테스트용으로 userId로 같이 씀.
@@ -147,15 +109,6 @@ struct ApplicationPreview: View {
                 }
             }
         }
-        router.push(to: .applicationCompleteView)
-      } label: {
-        Text("확인")
-          .foregroundStyle(.white)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 18)
-          .background(Color.gray)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
-      }
     }
     
     private var bottomButtonSection: some View {
