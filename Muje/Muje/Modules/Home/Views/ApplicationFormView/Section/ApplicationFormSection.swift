@@ -27,7 +27,6 @@ extension ApplicationFormView {
             HStack(spacing: 6) {
                 InfoTag(title: "학과 / 전공", isActive: requirementFlags.requiresDepartment)
                 InfoTag(title: "학번", isActive: requirementFlags.requiresDepartment)
-                InfoTag(title: "연락처", isActive: requirementFlags.requiresPhone)
                 Spacer()
             }
         }
