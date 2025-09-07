@@ -24,6 +24,7 @@ final class EditPostViewModel {
   var endDate: Date = Date()
   var endDateString: String
   var isPicker: Bool = false
+  var isLoading: Bool = false
   
   // MARK: - 이미지 관련
   var selectedItems: [PhotosPickerItem] = []        // PhotosPicker
@@ -129,6 +130,9 @@ extension EditPostViewModel {
 extension EditPostViewModel {
   @MainActor
   func updatedPost() async {
+    isLoading = true
+    defer { isLoading = false }
+    
     do {
       let updatedPost = createUpdatedPost()
       _ = try await firestoreManager.update(updatedPost)
