@@ -17,11 +17,9 @@ struct RecruitmentDetailView: View {
   
   var body: some View {
     ZStack {
-      if viewModel.isLoading {
-        loadingView
-      } else {
-        contentView
-      }
+      
+      contentView
+
       TopButtonView(
         isAuthor: viewModel.isAuthor,
         action: { router.pop() },
@@ -57,6 +55,10 @@ struct RecruitmentDetailView: View {
     )
     .navigationBarBackButtonHidden()
     .ignoresSafeArea(.all, edges: .top)
+    .loadingOverlay(
+      viewModel.isLoading,
+      message: viewModel.loadingMessage.title
+    )
   }
   
   private var contentView: some View {
@@ -88,21 +90,6 @@ struct RecruitmentDetailView: View {
     } contactAction: {
       // TODO: 쪽지하기
     }
-  }
-}
-
-// MARK: - 로딩중 화면 어떻게할지 얘기해봐야함. 아직 적용한 코드는 아닙니다
-extension RecruitmentDetailView {
-  private var loadingView: some View {
-    VStack {
-      ProgressView()
-        .scaleEffect(1.5)
-      Text(viewModel.loadingMessage.title)
-        .font(.headline)
-        .foregroundStyle(.secondary)
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(Color(.systemBackground))
   }
 }
 

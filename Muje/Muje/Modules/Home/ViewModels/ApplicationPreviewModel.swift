@@ -14,6 +14,7 @@ final class ApplicationPreviewModel {
   private let firesotreManager = FirestoreManager.shared
   
   var userInfo: User?
+  var isLoading: Bool = false
   
   func loadUserData(userId: String) async {
     do {
@@ -40,6 +41,9 @@ final class ApplicationPreviewModel {
     questionAnswer: [String: String],
     customQuestion: [CustomQuestion]
   ) async throws {
+    
+    isLoading = true
+    defer { isLoading = false }
     
     guard let userInfo = userInfo else { return }
     

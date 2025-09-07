@@ -13,9 +13,6 @@ struct EditPostView: View {
   @Bindable var viewModel: EditPostViewModel
   
   var body: some View {
-    if viewModel.isLoading {
-      ProgressView()
-    } else {
       ZStack {
         VStack(spacing: 32) {
           CustomTextField(
@@ -43,7 +40,7 @@ struct EditPostView: View {
         ToolbarLeadingBackButton()
         ToolbarCenterTitle(text: "수정하기")
       }
-    }
+      .loadingOverlay(viewModel.isLoading, message: "수정 중...")
   }
   
   // MARK: - 이미지 뷰

@@ -65,5 +65,6 @@ struct HomeView: View {
                 await viewModel.loadInitialPosts()
             }
         }
+        .loadingOverlay(viewModel.isLoading, message: "불러오는 중...")
     }
 }

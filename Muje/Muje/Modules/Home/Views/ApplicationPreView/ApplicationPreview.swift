@@ -46,6 +46,7 @@ struct ApplicationPreview: View {
     .task {
       await viewModel.loadUserData(userId: userId)
     }
+    .loadingOverlay(viewModel.isLoading, message: "지원서 제출 중...")
     
     bottomButtonSection
     

@@ -20,9 +20,6 @@ struct UploadPostView: View {
     
     var body: some View {
       
-      if uploadPostViewModel.isLoading {
-        ProgressView()
-      } else {
         ZStack(alignment: .bottom) {
           ScrollView {
             VStack(alignment: .leading) {
@@ -97,7 +94,10 @@ struct UploadPostView: View {
             router.pop()
           }
         }
-      }
+        .loadingOverlay(
+          uploadPostViewModel.isLoading,
+          message: "업로드 중..."
+        )
     }
     
     private var nextButtonView: some View {
