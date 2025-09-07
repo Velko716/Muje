@@ -30,7 +30,7 @@ struct RecruitmentDetailView: View {
           router.push(to: .editContentView(post: post, postImages: viewModel.postImages))
           
         },
-        reportAction: {}, // 신고하기 화면 이동
+        reportAction: {}, // TODO: 신고하기
         deleteAction: { Task { await viewModel.deletePostInfo(for: postId) } }
       )
     }
@@ -86,7 +86,7 @@ struct RecruitmentDetailView: View {
         )
       )
     } contactAction: {
-      // 문의하기 뷰로 이동
+      // TODO: 쪽지하기
     }
   }
 }

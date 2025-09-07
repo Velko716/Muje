@@ -97,7 +97,7 @@ struct ApplicationPreview: View {
   private var bottomButtonSection: some View {
     VStack {
       Button {
-        Task {
+        Task { // TODO: 지원서 작성 후 모집자에게 알림 전송
           try await viewModel.submitApplication(
             postId: postId,
             post: postBasicInfo,
@@ -105,8 +105,8 @@ struct ApplicationPreview: View {
             questionAnswer: questionAnswer,
             customQuestion: customQuestion
           )
+          router.push(to: .applicationCompleteView)
         }
-        router.push(to: .applicationCompleteView)
       } label: {
         Text("확인")
           .foregroundStyle(.white)
