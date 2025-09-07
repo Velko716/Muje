@@ -11,12 +11,21 @@ struct RecruitPostCard: View {
     @EnvironmentObject private var router: NavigationRouter
     var item: Post
     var isPost: Bool
-    var tempLists: [InterviewSlot]
+
+    
+    var tempLists: [InterviewSlotModel] = []
+  
+    let thumbnailImage: PostImage?
+  
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 16) {
-                InfoBox(name: item.title, title: item.content)
+              InfoBox(
+                name: item.title,
+                title: item.content,
+                thumbnailImage: thumbnailImage
+              )
                 HStack {
                     StatusCard(title: "모집 중", color: Color.green)
                     if item.hasInterview {
