@@ -100,7 +100,7 @@ struct MyPostsView: View {
             } else {
                 TabView(selection: $myPostsViewModel.currentApplyPage) {
                     ForEach(myPostsViewModel.applicationPost.indices, id: \.self) { index in
-                        ApplyPostCard(selectViewModel: selectViewModel, myPostsViewModel: myPostsViewModel, item: myPostsViewModel.applicationPost[index], isPost: false)
+                        ApplyPostCard(selectViewModel: selectViewModel, myPostsViewModel: myPostsViewModel, item: myPostsViewModel.applicationPost[index], isPost: false, slotId: myPostsViewModel.getSlotId(postId: myPostsViewModel.applicationPost[index].postId))
                             .tag(index)
                     }
                 }

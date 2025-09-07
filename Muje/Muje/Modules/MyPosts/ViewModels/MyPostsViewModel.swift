@@ -100,6 +100,14 @@ class MyPostsViewModel {
         return nil
     }
     
+    func getSlotId(postId: UUID) -> String? {
+        if let slotId = currentUserApplication[postId]?.interviewSlotId {
+            return slotId
+        } else {
+            return nil
+        }
+    }
+    
     func getSlotsPosts(forPostId postId: String) -> [InterviewSlot] {
         return uploadPostSlot.values.first { $0.first?.postId == postId } ?? []
     }
@@ -120,24 +128,11 @@ class MyPostsViewModel {
     }
     
     //다가오는 일정_지원공고
-    func upcomingApplyLists() -> [InterviewSlot] {
-        let upcomingSlots = applicationSlot.values
-            .flatMap { $0 }
-            .filter { slot in
-                let slotDate = slot.interviewDate.dateValue()
-                return slotDate >= Date().addingTimeInterval(-3600 * 24 * 200) && slotDate <= Date().addingTimeInterval(3600 * 24 * 200) //변경필요
-            }
-        return upcomingSlots
-    }
-    
-    //내가 지원한 공고
     func tempLists() -> [InterviewSlot] {
         var slots: [InterviewSlot] = []
         for application in currentUserApplication.values {
-            print(application.postId)
             if let slotId = application.interviewSlotId {
                 for slot in getSlotApplications(forPostId: application.postId) {
-                    print("슬롯 : \(slot.slotId) - 지원 : \(slotId)")
                     if slot.slotId.uuidString == slotId {
                         slots.append(slot)
                     }
@@ -145,6 +140,15 @@ class MyPostsViewModel {
             }
         }
         return slots
+    }
+    
+    func getDateSlot(postId: String, slotId: String) -> InterviewSlot? {
+        for slot in getSlotApplications(forPostId: postId)  {
+            if slotId == slot.slotId.uuidString {
+                return slot
+            }
+        }
+        return nil
     }
 }
 

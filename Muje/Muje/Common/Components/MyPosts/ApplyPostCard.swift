@@ -15,9 +15,7 @@ struct ApplyPostCard: View {
     var item: Post
     var isPost: Bool
     var status: ApplicationStatus = .interviewWaiting //서버에서 어플리케이션 DTO 받아와서 패치
-    var slotId: String? = nil //마찬가지로 어플리케이션 DTO 받아와서 패치
-    
-    var slot: InterviewSlotModel? //서버에서 인터뷰 슬롯 DTO들 받아와서 패치(어플리케이션 DTO에서 interviewSlotId를 찾은 후에 서버에서 동일한 id의 InterviewSlot DTO 받아오기)
+    var slotId: String?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -31,7 +29,7 @@ struct ApplyPostCard: View {
                 }
                 VStack(alignment: .leading, spacing: 8) {
                     DateBox(title: "모집 기간", startDate: item.recruitmentStart.dateValue(), endDate: item.recruitmentEnd.dateValue(), isPost: true)
-                    DateBox(title: "면접 일정", startDate: slot?.interviewDate ?? nil, isPost: isPost, hasInterview: item.hasInterview)
+                    DateBox(title: "면접 일정", startDate: myPostsViewModel.getDateSlot(postId: item.postId.uuidString, slotId: slotId ?? "")?.interviewDate.dateValue() ?? nil, isPost: isPost, hasInterview: item.hasInterview, slotString: myPostsViewModel.getDateSlot(postId: item.postId.uuidString, slotId: slotId ?? "")?.interviewTime)
                 }
             }
             .padding(16)

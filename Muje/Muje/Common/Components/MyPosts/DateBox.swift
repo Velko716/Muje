@@ -13,6 +13,7 @@ struct DateBox: View {
     var endDate: Date?
     var isPost: Bool
     var hasInterview: Bool?
+    var slotString: String?
     
     var body: some View {
         HStack(spacing: 16) {
@@ -26,7 +27,7 @@ struct DateBox: View {
                     Text("\(start.dateString) ~ \(end.dateString)")
                         .foregroundStyle(Color.black)
                 } else if let start = startDate, endDate == nil {
-                    Text("\(start.dateString) - \(start.hourMinute24)")
+                    Text("\(start.dateString) - \(slotString ?? "오류")")
                 } else {
                     Text(isPost ? "면접일정을 설정해주세요" : "미정")
                         .foregroundStyle(isPost ? Color.red : Color.black)
@@ -36,5 +37,5 @@ struct DateBox: View {
     }}
 
 #Preview {
-    DateBox(title: "모집기간", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 7), isPost: true, hasInterview: true)
+    DateBox(title: "모집기간", startDate: Date(), endDate: Date().addingTimeInterval(3600 * 24 * 7), isPost: true, hasInterview: true, slotString: "ㄴㄴ")
 }
