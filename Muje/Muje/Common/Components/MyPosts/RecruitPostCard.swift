@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct RecruitPostCard: View {
+    @EnvironmentObject private var router: NavigationRouter
     var item: Post
     var isPost: Bool
-    
-    var tempLists: [InterviewSlotModel] = []
-  
-  @EnvironmentObject private var router: NavigationRouter
+    var tempLists: [InterviewSlot]
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -25,9 +23,10 @@ struct RecruitPostCard: View {
                         StatusCard(title: "면접 진행", color: Color.blue)
                     }
                 }
+                
                 VStack(alignment: .leading, spacing: 8) {
-                  DateBox(title: "모집 기간", startDate: item.recruitmentStart.dateValue(), endDate: item.recruitmentEnd.dateValue(), isPost: true)
-                    DateBox(title: "면접 일정", startDate: tempLists.first?.interviewDate, endDate: tempLists.last?.interviewDate, isPost: isPost, hasInterview: item.hasInterview)
+                    DateBox(title: "모집 기간", startDate: item.recruitmentStart.dateValue(), endDate: item.recruitmentEnd.dateValue(), isPost: true)
+                    DateBox(title: "면접 일정", startDate: tempLists.first?.interviewDate.dateValue(), endDate: tempLists.last?.interviewDate.dateValue(), isPost: isPost, hasInterview: item.hasInterview)
                 }
             }
             .padding(16)

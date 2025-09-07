@@ -11,7 +11,8 @@ struct UpcomingCard: View {
     @Binding var myPostsViewModel: MyPostsViewModel
     var title: String
     var codition: Bool
-    var lists: [InterviewSlotModel]
+    var lists: [InterviewSlot]
+    var isRecruitment: Bool
     
     var body: some View {
         VStack(spacing: 16) {
@@ -39,12 +40,12 @@ struct UpcomingCard: View {
                     ForEach(lists.indices, id: \.self) { idx in
                         if checkFirst(index: idx) {
                             HStack(spacing: 16) {
-                                Text(lists[idx].postId)
+                                Text(myPostsViewModel.titleString(postId: lists[idx].postId, lists: checkLists()) ?? "오류")
                                     .foregroundStyle(Color.black)
                                 Spacer()
-                                Text(lists[idx].interviewDate.listDateString)
+                                Text(lists[idx].interviewDate.dateValue().listDateString)
                                     .foregroundStyle(Color.black)
-                                Text(lists[idx].interviewTime.hourMinute24)
+                                Text(lists[idx].interviewTime)
                                     .foregroundStyle(Color.gray)
                                 Text("\(lists[idx].currentReservations)명")
                                     .foregroundStyle(Color.gray)
@@ -52,7 +53,7 @@ struct UpcomingCard: View {
                         } else {
                             HStack(spacing: 16) {
                                 Spacer()
-                                Text(lists[idx].interviewTime.hourMinute24)
+                                Text(lists[idx].interviewTime)
                                     .foregroundStyle(Color.gray)
                                 Text("\(lists[idx].currentReservations)명")
                                     .foregroundStyle(Color.gray)
@@ -71,12 +72,9 @@ struct UpcomingCard: View {
                             .foregroundStyle(Color.gray)
                     }
                 }
-                
-                
             }
         }
-        .padding(.vertical, 16)
-        .padding(.horizontal, 18)
+        .hvPadding(18, 16)
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color.gray.opacity(0.3))
@@ -87,18 +85,19 @@ struct UpcomingCard: View {
         if index < 1 {
             return true
         } else {
-            if lists[index - 1].interviewDate.dateString == lists[index].interviewDate.dateString && (lists[index - 1].postId == lists[index].postId) {
+            if lists[index - 1].interviewDate.dateValue().dateString == lists[index].interviewDate.dateValue().dateString && (lists[index - 1].postId == lists[index].postId) {
                 return false
             } else {
                 return true
             }
         }
     }
+    
+    func checkLists() -> [Post] {
+        return isRecruitment ? myPostsViewModel.uploadPost : myPostsViewModel.applicationPost
+    }
 }
 
 #Preview {
-    UpcomingCard(myPostsViewModel: .constant(.init()), title: "지원 면접", codition: true, lists: [
-        .init(postId: "asd", interviewDate: Date(), interviewTime: Date(), maxCapacity: 3, currentReservations: 2, createdAt: .now),
-        .init(postId: "qwer", interviewDate: Date().addingTimeInterval(3600 * 5), interviewTime: Date().addingTimeInterval(3600 * 5), maxCapacity: 2, currentReservations: 1, createdAt: .now)
-    ])
+    UpcomingCard(myPostsViewModel: .constant(.init()), title: "asd", codition: true, lists: [], isRecruitment: false)
 }

@@ -22,6 +22,7 @@ struct PageController: View {
             }
             Spacer()
         }
+        .frame(maxWidth: 360)
     }
 }
 
