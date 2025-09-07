@@ -70,7 +70,7 @@ struct EditContentView: View {
       } label: {
         Text("수정 저장하기")
           .body1SemiBold18()
-          .foregroundStyle(.white01)
+          .foregroundStyle(.graywhite)
           .padding()
           .frame(maxWidth: .infinity)
           .background(

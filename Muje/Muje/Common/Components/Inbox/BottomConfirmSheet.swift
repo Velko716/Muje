@@ -15,7 +15,7 @@ struct BottomConfirmSheet: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            Color.black01.opacity(0.5) // FIXME: - 수치 변환
+            Color.grayblack.opacity(0.5) // FIXME: - 수치 변환
                 .ignoresSafeArea()
                 .onTapGesture { onCancel() }
                 .transition(.opacity)
@@ -26,7 +26,7 @@ struct BottomConfirmSheet: View {
                 VStack(spacing: 40) {
                     Text(title)
                         .font(Font.pretendard(type: .semiBold, size: 20))
-                        .foregroundStyle(Color.black01)
+                        .foregroundStyle(.grayblack)
                         .multilineTextAlignment(.center)
                         .lineSpacing(6)
                     
@@ -40,7 +40,7 @@ struct BottomConfirmSheet: View {
                                 .overlay {
                                     Text(primaryTitle)
                                         .font(Font.pretendard(type: .semiBold, size: 18))
-                                        .foregroundStyle(Color.white01)
+                                        .foregroundStyle(.graywhite)
                                 }
                         }
                         Button(action: onCancel) {

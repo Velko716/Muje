@@ -69,14 +69,14 @@ struct ConversationRow: View {
                     if unreadCount > 99 {
                         Text("+99")
                             .font(Font.pretendard(type: .bold, size: 12))
-                            .foregroundStyle(Color.white01)
+                            .foregroundStyle(.graywhite)
                             .padding(.vertical, 0.73)
                             .padding(.horizontal, 6.56)
                             .background(Capsule().fill(Color.pointSkyBlue))
                     } else {
                         Text("\(unreadCount)")
                             .font(Font.pretendard(type: .bold, size: 12))
-                            .foregroundStyle(Color.white01)
+                            .foregroundStyle(.graywhite)
                             .padding(.vertical, 0.73)
                             .padding(.horizontal, 6.56)
                             .background(Capsule().fill(Color.pointSkyBlue))
