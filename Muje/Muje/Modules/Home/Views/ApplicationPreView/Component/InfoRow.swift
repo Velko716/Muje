@@ -14,12 +14,15 @@ struct InfoRow: View {
   var body: some View {
     HStack {
       Text(title)
-        .frame(width: 60, alignment: .leading)
-      
+        .body1Regular16()
+        .foregroundStyle(.gray500)
+      Spacer().frame(width: 16)
       Text(value)
-      
-      Spacer()
+            .body1Medium16()
+            .foregroundStyle(.gray700)
+    Spacer()
     }
+    .padding(.horizontal, 16)
   }
 }
 
