@@ -16,25 +16,24 @@ struct StatusView: View {
                 ForEach(UploadPostStatus.allCases, id: \.self) { status in
                     if status == uploadPostViewModel.currentStatus {
                         Circle()
-                            .fill(Color.blue)
+                            .fill(.pointSkyBlue)
                             .frame(width: 23)
                             .overlay(content: {
                                 Text(status.postingLevel)
-                                    .bold()
-                                    .foregroundStyle(Color.white)
+                                    .caption14SemiBold()
+                                    .foregroundStyle(.graywhite)
                             })
                     } else {
                         Circle()
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(.gray100)
                             .frame(width: 10)
                     }
                 }
             }
             
             Text(uploadPostViewModel.currentStatus.postingTitle)
-                .foregroundStyle(Color.black)
-                .font(.title2)
-                .bold()
+                .headline24SemiBold()
+                .foregroundStyle(.gray800)
         }
         .padding(.bottom, uploadPostViewModel.currentStatus.padding)
     }
