@@ -27,8 +27,6 @@ struct ApplicationCompleteView: View {
     .safeAreaInset(edge: .bottom, content: {
       bottomButton
     })
-    .navigationTitle("모임 올리기")
-    .navigationBarTitleDisplayMode(.inline)
   }
   
   private var title: some View {

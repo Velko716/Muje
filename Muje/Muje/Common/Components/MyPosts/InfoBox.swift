@@ -8,23 +8,21 @@
 import SwiftUI
 
 struct InfoBox: View {
-    var image: Data?
     var name: String
     var title: String
+  
+    let thumbnailImage: PostImage?
+    let cachedURL: String?
     
     var body: some View {
         HStack(spacing: 8) {
-            if let data = image {
-                Image(uiImage: UIImage(data: data)!)
-                    .resizable()
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .frame(width: 54, height: 54)
-                    .scaledToFill()
-            } else {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color.gray)
-                    .frame(width: 54, height: 54)
-            }
+          if let thumbnailImage = thumbnailImage {
+            ThumbnailAsyncImage(
+              postImage: thumbnailImage,
+              cachedURL: cachedURL,
+              size: 54
+            )            
+          }
             VStack(alignment: .leading) {
                 Text(name)
                     .foregroundStyle(Color.gray)
@@ -39,5 +37,14 @@ struct InfoBox: View {
 }
 
 #Preview {
-    InfoBox(name: "동아리명", title: "댄스 동아리 OO 모집합니다")
+  InfoBox(
+    name: "동아리명",
+    title: "댄스 동아리 OO 모집합니다",
+    thumbnailImage: PostImage(
+      imageId: UUID(),
+      postId: "",
+      imageUrl: "",
+      imageOrder: 0
+    ), cachedURL: ""
+  )
 }

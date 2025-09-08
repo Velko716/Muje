@@ -155,7 +155,7 @@ extension ModalViewModel {
 // MARK: - 프리뷰 목데이터
 extension ModalViewModel {
   static var preview: ModalViewModel {
-    let mockApplicant = Application(
+    _ = Application(
       applicationId: UUID(),
       applicantUserId: "dd",
       postId: "dd",
@@ -172,8 +172,8 @@ extension ModalViewModel {
     
     let vm = ModalViewModel(
       managementViewModel: ApplicationManagementViewModel(),
-      applicant: mockApplicant,
-      allApplicants: [mockApplicant]
+      applicant: ApplicationManagementViewModel.preview.allApplicants.first!,
+      allApplicants: ApplicationManagementViewModel.preview.allApplicants
     )
     
     vm.questionAnswer = [

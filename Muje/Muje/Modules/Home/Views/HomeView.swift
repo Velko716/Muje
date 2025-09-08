@@ -20,7 +20,8 @@ struct HomeView: View {
                     ForEach(viewModel.postList, id: \.postId) { post in
                         PostListItem(
                             post: post,
-                            thumbnailImage: viewModel.thumbnailImages[post.postId]
+                            thumbnailImage: viewModel.thumbnailImages[post.postId],
+                            cachedURL: viewModel.imageURLCache[post.postId]
                         )
                         .listRowInsets(EdgeInsets())
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -65,5 +66,6 @@ struct HomeView: View {
                 await viewModel.loadInitialPosts()
             }
         }
+        .loadingOverlay(viewModel.isLoading, message: "불러오는 중...")
     }
 }

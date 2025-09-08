@@ -74,7 +74,13 @@ struct MyPostsView: View {
             } else {
                 TabView(selection: $myPostsViewModel.currentRecruitPage) {
                     ForEach(myPostsViewModel.uploadPost.indices, id: \.self) { index in
-                        RecruitPostCard(item: myPostsViewModel.uploadPost[index], isPost: true, tempLists: myPostsViewModel.getSlotsPosts(forPostId: myPostsViewModel.uploadPost[index].postId.uuidString))
+                      let post = myPostsViewModel.uploadPost[index]
+                      RecruitPostCard(
+                        item: post,
+                        isPost: true,
+                        thumbnailImage: myPostsViewModel.uploadThumbnail[post.postId],
+                        cachedURL: myPostsViewModel.imageURLCache[post.postId]
+                      )
                             .tag(index)
                     }
                 }
@@ -100,7 +106,16 @@ struct MyPostsView: View {
             } else {
                 TabView(selection: $myPostsViewModel.currentApplyPage) {
                     ForEach(myPostsViewModel.applicationPost.indices, id: \.self) { index in
-                        ApplyPostCard(selectViewModel: selectViewModel, myPostsViewModel: myPostsViewModel, item: myPostsViewModel.applicationPost[index], isPost: false, slotId: myPostsViewModel.getSlotId(postId: myPostsViewModel.applicationPost[index].postId))
+                      let post = myPostsViewModel.applicationPost[index]
+                      ApplyPostCard(
+                        selectViewModel: selectViewModel,
+                        myPostsViewModel: myPostsViewModel,
+                        item: post,
+                        isPost: false,
+                        slotId: myPostsViewModel.getSlotId(postId: myPostsViewModel.applicationPost[index].postId),
+                        thumbnailImage: myPostsViewModel.applicationThumbnail[post.postId],
+                        cachedURL: myPostsViewModel.imageURLCache[post.postId]
+                      )
                             .tag(index)
                     }
                 }

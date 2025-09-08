@@ -125,7 +125,6 @@ final class ApplicationManagementViewModel {
     case .submitted, .reviewWaiting:
       rejectApplicant()
     case .interviewWaiting:
-      
       cancelInterview()
     case .reviewCompleted:
       notifyAllResults()
@@ -236,7 +235,7 @@ final class ApplicationManagementViewModel {
   func notifyAllResults() {
     let _ = filterApplicants.filter { application in
       application.status == ApplicationStatus.reviewCompleted.rawValue
-    }
+    } // 이 변수 활용해서 for문으로 알림 보내면 될 거 같습니다..!
     
     // TODO: 실제 알림 로직
   }
@@ -298,6 +297,8 @@ final class ApplicationManagementViewModel {
         if let paseed = isPassed {
           allApplicants[i].isPassed = paseed
         }
+        // TODO: 지원자 상태 바뀔때마다 해당 지원자에게 알림
+        
       }
     }
     Task {
@@ -375,5 +376,22 @@ extension ApplicationManagementViewModel {
       equalTo: postId,
       sortedBy: { $0.createdAt?.dateValue() ?? Date() > $1.createdAt?.dateValue() ?? Date() }
     )
+  }
+}
+
+extension ApplicationManagementViewModel {
+  static var preview: ApplicationManagementViewModel {
+    let vm = ApplicationManagementViewModel()
+    vm.allApplicants = [Application(
+      applicationId: UUID(),
+      applicantUserId: "ddd",
+      postId: "",
+      status: ApplicationStatus.submitted.rawValue,
+      applicantName: "제이콥",
+      postTitle: "dd",
+      postOrganization: "dd",
+      postAuthorUserId: ""
+    )]
+    return vm
   }
 }

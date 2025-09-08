@@ -70,7 +70,6 @@ struct ApplicationManagementRow: View {
     } message: {
       Text("\(application.applicantName)님을 이전 단계로 되돌리시겠습니까?")
     }
-    // TODO:
   }
   
   private var infoSection: some View {
