@@ -83,7 +83,7 @@ struct ApplicationPreview: View {
     }
     //TODO: 디자인 반영 되면 폰트 수정
     private var userInfoDetailSection: some View {
-        VStack(spacing: 5) {
+        VStack(alignment: .leading, spacing: 5) {
             if requirementFlags.requiresStudentId {
                 InfoRow(title: "학번", value: viewModel.userInfo?.studentId ?? "")
             }
@@ -91,7 +91,6 @@ struct ApplicationPreview: View {
                 InfoRow(title: "학과", value: viewModel.userInfo?.department ?? "")
             }
         }
-        .padding(.horizontal, 24)
     }
     
     private var customQuestionSection: some View {
