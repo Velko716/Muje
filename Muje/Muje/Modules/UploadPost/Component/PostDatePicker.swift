@@ -15,24 +15,30 @@ struct PostDatePicker: View {
     @State var isSelected: Bool = false
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(title)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                Text(title)
+                    .caption14SemiBold()
+                    .foregroundStyle(.gray700)
+                Text("추후 설정 가능")
+                    .caption14Regular()
+                    .foregroundStyle(.gray500)
+            }
             
             Button(action: {
                 function()
             }, label: {
                 HStack(spacing: 6) {
                     Text(content)
-                        .foregroundStyle(isSelected ? Color.black : Color.gray)
+                        .body2Medium16()
+                        .foregroundStyle(isSelected ? .gray700 : .gray500)
                     Spacer()
-                    Image(systemName: "calendar")
+                    Image(.calendarIcon)
                 }
-                .foregroundStyle(Color.gray)
                 .padding(18)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.white)
-                        .stroke(Color.gray, style: StrokeStyle(lineWidth: 1))
+                        .fill(.gray50)
                 )
                 .onChange(of: content, { old, new in
                     isSelected = true
