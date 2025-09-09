@@ -32,7 +32,7 @@ enum ApplicationStatus: String, Codable, CaseIterable {
         case .submitted:
             return "면접 제안 전"
         case .interviewWaiting:
-            if let id = slotId {
+            if slotId != nil {
                 return "면접 일정 신청 완료"
             } else {
                 return "면접일정 신청하기"

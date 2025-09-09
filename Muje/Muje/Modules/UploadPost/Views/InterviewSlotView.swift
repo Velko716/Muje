@@ -100,28 +100,28 @@ struct InterviewSlotView: View {
             if interviewSlotViewModel.selectedSlots.isEmpty {
                 delayView
             } else {
-                ForEach(Array($interviewSlotViewModel.selectedSlots.enumerated()), id: \.offset) { idx, slot in
+                ForEach($interviewSlotViewModel.selectedSlots, id: \.id) { slot in
                     HStack(spacing: 24) {
                         Button(action: {
-                            interviewSlotViewModel.selectedSlots.remove(at: idx)
+                            interviewSlotViewModel.removeItem(withId: slot.id)
                         }, label: {
                             Image(systemName: "xmark")
                             
                         })
                         Spacer()
-                        Text(interviewSlotViewModel.selectedSlots[idx].startTime.shortDateString)
+                        Text(slot.wrappedValue.startTime.shortDateString)
                         Spacer()
                         Button(action: {
-                            interviewSlotViewModel.selectedSlots[idx].isStartShown.toggle()
+                            slot.wrappedValue.isStartShown.toggle()
                         }, label: {
-                            Text(interviewSlotViewModel.selectedSlots[idx].startTime.hourMinute24)
-                                .startPicker(isShown: interviewSlotViewModel.selectedSlots[idx].isStartShown, date: slot.startTime)
+                            Text(slot.wrappedValue.startTime.hourMinute24)
+                                .startPicker(isShown: slot.wrappedValue.isStartShown, date: slot.startTime)
                         })
                         Button(action: {
-                            interviewSlotViewModel.selectedSlots[idx].isEndShown.toggle()
+                            slot.wrappedValue.isEndShown.toggle()
                         }, label: {
-                            Text(interviewSlotViewModel.selectedSlots[idx].endTime.hourMinute24)
-                                .endPicker(isShown: interviewSlotViewModel.selectedSlots[idx].isEndShown, endTime: slot.endTime, lists: interviewSlotViewModel.selectedSlots[idx].timeLists)
+                            Text(slot.wrappedValue.endTime.hourMinute24)
+                                .endPicker(isShown: slot.wrappedValue.isEndShown, endTime: slot.endTime, lists: slot.wrappedValue.timeLists)
                         })
                         .onChange(of: slot.startTime.wrappedValue) {
                             interviewSlotViewModel.updateSlotTime(slot: slot)

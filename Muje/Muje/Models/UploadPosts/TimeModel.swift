@@ -8,7 +8,8 @@
 import Foundation
 
 //지원자 기준
-struct TimeModel: Hashable {
+struct TimeModel: Identifiable, Equatable {
+    let id: UUID = .init()
     var startTime: Date
     var endTime: Date
     var isStartShown: Bool

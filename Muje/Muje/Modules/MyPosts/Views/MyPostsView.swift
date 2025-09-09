@@ -51,12 +51,12 @@ struct MyPostsView: View {
                 Button(action: {
                     myPostsViewModel.isRecruit.toggle()
                 }, label: {
-                    UpcomingCard(myPostsViewModel: $myPostsViewModel, title: "모집 면접", codition: myPostsViewModel.isRecruit, lists: myPostsViewModel.upcomingRecruitLists())
+                    UpcomingCard(myPostsViewModel: $myPostsViewModel, title: "모집 면접", codition: myPostsViewModel.isRecruit, lists: myPostsViewModel.upcomingRecruitLists(), isRecruitment: true)
                 })
                 Button(action: {
                     myPostsViewModel.isApply.toggle()
                 }, label: {
-                    UpcomingCard(myPostsViewModel: $myPostsViewModel, title: "지원 면접", codition: myPostsViewModel.isApply, lists: myPostsViewModel.upcomingApplyLists())
+                    UpcomingCard(myPostsViewModel: $myPostsViewModel, title: "지원 면접", codition: myPostsViewModel.isApply, lists: myPostsViewModel.tempLists(), isRecruitment: false)
                 })
                 
             }
@@ -74,7 +74,13 @@ struct MyPostsView: View {
             } else {
                 TabView(selection: $myPostsViewModel.currentRecruitPage) {
                     ForEach(myPostsViewModel.uploadPost.indices, id: \.self) { index in
-                        RecruitPostCard(item: myPostsViewModel.uploadPost[index], isPost: true)
+                      let post = myPostsViewModel.uploadPost[index]
+                      RecruitPostCard(
+                        item: post,
+                        isPost: true,
+                        thumbnailImage: myPostsViewModel.uploadThumbnail[post.postId],
+                        cachedURL: myPostsViewModel.imageURLCache[post.postId]
+                      )
                             .tag(index)
                     }
                 }
@@ -82,10 +88,10 @@ struct MyPostsView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
             
-//            if myPostsViewModel.uploadPost.count > 1 {
-//                PageController(pageCount: myPostsViewModel.uploadPost.count, currentPage: $myPostsViewModel.currentRecruitPage)
-//                
-//            }
+            if myPostsViewModel.uploadPost.count > 1 {
+                PageController(pageCount: myPostsViewModel.uploadPost.count, currentPage: $myPostsViewModel.currentRecruitPage)
+                
+            }
         }
     }
     
@@ -100,7 +106,16 @@ struct MyPostsView: View {
             } else {
                 TabView(selection: $myPostsViewModel.currentApplyPage) {
                     ForEach(myPostsViewModel.applicationPost.indices, id: \.self) { index in
-                        ApplyPostCard(selectViewModel: selectViewModel, item: myPostsViewModel.applicationPost[index], isPost: false)
+                      let post = myPostsViewModel.applicationPost[index]
+                      ApplyPostCard(
+                        selectViewModel: selectViewModel,
+                        myPostsViewModel: myPostsViewModel,
+                        item: post,
+                        isPost: false,
+                        slotId: myPostsViewModel.getSlotId(postId: myPostsViewModel.applicationPost[index].postId),
+                        thumbnailImage: myPostsViewModel.applicationThumbnail[post.postId],
+                        cachedURL: myPostsViewModel.imageURLCache[post.postId]
+                      )
                             .tag(index)
                     }
                 }
@@ -108,9 +123,9 @@ struct MyPostsView: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
             
-//            if myPostsViewModel.applicationPost.count > 1 {
-//                PageController(pageCount: myPostsViewModel.applicationPost.count, currentPage: $myPostsViewModel.currentApplyPage)
-//            }
+            if myPostsViewModel.applicationPost.count > 1 {
+                PageController(pageCount: myPostsViewModel.applicationPost.count, currentPage: $myPostsViewModel.currentApplyPage)
+            }
         }
     }
     

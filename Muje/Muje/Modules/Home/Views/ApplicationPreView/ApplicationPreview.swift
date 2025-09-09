@@ -9,16 +9,18 @@ import SwiftUI
 import FirebaseFirestore
 
 struct ApplicationPreview: View {
-    @EnvironmentObject private var router: NavigationRouter
-    
-    let postId: String // 키체인 구현전까지 테스트용으로 userId로 같이 씀.
-    let requirementFlags: RequirementFlags
-    let postBasicInfo: PostBasicInfo
-    let customQuestion: [CustomQuestion]
-    @Binding var questionAnswer: [String: String]
-    
-    @State private var viewModel = ApplicationPreviewModel()
-    
+
+  @EnvironmentObject private var router: NavigationRouter
+  
+  let postId: String // 키체인 구현전까지 테스트용으로 userId로 같이 씀.
+  let requirementFlags: RequirementFlags
+  let postBasicInfo: PostBasicInfo
+  let customQuestion: [CustomQuestion]
+  @Binding var questionAnswer: [String: String]
+  
+  @State private var viewModel = ApplicationPreviewModel()
+  
+  private let userId: String = "0062C371-34F5-470B-BFE1-F671E23C5C97"
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
@@ -39,6 +41,7 @@ struct ApplicationPreview: View {
         .task {
             await viewModel.loadUserData(userId: postId)
         }
+      .loadingOverlay(viewModel.isLoading, message: "지원서 제출 중...")
         .toolbar {
             ToolbarLeadingBackButton()
             ToolbarCenterTitle(text: "신청서 미리보기")
@@ -92,7 +95,7 @@ struct ApplicationPreview: View {
             }
         }
     }
-    
+
     private var customQuestionSection: some View {
         VStack {
             ForEach(customQuestion, id: \.questionId) { question in
@@ -109,6 +112,7 @@ struct ApplicationPreview: View {
             }
         }
     }
+  }
     
     private var bottomButtonSection: some View {
         HStack(spacing: 17) {

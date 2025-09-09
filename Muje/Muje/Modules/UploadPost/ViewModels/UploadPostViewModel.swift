@@ -12,6 +12,7 @@ import FirebaseFirestore
 final class UploadPostViewModel {
     private let firebaseAuthManager = FirebaseAuthManager.shared
     private let firestoreManager = FirestoreManager.shared
+    private let firestorageManager = FireStorageManager.shared
   
 //    var currentUserId: String? {
 //      guard let currentUser = firebaseAuthManager.currentUser else { return nil }
@@ -58,6 +59,12 @@ final class UploadPostViewModel {
           await self.createInterviewSlot(
             postId: postId.uuidString,
             interviewSlotViewModel: interviewSlotViewModel
+          )
+        }
+        group.addTask {
+          await self.createPostImage(
+            postId: postId.uuidString,
+            postInfoViewModel: postInfo
           )
         }
         try await group.waitForAll()
@@ -136,5 +143,40 @@ final class UploadPostViewModel {
     } catch {
       print("인터뷰 슬롯 생성 실패")
     }
+  }
+  
+  // MARK: PostImage 생성
+  func createPostImage(
+    postId: String,
+    postInfoViewModel: PostInfoViewModel
+  ) async {
+    
+      // 스토리지와 동일한 uid 생성
+      let postData = postInfoViewModel.selectedImagesData
+      var currentOrder: Int = 0
+      
+      // 스토리지 업로드
+      for postImage in postData {
+        let imageId = UUID()
+        let imageURL = await firestorageManager.uploadPostImage(
+          data: postImage,
+          postId: postId,
+          imageId: imageId.uuidString
+        )
+        print("\(imageId)의 이미지 스토리지 업로드 성공")
+        
+        let postImage = PostImage(
+          imageId: imageId,
+          postId: postId,
+          imageUrl: imageURL,
+          imageOrder: currentOrder
+        )
+        do {
+          _ = try await firestoreManager.create(postImage)
+          currentOrder += 1
+        } catch {
+          print("이미지 업로드 실패")
+        }
+      }
   }
 }

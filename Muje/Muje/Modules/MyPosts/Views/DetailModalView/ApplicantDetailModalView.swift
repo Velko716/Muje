@@ -29,6 +29,8 @@ struct ApplicantDetailModalView: View {
         
         applicantInfoDetailSection
         
+        midButtonSection
+        
         Rectangle()
           .frame(maxWidth: .infinity)
           .frame(height: 12)
@@ -38,20 +40,20 @@ struct ApplicantDetailModalView: View {
         
       }
       
-      VStack {
+      VStack { // FIXME: 수정 - 진짜 개별로네
         BottomNavigationSection(
           viewModel: viewModel)
       }
     }
-//    .task {
-//      await viewModel.loadQuestionAnswer()
-//    }
+    .task {
+      await viewModel.loadQuestionAnswer()
+    }
     .sheet(item: $viewModel.confirmationType) { type in
       ConfirmationModalView(type: type) {
         viewModel.Action(for: type)
         viewModel.confirmationType = nil
       } exitSheet: { selectedApplicant = nil }
-      .presentationDetents([.fraction(0.3)])
+        .presentationDetents([.fraction(0.3)])
     }
   }
   
@@ -121,6 +123,25 @@ struct ApplicantDetailModalView: View {
     .padding(.bottom, 24)
   }
   
+  private var midButtonSection: some View {
+    VStack {
+      Button {
+        // TODO: 쪽지하기
+      } label: {
+        HStack {
+          Image(systemName: "")
+          Text("쪽지하기")
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 18)
+        .background(Color.gray)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+      }
+    }
+    .padding(.horizontal, 16)
+    .padding(.vertical, 24)
+  }
+  
   private var customQuestionSection: some View {
     VStack {
       ForEach(
@@ -140,14 +161,18 @@ struct ApplicantDetailModalView: View {
 
 #Preview {
   ApplicantDetailModalView(
-    viewModel: .preview,
+    viewModel: ModalViewModel(
+      managementViewModel: .preview,
+      applicant: ApplicationManagementViewModel.preview.allApplicants.first!,
+      allApplicants: ApplicationManagementViewModel.preview.allApplicants
+    ),
     selectedApplicant: .constant(
       Application(
         applicationId: UUID(),
         applicantUserId: "",
         postId: "",
         status: ApplicationStatus.submitted.rawValue,
-        applicantName: "",
+        applicantName: "제이콥",
         postTitle: "",
         postOrganization: "",
         postAuthorUserId: ""

@@ -24,13 +24,15 @@ struct SelectView: View {
             }
             .padding(.horizontal, 16)
             
-            Button(action: {
-                print("면접 일정")
-                selectViewModel.isSelected = true
-                if let idx = selectViewModel.currentIndex {
-                    selectViewModel.lists[idx].currentReservations += 1
-                }
-            }, label: {
+          Button(
+            action: {
+              print("면접 일정")
+              selectViewModel.isSelected = true
+              Task {
+                await selectViewModel.updated()
+              }
+            },
+            label: {
                 ActionButton(title: selectViewModel.str, condition: selectViewModel.currentIndex == nil)
                     .padding(.horizontal, 16)
             })
@@ -103,7 +105,7 @@ struct SelectView: View {
                 Button(action: {
                     selectViewModel.currentDate = calendarDay.date
                 }, label: {
-                    if selectViewModel.lists.contains(where: { $0.interviewDate.dateString == calendarDay.date.dateString }) {
+                    if selectViewModel.lists.contains(where: { $0.interviewDate.dateValue().dateString == calendarDay.date.dateString }) {
                         Cell(calendarDay: calendarDay, calendarViewModel: calendarViewModel, startDate: .now, endDate: .now, condition: true)
                     } else {
                         Cell(calendarDay: calendarDay, calendarViewModel: calendarViewModel, startDate: .now, endDate: .now)
@@ -118,14 +120,13 @@ struct SelectView: View {
     private var slotListsView: some View {
         List {
             ForEach(selectViewModel.lists.indices, id: \.self) { idx in
-                if selectViewModel.currentDate?.dateString == selectViewModel.lists[idx].interviewDate.dateString {
+                if checkDate(idx: idx) {
                     Button(action: {
                         selectViewModel.currentIndex = idx
                     }, label: {
                         HStack {
-                            Text(selectViewModel.lists[idx].postId)
-                            Text(selectViewModel.lists[idx].interviewDate.dateString)
-                            Text(selectViewModel.lists[idx].interviewTime.hourMinute24)
+                            Text(selectViewModel.lists[idx].interviewDate.dateValue().dateString)
+                            Text(selectViewModel.lists[idx].interviewTime)
                         }
                         .foregroundStyle(selectViewModel.checkMax(slot: selectViewModel.lists[idx]) ? Color.gray : Color.black)
                         
@@ -137,7 +138,9 @@ struct SelectView: View {
         }
     }
     
-    
+    func checkDate(idx: Int) -> Bool {
+        return selectViewModel.currentDate?.dateString == selectViewModel.lists[idx].interviewDate.dateValue().dateString
+    }
 }
 
 #Preview {
