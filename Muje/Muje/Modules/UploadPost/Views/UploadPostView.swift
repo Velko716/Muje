@@ -113,53 +113,46 @@ struct UploadPostView: View {
                     postInfoViewModel.debug()
                 }, label: {
                     ActionButton(title: "다음", condition: postInfoViewModel.nextCheck())
-                        .hvPadding(16, 20)
+                        .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
+                        .background(
+                            Rectangle()
+                                .fill(.graywhite)
+                                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
+                        )
                 })
                 .disabled(postInfoViewModel.nextCheck())
                 
             } else if uploadPostViewModel.currentStatus == .interview {
-                HStack {
-                    Button(action: {
-                        uploadPostViewModel.currentStatus = .input
-                    }, label: {
-                        ActionButton(title: "이전", condition: true)
-                    })
-                    Spacer()
-                    Button(action: {
+                TwoActionBottomButton(
+                    leftAction: { uploadPostViewModel.currentStatus = .input },
+                    leftText: "이전",
+                    rightAction: {
                         uploadPostViewModel.currentStatus = .info
-                    }, label: {
-                        ActionButton(title: "다음", condition: postInterviewViewModel.nextCheck())
-                    })
-                    .disabled(postInterviewViewModel.nextCheck())
-                }
-                .hvPadding(16, 20)
+                    },
+                    rightText: "다음",
+                    nextButtonCondition: postInfoViewModel.nextCheck()
+                )
             } else {
-              HStack {
-                  Button(action: {
-                      uploadPostViewModel.currentStatus = .interview
-                  }, label: {
-                      ActionButton(title: "이전", condition: true)
-                  })
-                  Spacer()
-                Button(
-                  action: {
-                    Task {
-                      try await uploadPostViewModel.submit(
-                        postInfo: postInfoViewModel,
-                        requireInfo: recruitmentPostViewModel,
-                        postInterviewViewModel: postInterviewViewModel,
-                        interviewSlotViewModel: interviewSlotViewModel
-                      )
-                      router.push(to: .uploadCompleteView)
-                    }
-                  },
-                  label: {
-                      ActionButton(title: "모집글 올리기", condition: true)
-                  })
-              }
-              .hvPadding(16, 20)
+                  TwoActionBottomButton(
+                    leftAction: { uploadPostViewModel.currentStatus = .interview },
+                    leftText: "이전",
+                    rightAction: {
+                        Task {
+                            try await uploadPostViewModel.submit(
+                                postInfo: postInfoViewModel,
+                                requireInfo: recruitmentPostViewModel,
+                                postInterviewViewModel: postInterviewViewModel,
+                                interviewSlotViewModel: interviewSlotViewModel
+                                )
+                            router.push(to: .uploadCompleteView)
+                        }
+                    },
+                    rightText: "모집글 올리기",
+                    nextButtonCondition: recruitmentPostViewModel.canSubmit
+                  )
             }
         }
+        .ignoresSafeArea(.all, edges: .bottom)
     }
     
     private var dateView: some View {
