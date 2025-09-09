@@ -44,8 +44,8 @@ struct ReportDetailView: View {
                         bgColor: Color.accentRed,
                         enabled: !viewModel.detailText.isEmpty
                     ) {}
+                        .environment(\.isEnabled, false) // TODO: 코드 논의
                 }
-                
             }
             .disabled(viewModel.detailText.isEmpty)
             .bottomBarBackground()

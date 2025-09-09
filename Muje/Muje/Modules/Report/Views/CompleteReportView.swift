@@ -45,6 +45,7 @@ struct CompleteReportView: View {
                         bgColor: Color.primaryBlack,
                         enabled: true
                     ) {}
+                        .environment(\.isEnabled, false) // TODO: 코드 논의
                 }
             }
             .bottomBarBackground()
