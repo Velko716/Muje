@@ -112,7 +112,7 @@ struct ApplicationPreview: View {
             }
         }
     }
-  }
+
     
     private var bottomButtonSection: some View {
         HStack(spacing: 17) {
