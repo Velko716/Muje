@@ -258,7 +258,7 @@ struct UserInfoInputView: View {
                                 Text("[필수] 이용약관에 동의합니다.")
                                     .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
                                     .foregroundStyle(termsAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
-                                Image(.iconChevronRight)
+                                Image(.chevronRight)
                                     .foregroundStyle(termsAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
                                     .frame(width: 24, height: 24)
                                 Spacer()
@@ -279,7 +279,7 @@ struct UserInfoInputView: View {
                                 Text("[필수] 개인정보 처리방침에 동의합니다.")
                                     .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
                                     .foregroundStyle(privacyAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
-                                Image(.iconChevronRight)
+                                Image(.chevronRight)
                                     .foregroundStyle(privacyAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
                                     .frame(width: 24, height: 24)
                                 Spacer()

@@ -9,7 +9,7 @@ import SwiftUI
 import FirebaseFirestore
 
 struct ApplicationPreview: View {
-  
+
   @EnvironmentObject private var router: NavigationRouter
   
   let postId: String // 키체인 구현전까지 테스트용으로 userId로 같이 씀.
@@ -21,180 +21,142 @@ struct ApplicationPreview: View {
   @State private var viewModel = ApplicationPreviewModel()
   
   private let userId: String = "0062C371-34F5-470B-BFE1-F671E23C5C97"
-  
-  var body: some View {
-    VStack(spacing: 0) {
-      CustomNavigationBar(
-        title: "지원서 미리보기") {
-          router.pop()
+    var body: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                
+                userInfoSection
+                Spacer().frame(height: 24)
+                userInfoDetailSection
+                Spacer().frame(height: 24)
+                Rectangle()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 12)
+                    .foregroundStyle(Color.gray.opacity(0.2)) //TODO: divider 컴포넌트로 변경
+                Spacer().frame(height: 24)
+                customQuestionSection
+                
+            }
         }
-    ScrollView {
-      
-      userInfoSection
-      
-      userInfoDetailSection
-      
-      Rectangle()
-        .frame(maxWidth: .infinity)
-        .frame(height: 12)
-        .foregroundStyle(Color.gray.opacity(0.2))
-      
-      customQuestionSection
-      
+        .task {
+            await viewModel.loadUserData(userId: postId)
+        }
+      .loadingOverlay(viewModel.isLoading, message: "지원서 제출 중...")
+        .toolbar {
+            ToolbarLeadingBackButton()
+            ToolbarCenterTitle(text: "신청서 미리보기")
+        }
+        
+        bottomButtonSection
+        
     }
-  }
-    .task {
-      await viewModel.loadUserData(userId: userId)
-    }
-    .loadingOverlay(viewModel.isLoading, message: "지원서 제출 중...")
     
-    bottomButtonSection
-    
-  }
-  
-  private var userInfoSection: some View {
-    VStack(alignment: .leading) {
-      Text(viewModel.userInfo?.name ?? "")
-      
-      HStack {
-        if requirementFlags.requiresGender {
-          Text(viewModel.userInfo?.genderDisplay ?? "")
+    private var userInfoSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(viewModel.userInfo?.name ?? "")
+                .headline24SemiBold()
+            
+            HStack(spacing: 0) {
+                if requirementFlags.requiresGender && requirementFlags.requiresAge {
+                    Text(viewModel.userInfo?.genderDisplay ?? "")
+                        .body2Regular16()
+                        .foregroundStyle(.gray800)
+                    Text(", ")
+                        .body2Regular16()
+                        .foregroundStyle(.gray800)
+                    Text(viewModel.userInfo?.ageString ?? "")
+                        .body2Regular16()
+                        .foregroundStyle(.gray800)
+                }
+                else if requirementFlags.requiresGender && !requirementFlags.requiresAge {
+                    Text(viewModel.userInfo?.genderDisplay ?? "")
+                        .body2Regular16()
+                        .foregroundStyle(.gray800)
+                }
+                else if !requirementFlags.requiresAge && requirementFlags.requiresAge {
+                    Text(viewModel.userInfo?.ageString ?? "")
+                        .body2Regular16()
+                        .foregroundStyle(.gray800)
+                }
+            }
         }
-        if requirementFlags.requiresAge {
-          Text(viewModel.userInfo?.ageString ?? "")
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+    }
+    //TODO: 디자인 반영 되면 폰트 수정
+    private var userInfoDetailSection: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            if requirementFlags.requiresStudentId {
+                InfoRow(title: "학번", value: viewModel.userInfo?.studentId ?? "")
+            }
+            if requirementFlags.requiresDepartment {
+                InfoRow(title: "학과", value: viewModel.userInfo?.department ?? "")
+            }
         }
-      }
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(.horizontal, 24)
-    .padding(.top, 16)
-    .padding(.bottom, 24)
-  }
-  
-  private var userInfoDetailSection: some View {
-    VStack(spacing: 5) {
-      if requirementFlags.requiresStudentId {
-        InfoRow(title: "학번", value: viewModel.userInfo?.studentId ?? "")
-      }
-      if requirementFlags.requiresDepartment {
-        InfoRow(title: "학과", value: viewModel.userInfo?.department ?? "")
-      }
-    }
-    .padding(.horizontal, 24)
-    .padding(.bottom, 24)
-  }
-  
-  private var customQuestionSection: some View {
-    VStack {
-      ForEach(customQuestion, id: \.questionId) { question in
-        QuestionAnswerToggle(
-          question: question.questionText,
-          answer: questionAnswer[question.questionId.uuidString] ?? "답변이 입력되지 않았습니다."
-        )
-      }
-    }
-  }
-  
-  private var bottomButtonSection: some View {
-    VStack {
-      Button {
-        Task { // TODO: 지원서 작성 후 모집자에게 알림 전송
-          try await viewModel.submitApplication(
-            postId: postId,
-            post: postBasicInfo,
-            requirement: requirementFlags,
-            questionAnswer: questionAnswer,
-            customQuestion: customQuestion
-          )
-          router.push(to: .applicationCompleteView)
-        }
-      } label: {
-        Text("확인")
-          .foregroundStyle(.white)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 18)
-          .background(Color.gray)
-          .clipShape(RoundedRectangle(cornerRadius: 10))
-      }
-    }
-    .padding(.vertical, 32)
-    .padding(.horizontal, 16)
-  }
-}
 
-#Preview {
-  @Previewable @State var viewModel = ApplicationPreviewModel()
+    private var customQuestionSection: some View {
+        VStack {
+            ForEach(customQuestion, id: \.questionId) { question in
+                QuestionAnswerToggle(
+                    question: question.questionText,
+                    answer: questionAnswer[question.questionId.uuidString] ?? "답변이 입력되지 않았습니다."
+                )
+                if question.questionId != customQuestion.last?.questionId {
+                    Divider()
+                        .foregroundStyle(.gray50)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 24)
+                }
+            }
+        }
+    }
+
     
-  return ApplicationPreview(
-    postId: "",
-    requirementFlags: RequirementFlags(
-      from: Post(
-        postId: UUID(),
-        authorUserId: "",
-        title: "ddddd",
-        organization: "dddddd",
-        content: "ddddddd",
-        recruitmentStart: Timestamp(date: Date()),
-        recruitmentEnd: Timestamp(date: Date()),
-        hasInterview: true,
-        status: PostStatus.recruiting.rawValue,
-        requiresName: true,
-        requiresStudentId: true,
-        requiresDepartment: true,
-        requiresGender: true,
-        requiresAge: true,
-        requiresPhone: true,
-        authorName: "박기연",
-        authorOrganization: "MAD"
-      )
-    ),
-    postBasicInfo: PostBasicInfo(
-      from: Post(
-        postId: UUID(),
-        authorUserId: "",
-        title: "ddddd",
-        organization: "dddddd",
-        content: "ddddddd",
-        recruitmentStart: Timestamp(date: Date()),
-        recruitmentEnd: Timestamp(date: Date()),
-        hasInterview: true,
-        status: PostStatus.recruiting.rawValue,
-        requiresName: true,
-        requiresStudentId: true,
-        requiresDepartment: true,
-        requiresGender: true,
-        requiresAge: true,
-        requiresPhone: true,
-        authorName: "박기연",
-        authorOrganization: "MAD"
-      )
-    ),
-    customQuestion: [CustomQuestion(
-      questionId: UUID(),
-      postId: "",
-      questionText: "햄버거 햄버거",
-      questionOrder: 1
-    ),CustomQuestion(
-      questionId: UUID(),
-      postId: "",
-      questionText: "햄버거 햄버거",
-      questionOrder: 2
-    ),CustomQuestion(
-      questionId: UUID(),
-      postId: "",
-      questionText: "햄버거 햄버거",
-      questionOrder: 3
-    ),CustomQuestion(
-      questionId: UUID(),
-      postId: "",
-      questionText: "햄버거 햄버거",
-      questionOrder: 4
-    ),CustomQuestion(
-      questionId: UUID(),
-      postId: "",
-      questionText: "햄버거 햄버거",
-      questionOrder: 5
-    )],
-    questionAnswer: .constant(["dddddddddd" : "우아아아아ㅏㅇ아ㅏ아"])
-  )
+    private var bottomButtonSection: some View {
+        HStack(spacing: 17) {
+            Button {
+                router.pop()
+            } label: {
+                Text("수정하기")
+                    .body1SemiBold18()
+                    .foregroundStyle(.gray700)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14.5)
+                    .padding(.horizontal, 45)
+                    .background(.gray50)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            
+            Button {
+                Task {
+                    try await viewModel.submitApplication(
+                        postId: postId,
+                        post: postBasicInfo,
+                        requirement: requirementFlags,
+                        questionAnswer: questionAnswer,
+                        customQuestion: customQuestion
+                    )
+                }
+                router.push(to: .applicationSubmitCompleteView)
+            } label: {
+                Text("신청서 제출")
+                    .body1SemiBold18()
+                    .foregroundStyle(.graywhite)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14.5)
+                    .padding(.horizontal, 45)
+                    .background(.primaryBlack)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+        }
+        .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
+        .background(
+                Rectangle()
+                    .fill(.graywhite)
+                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: -4)
+                    .ignoresSafeArea(.all, edges: .bottom)
+            )
+    }
 }
