@@ -22,7 +22,7 @@ struct BottomBar: View {
     
     var body: some View {
         Rectangle()
-            .fill(Color.gray) // FIXME: - 컬러 수정 DCDCDC
+            .fill(Color.gray100) // FIXME: - 컬러 수정 DCDCDC
             .frame(height: 0.5)
         
         Spacer().frame(height: 20)
