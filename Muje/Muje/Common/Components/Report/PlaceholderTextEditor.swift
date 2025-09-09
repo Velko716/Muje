@@ -19,7 +19,7 @@ struct PlaceholderTextEditor: View {
                 .focused($focused)
                 .font(Font.pretendard(type: .medium, size: 16))
                 .foregroundStyle(Color.gray500)
-                .padding(16)
+                .padding(8)
                 .frame(maxHeight: 212, alignment: .topLeading)
                 .scrollContentBackground(.hidden)
                 .background(
