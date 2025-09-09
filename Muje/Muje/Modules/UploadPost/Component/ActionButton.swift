@@ -12,13 +12,14 @@ struct ActionButton: View {
     var condition: Bool
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 10)
-            .fill(condition ? Color.gray.opacity(0.2) : Color.black)
-            .frame(height: 56)
-            .overlay(content: {
-                Text(title)
-                    .foregroundStyle(condition ? Color.secondary : Color.white)
-                    .bold()
-            })
+        Text(title)
+            .body1SemiBold16()
+            .foregroundStyle(condition ? .gray400 : .graywhite)
+            .padding(.horizontal, 14.5)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(condition ? .gray300 : .primaryBlack)
+            )
     }
 }
