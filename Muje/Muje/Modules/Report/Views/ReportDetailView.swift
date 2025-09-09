@@ -43,14 +43,13 @@ struct ReportDetailView: View {
                         textColor: Color.gray50,
                         bgColor: Color.accentRed,
                         enabled: !viewModel.detailText.isEmpty
-                    ) {
-                        // router.push(to: .emailVerificationView)
-                    }
+                    ) {}
                 }
                 
             }
             .disabled(viewModel.detailText.isEmpty)
             .bottomBarBackground()
+            .padding(.bottom, 8) // FIXME: - 논의 필요
         }
         .dismissKeyboardOnTap()
         .toolbar {
