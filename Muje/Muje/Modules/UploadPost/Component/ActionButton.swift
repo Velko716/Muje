@@ -12,14 +12,12 @@ struct ActionButton: View {
     var condition: Bool
     
     var body: some View {
-        Text(title)
-            .body1SemiBold16()
-            .foregroundStyle(condition ? .gray400 : .graywhite)
-            .padding(.horizontal, 14.5)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(condition ? .gray300 : .primaryBlack)
-            )
+            Text(title)
+                .body1SemiBold16()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14.5)
+                .background(condition ? .gray300 : .primaryBlack)
+                .foregroundStyle(condition ? .gray400 : .graywhite)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
