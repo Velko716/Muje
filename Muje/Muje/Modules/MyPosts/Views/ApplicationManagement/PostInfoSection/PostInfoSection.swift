@@ -20,44 +20,37 @@ extension ApplicationManagementView {
   private var titleSection: some View {
     VStack(alignment: .leading) {
       Text("\(postInfo.organization)")
-        .font(.caption)
-        .fontWeight(.bold)
+        .body2Regular16()
+        .foregroundStyle(.gray500)
       Text("\(postInfo.title)")
-        .font(.title2)
-        .fontWeight(.bold)
+        .body1SemiBold18()
+        .foregroundStyle(.gray700)
     }
   }
   
   private var statusSection: some View {
     HStack {
-      Text("\(postInfo.status)")
-        .font(.caption)
-        .fontWeight(.bold)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(Color.green.opacity(0.2))
-        .foregroundStyle(.green)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-      Text(postInfo.hasInterview ? "면접 진행" : "면접 없음")
-        .font(.caption)
-        .fontWeight(.bold)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(Color.blue.opacity(0.2))
-        .foregroundStyle(.blue)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+      if postInfo.status == "모집중" {
+        StatusChip(status: .recruiting)
+      } else {
+        StatusChip(status: .completed)
+      }
+      if postInfo.hasInterview {
+        StatusChip(status: .hasInterview)
+      }
       Spacer()
     }
-    .padding(.top, 12)
-    .padding(.bottom, 4)
+    .padding(.vertical, 8)
   }
   
   private var dateSection: some View {
     HStack(spacing: 16) {
       Text("모집 기간")
-        .font(.subheadline)
-        .foregroundStyle(.secondary)
+        .body2SemiBold16()
+        .foregroundStyle(.gray500)
       Text("\(postInfo.recruitmentStart.dateValue().shortDateString) ~ \(postInfo.recruitmentEnd.dateValue().shortDateString)")
+        .body2SemiBold16()
+        .foregroundStyle(.gray700)
     }
   }
 }

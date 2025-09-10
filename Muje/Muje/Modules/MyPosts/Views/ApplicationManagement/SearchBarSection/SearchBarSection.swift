@@ -38,12 +38,7 @@ extension ApplicationManagementView {
       Button {
         viewModel.startSearching()
       } label: {
-        Image(systemName: "magnifyingglass")
-          .font(.system(size: 16))
-          .padding(.vertical, 6)
-          .padding(.horizontal, 8)
-          .background(Color.white)
-          .clipShape(RoundedRectangle(cornerRadius: 100))
+        Image(.managementSearch)
       }
     }
     .padding(.top, 10)
@@ -57,7 +52,8 @@ extension ApplicationManagementView {
         viewModel.selectAll()
       } label: {
         Text(viewModel.selectedApplicantId.count == viewModel.filterApplicants.count ? "전체 해제" : "전체 선택")
-          .font(.system(size: 16))
+          .body2SemiBold16()
+          .foregroundStyle(.gray700)
           .padding(.vertical, 6)
           .padding(.horizontal, 8)
           .background(Color.white)
@@ -68,7 +64,8 @@ extension ApplicationManagementView {
         viewModel.selectedApplicantId.removeAll()
       } label: {
         Text("취소")
-          .font(.system(size: 16))
+          .body2SemiBold16()
+          .foregroundStyle(.gray700)
           .padding(.vertical, 6)
           .padding(.horizontal, 8)
           .background(Color.white)
@@ -86,7 +83,8 @@ extension ApplicationManagementView {
         viewModel.isSelectionMode = true
       } label: {
         Text("선택")
-          .font(.system(size: 16))
+          .body2SemiBold16()
+          .foregroundStyle(.gray700)
           .padding(.vertical, 6)
           .padding(.horizontal, 8)
           .background(Color.white)
@@ -98,12 +96,7 @@ extension ApplicationManagementView {
           isSearchFieldFocused = true
         }
       } label: {
-        Image(systemName: "magnifyingglass")
-          .font(.system(size: 16))
-          .padding(.vertical, 6)
-          .padding(.horizontal, 8)
-          .background(Color.white)
-          .clipShape(RoundedRectangle(cornerRadius: 100))
+        Image(.managementSearch)
       }
     }
     .padding(.trailing, 16)
@@ -116,13 +109,11 @@ extension ApplicationManagementView {
         viewModel.endSearching()
         isSearchFieldFocused = false
       } label: {
-        Image(systemName: "chevron.left")
-          .foregroundStyle(.blue)
-          .font(.title2)
+        Image(.chevronLeft)
       }
+      
       HStack {
-        Image(systemName: "magnifyingglass")
-          .foregroundStyle(.gray)
+        Image(.searchBarIcon)
         
         TextField(placeholderText, text: $viewModel.searchText)
           .textFieldStyle(PlainTextFieldStyle())
@@ -147,9 +138,9 @@ extension ApplicationManagementView {
         }
       }
       .padding(.horizontal, 12)
-      .padding(.vertical, 8)
-      .background(Color(.systemGray6))
-      .clipShape(RoundedRectangle(cornerRadius: 10))
+      .padding(.vertical, 18)
+      .background(.gray50)
+      .clipShape(RoundedRectangle(cornerRadius: 100))
     }
     .padding(.horizontal, 16)
     .padding(.top, 2)

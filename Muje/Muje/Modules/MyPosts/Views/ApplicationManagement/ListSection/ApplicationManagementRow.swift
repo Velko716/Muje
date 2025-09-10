@@ -30,13 +30,9 @@ struct ApplicationManagementRow: View {
     .padding(.horizontal, 16)
     .padding(.vertical, 16)
     .background(
-      isSelected ? Color.blue.opacity(0.1) : Color.gray.opacity(0.2)
+      isSelected ? Color.gray100: Color.gray50
     )
     .clipShape(RoundedRectangle(cornerRadius: 10))
-    .overlay(
-      RoundedRectangle(cornerRadius: 10)
-        .stroke(isSelected ? Color.blue : Color.clear, lineWidth: 2)
-    )
     .scaleEffect(isLongPressed ? 1.05 : 1.0)
     .shadow(
       color: .black.opacity(
@@ -75,6 +71,9 @@ struct ApplicationManagementRow: View {
   private var infoSection: some View {
     VStack(alignment: .leading, spacing: 12) {
       Text(application.applicantName)
+        .body1SemiBold18()
+        .foregroundStyle(.gray700)
+      
       infoDetailSection
       markSection
     }
@@ -84,12 +83,18 @@ struct ApplicationManagementRow: View {
     HStack {
       if let _ = application.applicantGender {
         Text(application.genderDisplay)
+          .body1Medium16()
+          .foregroundStyle(.gray700)
       }
       if let _ = application.applicantBirthYear {
         Text(application.ageString)
+          .body1Medium16()
+          .foregroundStyle(.gray700)
       }
       if let department = application.applicantDepartment {
         Text(department)
+          .body1Medium16()
+          .foregroundStyle(.gray700)
       }
       Spacer()
     }
@@ -97,7 +102,7 @@ struct ApplicationManagementRow: View {
   
   private var markSection: some View {
     HStack {
-      Image(systemName: application.statusIcon)
+      application.statusIcon
         .foregroundStyle(application.statusColor)
       
       if application.interviewSlotId != nil {
@@ -122,7 +127,9 @@ struct ApplicationManagementRow: View {
         Button {
           viewModel.toggleSelection(application.applicationId)
         } label: {
-          Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+          Image(
+            isSelected ? .checkBoxFilled : .checkBoxEmpty
+          )
         }
       }
     }
