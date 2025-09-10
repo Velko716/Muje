@@ -10,10 +10,11 @@ import SwiftUI
 struct TwoActionBottomButton: View {
     var leftAction: () -> Void
     var leftText: String
-    var leftBGColor: Color = .gray50
+    // var leftBGColor: Color = .gray50
     var rightAction: () -> Void
     var rightText: String
-    var rightBGColor: Color = .primaryBlack
+    // var rightBGColor: Color = .primaryBlack
+    var nextButtonCondition: Bool = true
     var body: some View {
         HStack(spacing: 17) {
             Button {
@@ -23,7 +24,7 @@ struct TwoActionBottomButton: View {
                     .body1SemiBold18()
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(leftBGColor)
+                    .background(.gray50)
                     .foregroundStyle(.gray700)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
@@ -34,10 +35,11 @@ struct TwoActionBottomButton: View {
                     .body1SemiBold18()
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(rightBGColor)
-                    .foregroundStyle(.graywhite)
+                    .background(nextButtonCondition ? .gray300 : .primaryBlack)
+                    .foregroundStyle(nextButtonCondition ? .gray400 : .graywhite)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .disabled(nextButtonCondition)
         }
         .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
         .background(
