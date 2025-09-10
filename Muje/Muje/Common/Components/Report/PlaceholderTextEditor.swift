@@ -24,7 +24,7 @@ struct PlaceholderTextEditor: View {
                 .scrollContentBackground(.hidden)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color.white01)
+                        .fill(Color.white)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
