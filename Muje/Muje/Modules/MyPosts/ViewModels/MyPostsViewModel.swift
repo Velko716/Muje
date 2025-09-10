@@ -153,6 +153,16 @@ class MyPostsViewModel {
         }
         return nil
     }
+    
+    func getStatus(postId: UUID) -> ApplicationStatus {
+        for application in currentUserApplication.values {
+            if application.postId == postId.uuidString {
+                return ApplicationStatus(rawValue: application.status) ?? .submitted
+            }
+                
+        }
+        return .submitted
+    }
 }
 
 // MARK: - 파이어베이스 로직

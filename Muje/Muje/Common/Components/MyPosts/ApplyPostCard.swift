@@ -14,10 +14,10 @@ struct ApplyPostCard: View {
     
     var item: Post
     var isPost: Bool
-    var status: ApplicationStatus = .interviewWaiting //서버에서 어플리케이션 DTO 받아와서 패치
+    var status: ApplicationStatus
     var slotId: String?
     
-    var slot: InterviewSlotModel? //서버에서 인터뷰 슬롯 DTO들 받아와서 패치(어플리케이션 DTO에서 interviewSlotId를 찾은 후에 서버에서 동일한 id의 InterviewSlot DTO 받아오기)
+    var slot: InterviewSlotModel?
   
     let thumbnailImage: PostImage?
     let cachedURL: String?
@@ -67,7 +67,7 @@ struct ApplyPostCard: View {
                   selectViewModel.isSetting = true
                 },
                 condition: status.buttonStatus)
-                .disabled(status.buttonStatus)
+                .disabled(status.buttonStatus || slotId != nil)
                 
                 Divider()
                 ButtonBox(title: "공고글 보기", action: {

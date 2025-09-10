@@ -22,16 +22,6 @@ struct MyPostsView: View {
         .task {
           await myPostsViewModel.loadAllData()
         }
-//        .onAppear {
-//          Task {
-//            await myPostsViewModel.loadAllDataIfNeed()
-//          }
-//        }
-//        .refreshable {
-//          Task {
-//            await myPostsViewModel.forceRefresh()
-//          }
-//        }
         .safeAreaPadding(.horizontal, 16)
         .fullScreenCover(isPresented: $selectViewModel.isSetting) {
             SelectView(selectViewModel: selectViewModel)
@@ -81,7 +71,7 @@ struct MyPostsView: View {
                         thumbnailImage: myPostsViewModel.uploadThumbnail[post.postId],
                         cachedURL: myPostsViewModel.imageURLCache[post.postId]
                       )
-                            .tag(index)
+                      .tag(index)
                     }
                 }
                 .frame(height: 260)
@@ -112,11 +102,12 @@ struct MyPostsView: View {
                         myPostsViewModel: myPostsViewModel,
                         item: post,
                         isPost: false,
+                        status: myPostsViewModel.getStatus(postId: myPostsViewModel.applicationPost[index].postId),
                         slotId: myPostsViewModel.getSlotId(postId: myPostsViewModel.applicationPost[index].postId),
                         thumbnailImage: myPostsViewModel.applicationThumbnail[post.postId],
                         cachedURL: myPostsViewModel.imageURLCache[post.postId]
                       )
-                            .tag(index)
+                      .tag(index)
                     }
                 }
                 .frame(height: 260)
