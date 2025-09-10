@@ -23,10 +23,6 @@ struct ApplicationManagementView: View {
   
   var body: some View {
     VStack(spacing: 0) {
-      CustomNavigationBar(
-        title: "내가 올린 공고") {
-          router.pop()
-        }
       ScrollViewReader { proxy in
         ScrollView {
           LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
@@ -35,6 +31,7 @@ struct ApplicationManagementView: View {
               .transaction { t in
                 t.disablesAnimations = true }
               .padding(.bottom, 8)
+              .padding(.top, 16)
             
             Section {
               contentSection
@@ -43,33 +40,33 @@ struct ApplicationManagementView: View {
             }
           }
         }
+        .safeAreaInset(edge: .bottom) {
+            if viewModel.selectedTab == .management {
+              bottomButton
+                .transition(.identity) // 그룹에 적용
+                .animation(nil, value: viewModel.selectedTab)
+            }
+          }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+          ToolbarCenterTitle(text: "내가 올린 모임")
+          ToolbarLeadingBackButton()
+        }
         .animation(.none, value: viewModel.selectedTab)
         .animation(.none, value: viewModel.selectedManagementStage)
-//        .onChange(of: viewModel.selectedManagementStage) {
-//          withAnimation(.easeInOut(duration: 0.5)) {
-//            proxy.scrollTo("contentTop", anchor: .top)
-//          }
-//        }
         .onChange(of: viewModel.selectedTab) {
           withAnimation(.easeInOut(duration: 0.5)) {
             proxy.scrollTo("contentTop", anchor: .top)
           }
         }
       }
-      Group {
-        if viewModel.selectedTab == .management {
-          bottomButton
-        }
-      }
-      .transition(.identity) // 그룹에 적용
-      .animation(nil, value: viewModel.selectedTab)
     }
-    //    .onAppear {
-    //      loadData()
+    .onAppear {
+      loadData()
+    }
+    //    .task {
+    //      await viewModel.loadApplicationData(for: postId)
     //    }
-    .task {
-      await viewModel.loadApplicationData(for: postId)
-    }
     .sheet(item: $selectedApplicant) { applicant in
       ApplicantDetailModalView(
         viewModel: ModalViewModel(
@@ -85,7 +82,6 @@ struct ApplicationManagementView: View {
   private var stickyHeader: some View {
     VStack(spacing: 0) {
       tabSelctionSection
-        .padding(.top, 8)
         .background(Color.white)
       if viewModel.selectedTab == .management && !viewModel.isSelectionMode {
         VStack(spacing: 0) {
@@ -133,7 +129,7 @@ struct ApplicationManagementView: View {
     }
   }
   
-
+  
   
   // MARK: - 프리뷰용 목데이터
   private func loadData() {
@@ -320,22 +316,24 @@ struct ApplicationManagementView: View {
 }
 
 #Preview {
-  ApplicationManagementView(
-    postId: "post_id",
-    postInfo: ApplicationManagementPostInfo(
-      from: Post(
-        postId: UUID(),
-        authorUserId: "dd",
-        title: "집에 가고 싶다~",
-        organization: "MAD",
-        content: "",
-        recruitmentStart: Timestamp(date: Date()),
-        recruitmentEnd: Timestamp(date: Date()),
-        hasInterview: true,
-        status: PostStatus.recruiting.rawValue,
-        authorName: "dd",
-        authorOrganization: "MAD"
+  NavigationStack {
+    ApplicationManagementView(
+      postId: "post_id",
+      postInfo: ApplicationManagementPostInfo(
+        from: Post(
+          postId: UUID(),
+          authorUserId: "dd",
+          title: "집에 가고 싶다~",
+          organization: "MAD",
+          content: "",
+          recruitmentStart: Timestamp(date: Date()),
+          recruitmentEnd: Timestamp(date: Date()),
+          hasInterview: true,
+          status: PostStatus.recruiting.rawValue,
+          authorName: "dd",
+          authorOrganization: "MAD"
+        )
       )
     )
-  )
+  }
 }
