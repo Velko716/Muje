@@ -26,17 +26,11 @@ extension ApplicationManagementView {
     .transaction { transaction in
       transaction.disablesAnimations = true
     }
-    //    .animation(.none, value: viewModel.selectedTab)
-    //    .animation(.none, value: viewModel.selectedManagementStage)
-    //    .animation(.none, value: viewModel.isSelectionMode)
-    .padding(.horizontal, 16)
-    .padding(.vertical, 12)
-    .background(Color(.systemBackground))
   }
   
   private func notifyButtons(_ type: NotifyButtonType) -> some View {
     Button {
-      //
+      // TODO: 심사 결과 알림
     } label: {
       Text(type.dispayName)
         .font(.system(size: 18))
@@ -46,6 +40,14 @@ extension ApplicationManagementView {
         .background(Color.gray)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
+    .hvPadding(16, 20)
+    .frame(maxWidth: .infinity)
+    .background(
+      Rectangle()
+        .fill(Color.white)
+        .shadow(radius: 3)
+        .ignoresSafeArea(edges: .bottom)
+    )
   }
   
   private func processButton(_ type: ManagementButtonType) -> some View {
@@ -78,8 +80,13 @@ extension ApplicationManagementView {
       .disabled(viewModel.selectedApplicantId.isEmpty)
       .opacity(viewModel.selectedApplicantId.isEmpty ? 0.5 : 1.0)
     }
-    //    .padding(.horizontal, 16)
-    //    .padding(.vertical, 12)
-    //    .background(Color(.systemBackground))
+    .hvPadding(16, 20)
+    .frame(maxWidth: .infinity)
+    .background(
+      Rectangle()
+        .fill(Color.white)
+        .shadow(radius: 3)
+        .ignoresSafeArea(edges: .bottom)
+    )
   }
 }

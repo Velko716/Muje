@@ -71,20 +71,20 @@ extension Application {
     }
   }
   
-  var statusIcon: String {
+  var statusIcon: Image {
     let status = ApplicationStatus(rawValue: self.status)
     
     switch status {
     case .submitted:
-      return "doc.text.fill"
+      return Image(.submit)
     case .interviewWaiting:
-      return interviewSlotId == nil ? "clock.fill" : "checkmark.circle.fill"
+      return interviewSlotId == nil ? Image(.nonInterview) : Image(.interview)
     case .reviewWaiting:
-      return "eye.fill"
+      return Image(.interviewComplete)
     case .reviewCompleted:
-      return isPassed == true ? "checkmark.circle.fill" : "xmark.circle.fill"
+      return isPassed == true ? Image(.pass) : Image(.nonPass)
     default :
-      return ""
+      return Image(.iconStatusError)
     }
   }
   
@@ -93,13 +93,13 @@ extension Application {
     
     switch status {
     case .submitted:
-      return .blue
+      return .statusTextBlue
     case .interviewWaiting:
-      return interviewSlotId == nil ? .gray : .green
+      return interviewSlotId == nil ? .statusTextOrange : .statusTextGreen
     case .reviewWaiting:
-      return .yellow
+      return .gray500
     case .reviewCompleted:
-      return isPassed == true ? .green : .red
+      return isPassed == true ? .pointSkyBlue : .statusTextRed
     default :
       return .black
     }

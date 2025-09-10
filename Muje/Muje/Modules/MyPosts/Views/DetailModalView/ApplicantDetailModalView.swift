@@ -84,8 +84,8 @@ struct ApplicantDetailModalView: View {
           Text(viewModel.currentApplicant.ageString)
         }
         // MARK: 지원자 상태 아이콘 분기
-        Image(systemName: viewModel.currentApplicant.statusIcon)
-          .foregroundStyle(viewModel.currentApplicant.statusColor)
+//        Image(systemName: viewModel.currentApplicant.statusIcon)
+//          .foregroundStyle(viewModel.currentApplicant.statusColor)
         // MARK: 지원자 상태 텍스트 분기
         if viewModel.currentApplicant.interviewSlotId != nil {
           if viewModel.currentApplicant.status == ApplicationStatus.interviewWaiting.rawValue {
