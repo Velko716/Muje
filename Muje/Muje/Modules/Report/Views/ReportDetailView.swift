@@ -16,8 +16,8 @@ struct ReportDetailView: View {
         ZStack {
             VStack(alignment: .leading) {
                 Text("상세 내용을 작성해주세요")
-                    .font(Font.system(size: 22, weight: .semibold)) // FIXME: - 폰트 수정
-                    .foregroundStyle(Color.black) // FIXME: - 컬러 수정
+                    .font(Font.pretendard(type: .semiBold, size: 22))
+                    .foregroundStyle(Color.gray700)
                 
                 Spacer().frame(height: 27)
                 
@@ -27,37 +27,30 @@ struct ReportDetailView: View {
                 )
                 Spacer()
             }
-            // FIXME: - 컴포넌트로 대체 하기
-            .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 20) {
-                    LinearGradient(
-                        colors: [Color.black.opacity(0.8), .clear],
-                        startPoint: .top, endPoint: .bottom
-                    )
-                    .frame(height: 1)
-                    
-                    NavigationLink {
-                        CompleteReportView(
-                            viewModel: viewModel,
-                            showReportSheet: $showReportSheet
-                        )
-                            .hideBackButton()
-                    } label: {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(viewModel.detailText.isEmpty ? Color.gray : Color.red) // FIXME: - 컬러 수정
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 56)
-                            .overlay {
-                                Text("신고하기")
-                                    .font(Font.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
-                                    .foregroundStyle(viewModel.detailText.isEmpty ? Color.black : Color.white) // FIXME: - 컬러 수정
-                            }
-                    }
-                    .disabled(viewModel.detailText.isEmpty)
-                }
-            }
         }
         .paddingH16()
+        .safeAreaInset(edge: .bottom) {
+            NavigationLink {
+                CompleteReportView(
+                    viewModel: viewModel,
+                    showReportSheet: $showReportSheet
+                )
+                .hideBackButton()
+            } label: {
+                VStack {
+                    BottomBar(
+                        text: "신고하기",
+                        textColor: Color.gray50,
+                        bgColor: Color.accentRed,
+                        enabled: !viewModel.detailText.isEmpty
+                    ) {}
+                        .environment(\.isEnabled, false) // TODO: 코드 논의
+                }
+            }
+            .disabled(viewModel.detailText.isEmpty)
+            .bottomBarBackground()
+            .padding(.bottom, 8) // FIXME: - 논의 필요
+        }
         .dismissKeyboardOnTap()
         .toolbar {
             ToolbarLeadingXmarkBackButton { showReportSheet = false }
@@ -72,36 +65,3 @@ struct ReportDetailView: View {
     }
 }
 
-// FIXME: - UI 업데이트 필요함 + 소스 코드 위치 이동
-/// 둥근 박스 스타일의 TextEditor + placeholder
-struct PlaceholderTextEditor: View {
-    @Binding var text: String
-    var placeholder: String
-    @FocusState private var focused: Bool
-    
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            TextEditor(text: $text)
-                .focused($focused)
-                .font(.system(size: 17))
-                .padding(12)
-                .frame(maxHeight: 212, alignment: .topLeading)
-                .scrollContentBackground(.hidden)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color(uiColor: .secondarySystemBackground))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color(uiColor: .systemGray4), lineWidth: 1)
-                )
-            if text.isEmpty {
-                Text(placeholder)
-                    .font(.system(size: 17))
-                    .foregroundStyle(Color(uiColor: .systemGray3))
-                    .padding([.top, .leading], 16)
-                    .allowsHitTesting(false)
-            }
-        }
-    }
-}

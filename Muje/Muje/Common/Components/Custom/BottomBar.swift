@@ -22,7 +22,7 @@ struct BottomBar: View {
     
     var body: some View {
         Rectangle()
-            .fill(Color.gray) // FIXME: - 컬러 수정 DCDCDC
+            .fill(Color.gray100)
             .frame(height: 0.5)
         
         Spacer().frame(height: 20)
@@ -31,15 +31,15 @@ struct BottomBar: View {
             action()
         } label: {
             Text(text)
-                .font(.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(enabled ? textColor : Color.white) // FIXME: - 컬러 수정
+                .font(Font.pretendard(type: .semiBold, size: 18))
+                .foregroundStyle(enabled ? textColor : Color.gray400)
                 .frame(maxWidth: .infinity, maxHeight: 54)
             
         }
         .disabled(!enabled)
         .background(
             RoundedRectangle(cornerRadius: 10)
-                .fill(enabled ? bgColor : Color.secondary) // FIXME: - 컬러 수정
+                .fill(enabled ? bgColor : Color.gray200)
         )
         .padding(.horizontal, 16)
     }

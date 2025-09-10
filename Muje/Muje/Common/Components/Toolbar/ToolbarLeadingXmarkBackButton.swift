@@ -23,7 +23,7 @@ struct ToolbarLeadingXmarkBackButton: ToolbarContent {
                 if let action { action() } else { dismiss() }
             } label: {
                 Image(.iconCloseBlack)
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Color.gray700)
             }
         }
     }
