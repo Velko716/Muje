@@ -79,8 +79,7 @@ struct UploadPostView: View {
         .safeAreaInset(edge: .bottom) {
             nextButtonView
         }
-        .ignoresSafeArea(edges: .bottom)
-        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .ignoresSafeArea(.all, edges: .bottom)
         .navigationTitle("모임 올리기")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
