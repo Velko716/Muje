@@ -39,6 +39,7 @@ struct TwoActionBottomButton: View {
                     .foregroundStyle(nextButtonCondition ? .gray400 : .graywhite)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .disabled(nextButtonCondition)
         }
         .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
         .background(
