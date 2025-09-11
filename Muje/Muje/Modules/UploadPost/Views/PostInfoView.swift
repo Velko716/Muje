@@ -30,7 +30,7 @@ struct PostInfoView: View {
                 imageView
                 contentView
             }
-            .padding(.bottom, 160)
+            .padding(.bottom, 67)
         }
     }
     
