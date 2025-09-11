@@ -16,9 +16,12 @@ class RecruitmentPostViewModel {
     var canSubmit: Bool {
       let hasBasicInfo = basicInfoChecked.values.contains(true)
       let validQuestionCount = customQuestions.filter {
-        !$0.questionText.trimmingCharacters(in: .whitespaces).isEmpty
+        $0.isValid
       }.count
       return hasBasicInfo && validQuestionCount >= 1
+    }
+    func nextCheck() -> Bool {
+        return (basicInfoChecked.values.contains(true) && customQuestions.filter { $0.isValid }.count >= 1)
     }
   
   init() {
@@ -26,11 +29,6 @@ class RecruitmentPostViewModel {
       basicInfoChecked[field] = field == .name
     }
   }
-    //TODO: 뷰모델에서 개수 세긴 하는데 뷰에서 연결을 안햇네욤;;ㅎㅎ(SEO)
-    
-    var postButtonColor: Color {
-        canSubmit ? Color.black : Color.gray
-    }
   
   // MARK: - CustomQuestion 관련 로직
   func addCustomQuestion() {
