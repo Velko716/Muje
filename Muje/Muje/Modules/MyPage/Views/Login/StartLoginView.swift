@@ -22,15 +22,20 @@ struct StartLoginView: View {
         // TODO: 컴포넌트로 이 뷰를 만들기
         .safeAreaInset(edge: .bottom) {
             VStack {
-                BottomBar(text: "시작하기", textColor: Color.white, bgColor: Color.black, enabled: true) {
+                BottomBar(
+                    text: "시작하기",
+                    textColor: Color.white,
+                    bgColor: Color.primaryBlack,
+                    enabled: true
+                ) {
                     router.push(to: .emailVerificationView)
                 }
                 
                 Spacer().frame(height: 16)
                 
                 Text("이미 가입하신적이 있으신가요?")
-                    .font(Font.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정
-                    .foregroundStyle(Color.black) // FIXME: - 컬러 수정
+                    .font(Font.pretendard(type: .medium, size: 14))
+                    .foregroundStyle(Color.gray700)
                 
                 Spacer().frame(height: 4)
                 
@@ -38,8 +43,8 @@ struct StartLoginView: View {
                     router.push(to: .loginView)
                 } label: {
                     Text("로그인하기")
-                        .font(Font.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정
-                        .foregroundStyle(Color.blue) // FIXME: - 컬러 수정
+                        .font(Font.pretendard(type: .medium, size: 14))
+                        .foregroundStyle(Color.pointSkyBlue)
                 }
             }
             .bottomBarBackground() // ViewModifier
@@ -74,12 +79,12 @@ struct StartLoginView: View {
     private var middleServiceNameView: some View {
         VStack(spacing: 19) {
             Text("[서비스 네임]")
-                .font(Font.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color.black)
+                .font(Font.pretendard(type: .semiBold, size: 24))
+                .foregroundStyle(Color.gray700)
             
             Text("[브랜드 슬로건, UX라이팅]")
-                .font(Font.system(size: 18, weight: .semibold))
-                .foregroundStyle(Color.black)
+                .font(Font.pretendard(type: .semiBold, size: 18))
+                .foregroundStyle(Color.gray700)
         }
     }
     
