@@ -16,7 +16,7 @@ struct UploadPostView: View {
     @State var postInterviewViewModel = PostInterviewViewModel()
     @State var recruitmentPostViewModel = RecruitmentPostViewModel()
     @State var interviewSlotViewModel = InterviewSlotViewModel()
-  
+    @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
       
@@ -31,15 +31,19 @@ struct UploadPostView: View {
                 PostInfoView(
                   postInfoViewModel: postInfoViewModel
                 )
+                .focused($isTextFieldFocused)
+                
               } else if uploadPostViewModel.currentStatus == .interview {
                 PostInterviewView(
                   postInfoViewModel: postInfoViewModel,
                   postInterviewViewModel: postInterviewViewModel, interviewSlotViewModel: interviewSlotViewModel
                 )
+                .focused($isTextFieldFocused)
               } else {
                 RecruitmentPostView(
                   viewModel: recruitmentPostViewModel
                 )
+                .focused($isTextFieldFocused)
               }
             }
             .safeAreaPadding(.horizontal, 16)
@@ -177,6 +181,9 @@ struct UploadPostView: View {
                 .padding(.horizontal, 24)
         }
         .ignoresSafeArea()
+        .onAppear {
+            isTextFieldFocused = false
+        }
     }
 }
 
