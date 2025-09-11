@@ -33,11 +33,11 @@ extension ApplicationManagementView {
       // TODO: 심사 결과 알림
     } label: {
       Text(type.dispayName)
-        .font(.system(size: 18))
+        .body1SemiBold18()
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .foregroundStyle(.white)
-        .background(Color.gray)
+        .foregroundStyle(.graywhite)
+        .background(.primaryBlack)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
     .hvPadding(16, 20)
@@ -56,11 +56,11 @@ extension ApplicationManagementView {
         viewModel.handleLeftButtonAction()
       } label: {
         Text(type.LeftDisplayName)
-          .font(.headline)
+          .body1SemiBold18()
           .frame(maxWidth: .infinity)
           .padding(.vertical, 16)
-          .foregroundStyle(.white)
-          .background(Color.red)
+          .foregroundStyle(.gray700)
+          .background(.gray50)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       .disabled(viewModel.selectedApplicantId.isEmpty)
@@ -70,11 +70,11 @@ extension ApplicationManagementView {
         viewModel.handleRightButtonAction()
       } label: {
         Text(type.RightDisplayName)
-          .font(.system(size: 18))
+          .body1SemiBold18()
           .frame(maxWidth: .infinity)
           .padding(.vertical, 16)
-          .foregroundStyle(.white)
-          .background(Color.gray)
+          .foregroundStyle(.graywhite)
+          .background(.primaryBlack)
           .clipShape(RoundedRectangle(cornerRadius: 10))
       }
       .disabled(viewModel.selectedApplicantId.isEmpty)
