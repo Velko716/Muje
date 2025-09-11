@@ -105,12 +105,7 @@ struct UploadPostView: View {
     }
     
     private var nextButtonView: some View {
-        ZStack(alignment: .top) {
-            Rectangle()
-                .fill(Color.white)
-                .frame(height: 120)
-                .border(Color.gray.opacity(0.2))
-            
+        ZStack {
             if uploadPostViewModel.currentStatus == .input {
                 Button(action: {
                     uploadPostViewModel.currentStatus = .interview
