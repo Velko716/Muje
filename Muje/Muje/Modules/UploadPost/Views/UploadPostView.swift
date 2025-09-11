@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct UploadPostView: View {
     @EnvironmentObject private var router: NavigationRouter
     @State var uploadPostViewModel = UploadPostViewModel()
@@ -74,13 +72,15 @@ struct UploadPostView: View {
             }
           }
           .toast(isShown: $postInfoViewModel.showToast, message: "사진은 최대 5장까지만 업로드할 수 있어요", alignment: .bottom)
-          nextButtonView
-          
           if postInfoViewModel.isPicker {
             dateView
           }
         }
+        .safeAreaInset(edge: .bottom) {
+            nextButtonView
+        }
         .ignoresSafeArea(edges: .bottom)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .navigationTitle("모임 올리기")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -120,7 +120,6 @@ struct UploadPostView: View {
                         )
                 })
                 .disabled(postInfoViewModel.nextCheck())
-                
             } else if uploadPostViewModel.currentStatus == .interview {
                 TwoActionBottomButton(
                     leftAction: { uploadPostViewModel.currentStatus = .input },
@@ -129,11 +128,12 @@ struct UploadPostView: View {
                         uploadPostViewModel.currentStatus = .info
                     },
                     rightText: "다음",
-                    nextButtonCondition: postInfoViewModel.nextCheck()
+                    nextButtonCondition: postInterviewViewModel.nextCheck()
                 )
             } else {
-                  TwoActionBottomButton(
-                    leftAction: { uploadPostViewModel.currentStatus = .interview },
+                TwoActionBottomButton(
+                    leftAction: { uploadPostViewModel.currentStatus = .interview
+                    },
                     leftText: "이전",
                     rightAction: {
                         Task {
@@ -142,16 +142,15 @@ struct UploadPostView: View {
                                 requireInfo: recruitmentPostViewModel,
                                 postInterviewViewModel: postInterviewViewModel,
                                 interviewSlotViewModel: interviewSlotViewModel
-                                )
+                            )
                             router.push(to: .uploadCompleteView)
                         }
                     },
                     rightText: "모집글 올리기",
-                    nextButtonCondition: recruitmentPostViewModel.canSubmit
-                  )
+                    nextButtonCondition: !recruitmentPostViewModel.nextCheck()
+                )
             }
         }
-        .ignoresSafeArea(.all, edges: .bottom)
     }
     
     private var dateView: some View {
