@@ -14,7 +14,7 @@ struct TwoActionBottomButton: View {
     var rightAction: () -> Void
     var rightText: String
     // var rightBGColor: Color = .primaryBlack
-    var nextButtonCondition: Bool = true
+    var nextButtonCondition: Bool = false
     var body: some View {
         HStack(spacing: 17) {
             Button {
@@ -39,7 +39,6 @@ struct TwoActionBottomButton: View {
                     .foregroundStyle(nextButtonCondition ? .gray400 : .graywhite)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            .disabled(nextButtonCondition)
         }
         .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
         .background(
