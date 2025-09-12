@@ -83,8 +83,10 @@ struct PostInterviewView: View {
                     )
                 })
             }
-            
-            CustomTextField(title: "면접 장소", tempTitle: "장소를 입력해주세요", textValue: $postInterviewViewModel.interviewLocation, subTitle: "추후 설정 가능", maxLength: 100)
+            VStack(alignment: .leading, spacing: 8) {
+                TextWithDescription(MainText: "면접 장소", Description: "추후 설정 가능")
+                RoundedTextField(text: $postInterviewViewModel.interviewLocation, placeholder: "장소를 입력해주세요", keyboard: .default)
+            }
         }
     }
 }
