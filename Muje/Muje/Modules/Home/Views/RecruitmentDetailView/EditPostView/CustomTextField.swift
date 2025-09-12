@@ -28,8 +28,8 @@ struct CustomTextField: View {
             }
             TextField(tempTitle, text: textValue, axis: .vertical)
                 .maxLength(text: textValue, maxLength)
-                .bold()
-                .padding(18)
+                .font(.pretendard(type: .medium, size: 16))
+                .padding(16)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color.clear)
