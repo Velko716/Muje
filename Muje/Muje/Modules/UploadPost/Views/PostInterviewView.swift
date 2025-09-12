@@ -15,17 +15,28 @@ struct PostInterviewView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
             Text("면접 여부는 모집글 작성이 완려되면 수정할 수 없어요")
-                .foregroundStyle(Color.gray)
+                .caption14Medium()
+                .foregroundStyle(.gray500)
             
             HStack {
                 Button(action: {
-                    postInterviewViewModel.hasInterview = true
+                    if postInterviewViewModel.hasInterview == nil || postInterviewViewModel.hasInterview == false {
+                        postInterviewViewModel.hasInterview = true
+                    }
+                    else {
+                        postInterviewViewModel.hasInterview = nil // 버튼 한 번 더 클릭 시 선택 취소
+                    }
                 }, label: {
                     InterviewButton(condition: postInterviewViewModel.hasInterview, value: true, title: "예")
                 })
                 Spacer()
                 Button(action: {
-                    postInterviewViewModel.hasInterview = false
+                    if postInterviewViewModel.hasInterview == nil || postInterviewViewModel.hasInterview == true {
+                        postInterviewViewModel.hasInterview = false
+                    }
+                    else {
+                        postInterviewViewModel.hasInterview = nil // 버튼 한 번 더 클릭 시 선택 취소
+                    }
                 }, label: {
                     InterviewButton(condition: postInterviewViewModel.hasInterview, value: false, title: "아니요")
                 })
