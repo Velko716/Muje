@@ -102,7 +102,7 @@ struct PostInfoView: View {
     }
     
     private var contentView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("모집 내용")
                 .caption14SemiBold()
             TextField("활동 목적, 모집 인원, 활동 일정, 지원 자격 등을 자유롭게 작성해주세요", text: $postInfoViewModel.content, axis: .vertical)
