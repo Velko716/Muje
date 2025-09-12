@@ -59,12 +59,7 @@ struct PostInterviewView: View {
     private var interviewSettingView: some View {
         VStack {
             VStack(alignment: .leading) {
-                HStack(spacing: 4) {
-                    Text("면접 일정")
-                    Text("추후 설정 가능")
-                        .font(.caption)
-                        .foregroundStyle(Color.gray)
-                }
+                TextWithDescription(MainText: "면접 일정", Description: "추후 설정 가능")
                 
                 Button(action: {
                     print("데이트 피커")
@@ -73,7 +68,8 @@ struct PostInterviewView: View {
                     HStack(spacing: 6) {
                         Text(interviewSlotViewModel.datePrint())
                         Spacer()
-                        Image(systemName: "calendar")
+                        Image(.calendarIcon)
+                            .frame(width: 24, height: 24)
                     }
                     .foregroundStyle(Color.gray)
                     .padding(18)
