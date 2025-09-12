@@ -14,7 +14,7 @@ struct PostInterviewView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
-            Text("면접 여부는 모집글 작성이 완려되면 수정할 수 없어요")
+            Text("면접 여부는 모집글 작성이 완료되면 수정할 수 없어요")
                 .caption14Medium()
                 .foregroundStyle(.gray500)
             
