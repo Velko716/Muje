@@ -11,14 +11,13 @@ struct TextWithDescription: View {
     var MainText: String
     var Description: String = "1개 이상"
     var body: some View {
-        HStack {
+        HStack(spacing: 8) {
             Text(MainText)
-                .font(.system(size: 14))
-                .foregroundStyle(.black)
-            Spacer().frame(width: 8)
+                .caption14SemiBold()
+                .foregroundStyle(.gray700)
             Text(Description)
-                .font(.system(size: 14))
-                .foregroundStyle(.gray)
+                .caption14Regular()
+                .foregroundStyle(.gray500)
         }
     }
 }
