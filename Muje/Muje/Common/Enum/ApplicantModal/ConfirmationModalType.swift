@@ -60,7 +60,7 @@ enum ConfirmationModalType: Identifiable {
     case .pass:
       return "합격"
     case .cancelInterview:
-      return "면접 제안 취소"
+      return "면접 취소"
     case .notify:
       return "심사 결과 공유"
     }
