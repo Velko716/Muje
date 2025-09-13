@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon-statusChecked.png",
+      "filename" : "icon-statusChecked.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },

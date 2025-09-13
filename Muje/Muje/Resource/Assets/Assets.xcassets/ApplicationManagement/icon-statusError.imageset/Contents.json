@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "icon-statusError.png",
+      "filename" : "icon-statusError.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
