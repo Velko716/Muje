@@ -12,11 +12,12 @@ extension ApplicationManagementView {
     VStack {
       HStack {
         Text("지원자 관리")
-          .font(.headline)
-          .fontWeight(viewModel.selectedTab == .management ? .bold : .medium)
-          .foregroundStyle(viewModel.selectedTab == .management ? .primary : .secondary)
+          .body1SemiBold16()
+          .foregroundStyle(
+            viewModel.selectedTab == .management ? Color.gray700 : Color.gray300
+          )
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
+          
           .contentShape(Rectangle())
           .onTapGesture {
             withAnimation(.easeInOut(duration: 0.3)) {
@@ -25,11 +26,12 @@ extension ApplicationManagementView {
             }
           }
         Text("지원자 리스트")
-          .font(.headline)
-          .fontWeight(viewModel.selectedTab == .list ? .bold : .medium)
-          .foregroundStyle(viewModel.selectedTab == .list ? .primary : .secondary)
+          .body1SemiBold16()
+          .foregroundStyle(
+            viewModel.selectedTab == .list ? Color.gray700 : Color.gray300
+          )
           .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
+          
           .contentShape(Rectangle())
           .onTapGesture {
             withAnimation(.easeInOut(duration: 0.3)) {
@@ -39,6 +41,7 @@ extension ApplicationManagementView {
           }
       }
       .padding(.horizontal, 16)
+      .padding(.top, 24)
       rectangle
     }
   }
@@ -46,11 +49,11 @@ extension ApplicationManagementView {
   private var rectangle: some View {
     ZStack {
       Rectangle()
-        .fill(Color.gray.opacity(0.3))
+        .fill(Color.gray300)
         .frame(height: 2)
       GeometryReader { geometry in
         Rectangle()
-          .fill(Color.primary)
+          .fill(Color.gray700)
           .frame(width: geometry.size.width / 2, height: 2)
           .offset(x: viewModel.selectedTab == .management ? 0 : geometry.size.width / 2)
           .animation(.easeInOut(duration: 0.3), value: viewModel.selectedTab)
