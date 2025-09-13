@@ -16,10 +16,12 @@ struct ToolbarLeadingBackButton: ToolbarContent {
             Button {
                 dismiss()
             } label: {
-                Image(.chevronLeft) // FIXME: - 이미지 열거형으로 만들기
+                Image(.che) // FIXME: - 이미지 열거형으로 만들기
+              // MARK: 기존 세오 셰브론 -> SVG로 추출한 che로 변경
                     .foregroundStyle(Color.gray700)
                     .frame(width: 24, height: 24)
             }
+            .padding(.leading, -4)
         }
     }
 }
