@@ -21,7 +21,7 @@ struct ToolbarLeadingBackButton: ToolbarContent {
                     .foregroundStyle(Color.gray700)
                     .frame(width: 24, height: 24)
             }
-            .padding(.leading, -4)
+            .padding(.leading, -8)
         }
     }
 }
