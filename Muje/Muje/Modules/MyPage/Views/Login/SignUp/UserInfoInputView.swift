@@ -64,7 +64,7 @@ struct UserInfoInputView: View {
                 BottomBar(
                     text: "확인",
                     textColor: .white,
-                    bgColor: .black,
+                    bgColor: Color.primaryBlack,
                     enabled: isSubmitEnabled
                 ) {
                     let user = User(
@@ -140,14 +140,14 @@ struct UserInfoInputView: View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 10) {
-                    Circle().fill(Color.gray)
+                    Circle().fill(Color.gray100)
                         .frame(width: 10, height: 10)
-                    Circle().fill(Color.blue)
+                    Circle().fill(Color.pointSkyBlue)
                         .frame(width: 24, height: 24)
                         .overlay {
                             Text("2")
-                                .font(.system(size: 14, weight: .semibold)) // FIXME: - 폰트 수정
-                                .foregroundStyle(.white) // FIXME: - 컬러 수정
+                                .font(Font.pretendard(type: .semiBold, size: 14))
+                                .foregroundStyle(.white)
                         }
                 }
                 Text("인적사항을 입력해주세요")
@@ -162,8 +162,8 @@ struct UserInfoInputView: View {
     private var middleInfoInputView: some View {
         VStack(alignment: .leading) {
             Text("이름")
-                .font(Font.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.black)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
             
             Spacer().frame(height: 8)
             
@@ -176,8 +176,8 @@ struct UserInfoInputView: View {
             Spacer().frame(height: 32)
             
             Text("생년월일")
-                .font(Font.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.black)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
             
             Spacer().frame(height: 8)
             
@@ -190,8 +190,8 @@ struct UserInfoInputView: View {
             Spacer().frame(height: 32)
             
             Text("학과")
-                .font(Font.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.black)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
             
             Spacer().frame(height: 8)
             
@@ -204,8 +204,8 @@ struct UserInfoInputView: View {
             Spacer().frame(height: 32)
             
             Text("학번")
-                .font(Font.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.black)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
             
             Spacer().frame(height: 8)
             
@@ -218,8 +218,8 @@ struct UserInfoInputView: View {
             Spacer().frame(height: 32)
             
             Text("성별")
-                .font(Font.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.black)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
             
             Spacer().frame(height: 8)
             
@@ -240,8 +240,8 @@ struct UserInfoInputView: View {
             Spacer().frame(height: 32)
             
             Text("약관동의")
-                .font(Font.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.black)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
             
             Spacer().frame(height: 8)
             
@@ -256,19 +256,16 @@ struct UserInfoInputView: View {
                         } label: {
                             HStack(spacing: .zero) {
                                 Text("[필수] 이용약관에 동의합니다.")
-                                    .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
-                                    .foregroundStyle(termsAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
+                                    .font(Font.pretendard(type: .medium, size: 16))
+                                    .foregroundStyle(termsAgreed ? Color.pointSkyBlue : Color.gray500)
                                 Image(.chevronRight)
-                                    .foregroundStyle(termsAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
+                                    .foregroundStyle(termsAgreed ? Color.pointSkyBlue : Color.gray300)
                                     .frame(width: 24, height: 24)
                                 Spacer()
                                 if termsAgreed {
-                                    Image(.checkBox)
+                                    Image(.checkedBox)
                                 } else {
-                                    Circle()
-                                        .stroke(Color.gray, lineWidth: 1) // FIXME: - 테두리 색 수정
-                                        .fill(Color.white) // FIXME: - 컬러 수정
-                                        .frame(width: 26, height: 26) // FIXME: - 이미지로 수정
+                                    Image(.checkBox)
                                 }
                             }
                         }
@@ -277,20 +274,17 @@ struct UserInfoInputView: View {
                         } label: {
                             HStack(spacing: .zero) {
                                 Text("[필수] 개인정보 처리방침에 동의합니다.")
-                                    .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
-                                    .foregroundStyle(privacyAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
+                                    .font(Font.pretendard(type: .medium, size: 16))
+                                    .foregroundStyle(privacyAgreed ? Color.pointSkyBlue : Color.gray500)
                                 Image(.chevronRight)
-                                    .foregroundStyle(privacyAgreed ? Color.blue : Color.gray) // FIXME: - 컬러 수정
+                                    .foregroundStyle(privacyAgreed ? Color.pointSkyBlue : Color.gray300)
                                     .frame(width: 24, height: 24)
                                 Spacer()
                                 
                                 if privacyAgreed {
-                                    Image(.checkBox)
+                                    Image(.checkedBox)
                                 } else {
-                                    Circle()
-                                        .stroke(Color.gray, lineWidth: 1) // FIXME: - 테두리 색 수정
-                                        .fill(Color.white) // FIXME: - 컬러 수정
-                                        .frame(width: 26, height: 26) // FIXME: - 이미지로 수정
+                                    Image(.checkBox)
                                 }
                             }
                         }
