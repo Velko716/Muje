@@ -17,22 +17,19 @@ struct RecruitmentPostView: View {
         titleView
         basicInfoView
         customQuestionView
-      } //: VSTACK
+      }
       .padding(.bottom, 160)
   }
   
   private var titleView: some View {
     VStack(alignment: .leading) {
-//      Text("지원자로부터\n수집할 정보를 선택해주세요")
-//        .font(.system(size: 24))
       HStack {
-        Image(systemName: "exclamationmark.circle")
-          .font(.system(size: 16))
+          Image(.informationIcon)
+              .frame(width: 20, height: 20)
         Text("모집글 작성이 완료되면 수정할 수 없어요")
-          .font(.system(size: 14))
-          .foregroundStyle(.gray)
+          .caption14Medium()
+          .foregroundStyle(.gray500)
       }
-//      .padding(.top, 8)
     }
     .padding(.bottom, 40)
   }
@@ -73,13 +70,16 @@ struct RecruitmentPostView: View {
     Button(action: viewModel.addCustomQuestion) {
       VStack(alignment: .center) {
         Text("커스텀 질문 추가하기")
+              .body1Medium16()
+              .foregroundStyle(.pointSkyBlue)
         Image(.addCircle)
+              .foregroundStyle(.pointSkyBlue)
       }
       .frame(maxWidth: .infinity, alignment: .center)
-      .padding()
+      .padding(.vertical, 17)
       .background(
         RoundedRectangle(cornerRadius: 10)
-          .fill(Color.gray.opacity(0.2))
+            .fill(.gray100)
       )
     }
   }
