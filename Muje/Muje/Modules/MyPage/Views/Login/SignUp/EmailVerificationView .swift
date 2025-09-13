@@ -72,7 +72,7 @@ struct EmailVerificationView: View {
                 BottomBar(
                     text: bottomLabel,
                     textColor: .white,
-                    bgColor: .black,
+                    bgColor: Color.primaryBlack,
                     enabled: emailText.isEmpty ? false : true
                 ) {
                     if isPasswordStep {
@@ -118,16 +118,16 @@ struct EmailVerificationView: View {
         HStack {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 10) {
-                    Circle().fill(Color.blue).frame(width: 24, height: 24)
+                    Circle().fill(Color.pointSkyBlue).frame(width: 24, height: 24)
                         .overlay { Text("1")
-                                .font(.system(size: 14, weight: .semibold)) // FIXME: - 폰트 수정
-                                .foregroundStyle(.white) // FIXME: - 컬러 수정
+                                .font(Font.pretendard(type: .semiBold, size: 14))
+                                .foregroundStyle(.white)
                         }
-                    Circle().fill(Color.gray).frame(width: 10, height: 10)
+                    Circle().fill(Color.gray100).frame(width: 10, height: 10)
                 }
                 Text("학교 인증을 위해서\n대학교 이메일을 입력해주세요.")
-                    .font(.system(size: 24, weight: .semibold)) // FIXME: - 폰트 수정
-                    .foregroundStyle(.black) // FIXME: - 컬러 수정
+                    .font(Font.pretendard(type: .semiBold, size: 24))
+                    .foregroundStyle(Color.gray700)
             }
             Spacer()
         }
@@ -137,8 +137,8 @@ struct EmailVerificationView: View {
     private var emailSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("대학교 이메일")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.black)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
                 .offset(x: 4)
             
             RoundedTextField(
@@ -150,8 +150,8 @@ struct EmailVerificationView: View {
             
             if auth.emailVerified {
                 Text("이메일 인증을 성공했어요")
-                    .font(.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정
-                    .foregroundStyle(.blue) // FIXME: - 컬러 수정
+                    .font(Font.pretendard(type: .medium, size: 14))
+                    .foregroundStyle(Color.pointSkyBlue)
                     .offset(x: 4)
             }
         }
@@ -164,8 +164,8 @@ struct EmailVerificationView: View {
                 VStack(alignment: .leading, spacing: .zero) {
                     // 비밀번호
                     Text("비밀번호")
-                        .font(.system(size: 14, weight: .semibold)) // FIXME: - 폰트 수정
-                        .foregroundStyle(.gray) // FIXME: - 컬러 수정
+                        .font(Font.pretendard(type: .semiBold, size: 14))
+                        .foregroundStyle(Color.gray700)
                         .offset(x: 4)
                     
                     Spacer().frame(height: 8)
@@ -184,14 +184,14 @@ struct EmailVerificationView: View {
                         .autocorrectionDisabled()
                         .overlay {
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(passwordError == nil ? Color.gray.opacity(0.3) : .red, lineWidth: 1)
+                                .stroke(passwordError == nil ? Color.gray100 : Color.accentRed, lineWidth: 1)
                         }
                         .onChange(of: passwordText) { _, _ in passwordTouched = true }
                         
                         if let msg = passwordError {
                             Text(msg)
-                                .font(.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정
-                                .foregroundStyle(.red) // FIXME: - 컬러 수정
+                                .font(Font.pretendard(type: .medium, size: 14))
+                                .foregroundStyle(Color.accentRed)
                                 .offset(x: 4)
                         }
                     }
@@ -200,8 +200,8 @@ struct EmailVerificationView: View {
                     
                     // 비밀번호 확인
                     Text("비밀번호 확인")
-                        .font(.system(size: 14, weight: .semibold)) // FIXME: - 폰트 수정
-                        .foregroundStyle(.gray) // FIXME: - 컬러 수정
+                        .font(Font.pretendard(type: .semiBold, size: 14))
+                        .foregroundStyle(Color.gray700)
                         .offset(x: 4)
                     
                     Spacer().frame(height: 8)
@@ -220,14 +220,14 @@ struct EmailVerificationView: View {
                         .autocorrectionDisabled()
                         .overlay {
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(confirmError == nil ? Color.gray.opacity(0.3) : .red, lineWidth: 1)
+                                .stroke(confirmError == nil ? Color.gray100 : Color.accentRed, lineWidth: 1)
                         }
                         .onChange(of: rePasswordText) { _, _ in confirmTouched = true }
                         
                         if let msg = confirmError {
                             Text(msg)
-                                .font(.system(size: 12)) // FIXME: - 폰트 수정
-                                .foregroundStyle(.red) // FIXME: - 컬러 수정
+                                .font(Font.pretendard(type: .semiBold, size: 14))
+                                .foregroundStyle(Color.gray700)
                                 .offset(x: 4)
                         }
                     }
