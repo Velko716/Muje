@@ -25,6 +25,7 @@ struct ToolbarLeadingXmarkBackButton: ToolbarContent {
                 Image(.iconCloseBlack)
                     .foregroundStyle(Color.gray700)
             }
+            .padding(.leading, -12)
         }
     }
 }

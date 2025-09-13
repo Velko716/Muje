@@ -22,14 +22,15 @@ struct ApplicantDetailModalView: View {
   
   var body: some View {
     VStack(spacing: 0) {
-      navigationHeader
       ScrollView {
         
         applicantInfoSection
         
         applicantInfoDetailSection
         
-        midButtonSection
+        contactButton
+        
+//        interviewStatus
         
         Rectangle()
           .frame(maxWidth: .infinity)
@@ -39,11 +40,14 @@ struct ApplicantDetailModalView: View {
         customQuestionSection
         
       }
-      
-      VStack { // FIXME: 수정 - 진짜 개별로네
+      .safeAreaInset(edge: .bottom) {
         BottomNavigationSection(
           viewModel: viewModel)
       }
+    }
+    .padding(.top, 16)
+    .toolbar {
+        ToolbarLeadingXmarkBackButton()
     }
     .task {
       await viewModel.loadQuestionAnswer()
@@ -57,58 +61,55 @@ struct ApplicantDetailModalView: View {
     }
   }
   
-  private var navigationHeader: some View {
-    HStack {
-      Button {
-        //
-      } label: {
-        Image(systemName: "xmark")
-          .font(.system(size: 18))
-          .foregroundStyle(Color.black)
-      }
-      Spacer()
-    }
-    .padding(.leading, 16)
-    .padding(.top, 16)
-  }
-  
   private var applicantInfoSection: some View {
     VStack(alignment: .leading) {
       Text(viewModel.currentApplicant.applicantName)
+        .headline24SemiBold()
+        .foregroundStyle(.grayblack)
       
       HStack {
         if (viewModel.currentApplicant.applicantGender != nil) {
           Text(viewModel.currentApplicant.genderDisplay)
+            .body2Regular16()
+            .foregroundStyle(.grayblack)
         }
         if (viewModel.currentApplicant.applicantBirthYear != nil) {
           Text(viewModel.currentApplicant.ageString)
+            .body2Regular16()
+            .foregroundStyle(.grayblack)
         }
-        // MARK: 지원자 상태 아이콘 분기
-//        Image(systemName: viewModel.currentApplicant.statusIcon)
-//          .foregroundStyle(viewModel.currentApplicant.statusColor)
-        // MARK: 지원자 상태 텍스트 분기
-        if viewModel.currentApplicant.interviewSlotId != nil {
-          if viewModel.currentApplicant.status == ApplicationStatus.interviewWaiting.rawValue {
-            Text(viewModel.currentApplicant.getInterviewDisplayText(with: interviewSlot))
-              .foregroundStyle(viewModel.currentApplicant.statusColor)
-          } else {
-            Text(viewModel.currentApplicant.detailedStatusText)
-              .foregroundStyle(viewModel.currentApplicant.statusColor)
-          }
-        } else {
-          Text(viewModel.currentApplicant.detailedStatusText)
-            .foregroundStyle(viewModel.currentApplicant.statusColor)
-        }
+        Spacer().frame(width: 12)
+        statusSection
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.horizontal, 16)
-    .padding(.top, 35)
     .padding(.bottom, 24)
   }
   
+  private var statusSection: some View {
+    HStack(spacing: 2) {
+      // MARK: 지원자 상태 아이콘 분기
+      viewModel.currentApplicant.statusIcon
+        .foregroundStyle(viewModel.currentApplicant.statusColor)
+      // MARK: 지원자 상태 텍스트 분기
+      if viewModel.currentApplicant.interviewSlotId != nil {
+        if viewModel.currentApplicant.status == ApplicationStatus.interviewWaiting.rawValue {
+          Text(viewModel.currentApplicant.getInterviewDisplayText(with: interviewSlot))
+            .foregroundStyle(viewModel.currentApplicant.statusColor)
+        } else {
+          Text(viewModel.currentApplicant.detailedStatusText)
+            .foregroundStyle(viewModel.currentApplicant.statusColor)
+        }
+      } else {
+        Text(viewModel.currentApplicant.detailedStatusText)
+          .foregroundStyle(viewModel.currentApplicant.statusColor)
+      }
+    }
+  }
+  
   private var applicantInfoDetailSection: some View {
-    VStack(spacing: 5) {
+    VStack(alignment: .leading) {
       //      if requirementFlags.requiresPhone {
       //        InfoRow(title: "연락처", value: viewModel.userInfo?.phone ?? "")
       //      }
@@ -119,28 +120,42 @@ struct ApplicantDetailModalView: View {
         InfoRow(title: "학과", value: department)
       }
     }
-    .padding(.horizontal, 16)
     .padding(.bottom, 24)
   }
   
-  private var midButtonSection: some View {
+  private var contactButton: some View {
     VStack {
       Button {
         // TODO: 쪽지하기
       } label: {
-        HStack {
-          Image(systemName: "")
-          Text("쪽지하기")
+        HStack(spacing: 6) {
+          Image(.contact)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 18)
-        .background(Color.gray)
+        .padding(.vertical, 10)
+        .background(.gray100)
         .clipShape(RoundedRectangle(cornerRadius: 10))
       }
     }
     .padding(.horizontal, 16)
-    .padding(.vertical, 24)
+    .padding(.bottom, 24)
   }
+  
+//  private var interviewStatus: some View {
+//    HStack {
+//      Text("dd")
+//        .padding(.horizontal, 16)
+//      Spacer()
+//      Text("dd")
+//        .padding(.horizontal, 16)
+//    }
+//    .frame(maxWidth: .infinity)
+//    .padding(.vertical, 21)
+//    .background(Color.gray)
+//    .clipShape(RoundedRectangle(cornerRadius: 10))
+//    .padding(.horizontal, 16)
+//    .padding(.bottom, 16)
+//  }
   
   private var customQuestionSection: some View {
     VStack {
@@ -160,23 +175,25 @@ struct ApplicantDetailModalView: View {
 }
 
 #Preview {
-  ApplicantDetailModalView(
-    viewModel: ModalViewModel(
-      managementViewModel: .preview,
-      applicant: ApplicationManagementViewModel.preview.allApplicants.first!,
-      allApplicants: ApplicationManagementViewModel.preview.allApplicants
-    ),
-    selectedApplicant: .constant(
-      Application(
-        applicationId: UUID(),
-        applicantUserId: "",
-        postId: "",
-        status: ApplicationStatus.submitted.rawValue,
-        applicantName: "제이콥",
-        postTitle: "",
-        postOrganization: "",
-        postAuthorUserId: ""
+  NavigationStack {
+    ApplicantDetailModalView(
+      viewModel: ModalViewModel(
+        managementViewModel: .preview,
+        applicant: ApplicationManagementViewModel.preview.allApplicants.first!,
+        allApplicants: ApplicationManagementViewModel.preview.allApplicants
+      ),
+      selectedApplicant: .constant(
+        Application(
+          applicationId: UUID(),
+          applicantUserId: "",
+          postId: "",
+          status: ApplicationStatus.submitted.rawValue,
+          applicantName: "제이콥",
+          postTitle: "",
+          postOrganization: "",
+          postAuthorUserId: ""
+        )
       )
     )
-  )
+  }
 }

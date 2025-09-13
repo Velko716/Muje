@@ -42,6 +42,7 @@ extension ApplicationManagementView {
       }
       .padding(.horizontal, 16)
       .padding(.top, 24)
+      .padding(.bottom, 8)
       rectangle
     }
   }

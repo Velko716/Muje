@@ -19,8 +19,14 @@ struct BottomNavigationSection: View {
       Divider()
       bottomButtonSection
     }
-    .padding(.top, 16)
-    .padding(.horizontal, 16)
+    .hvPadding(16, 4)
+    .frame(maxWidth: .infinity)
+    .background(
+      Rectangle()
+        .fill(Color.white)
+        .shadow(radius: 3)
+        .ignoresSafeArea(edges: .bottom)
+    )
   }
   
   private var navigatorSection: some View {
@@ -28,32 +34,39 @@ struct BottomNavigationSection: View {
       Button {
         viewModel.moveToPrevious()
       } label: {
-        Image(systemName: "chevron.left")
-          .font(.system(size: 16))
-          .foregroundStyle(viewModel.currentIndex > 0 ? Color.black : Color.gray)
+        if viewModel.currentIndex <= 0 {
+          Image(.chevronLeftInActive)
+        } else {
+          Image(.che)
+        }
       }
       .disabled(viewModel.currentIndex <= 0)
+      
       Spacer()
-      Text(
-        "\(viewModel.currentApplicant.applicantName) (\(viewModel.currentIndex + 1)/\(viewModel.allApplicants.count))"
-      )
-        .font(.system(size: 16))
-        .foregroundStyle(Color.black)
+      
+      Text("\(viewModel.currentApplicant.applicantName)")
+        .body1SemiBold18()
+        .foregroundStyle(.grayblack)
+      Text("(\(viewModel.currentIndex + 1)/\(viewModel.allApplicants.count))")
+        .body1Regular18()
+        .foregroundStyle(.gray700)
+      
       Spacer()
+      
       Button {
         viewModel.moveToNext()
       } label: {
-        Image(systemName: "chevron.right")
-          .font(.system(size: 16))
-          .foregroundStyle(
-            viewModel.currentIndex < viewModel.allApplicants.count - 1 ? Color.black : Color.gray
-          )
+        if viewModel.currentIndex >= viewModel.allApplicants.count - 1 {
+          Image(.chevronRightInActive)
+        } else {
+          Image(.chevronRightActive)
+        }
       }
       .disabled(
         viewModel.currentIndex >= viewModel.allApplicants.count - 1
       )
     }
-    .padding(.vertical, 16)
+    .padding(.vertical, 4)
   }
   
   private var bottomButtonSection: some View {
@@ -73,21 +86,23 @@ struct BottomNavigationSection: View {
             viewModel.showConfirmationModal(for: .left)
           } label: {
             Text(left)
-              .font(.system(size: 18))
-              .foregroundStyle(Color.black)
+              .body1SemiBold18()
+              .foregroundStyle(.accentRed)
               .frame(maxWidth: .infinity)
               .padding(.vertical, 16)
-              .background(Color.gray)
+              .background(.gray50)
+              .clipShape(RoundedRectangle(cornerRadius: 10))
           }
           Button {
             viewModel.showConfirmationModal(for: .right)
           } label: {
             Text(right)
-              .font(.system(size: 18))
-              .foregroundStyle(Color.white)
+              .body1SemiBold18()
+              .foregroundStyle(.graywhite)
               .frame(maxWidth: .infinity)
               .padding(.vertical, 16)
-              .background(Color.black)
+              .background(.grayblack)
+              .clipShape(RoundedRectangle(cornerRadius: 10))
           }
         }
         .padding(.vertical, 16)
@@ -97,11 +112,13 @@ struct BottomNavigationSection: View {
             viewModel.confirmationType = .notify(viewModel.currentApplicant.applicantName)
           } label: {
             Text(title)
-              .font(.system(size: 18))
-              .foregroundStyle(Color.white)
+              .body1SemiBold18()
+              .foregroundStyle(.graywhite)
               .frame(maxWidth: .infinity)
               .padding(.vertical, 16)
               .background(Color.black)
+              .background(.grayblack)
+              .clipShape(RoundedRectangle(cornerRadius: 10))
           }
         }
         .padding(.vertical, 16)
@@ -111,29 +128,14 @@ struct BottomNavigationSection: View {
 }
 
 #Preview {
-  BottomNavigationSection(
-    viewModel: ModalViewModel(
-      managementViewModel: ApplicationManagementViewModel(),
-      applicant: Application(
-        applicationId: UUID(),
-        applicantUserId: "dd",
-        postId: "dd",
-        status: ApplicationStatus.submitted.rawValue,
-        applicantName: "dd",
-        postTitle: "dd",
-        postOrganization: "dd",
-        postAuthorUserId: "dd"
-      ),
-      allApplicants: [Application(
-        applicationId: UUID(),
-        applicantUserId: "dd",
-        postId: "dd",
-        status: ApplicationStatus.submitted.rawValue,
-        applicantName: "dd",
-        postTitle: "dd",
-        postOrganization: "dd",
-        postAuthorUserId: "dd"
-      )]
+  NavigationStack {
+    
+    BottomNavigationSection(
+      viewModel: ModalViewModel(
+        managementViewModel: .preview,
+        applicant: ApplicationManagementViewModel.preview.allApplicants.first!,
+        allApplicants: ApplicationManagementViewModel.preview.allApplicants
+      )
     )
-  )
+  }
 }

@@ -25,7 +25,7 @@ struct TopButtonView: View {
         DropButton
       }
       .padding(.horizontal, 16)
-      .padding(.top, 100)
+      .padding(.top, 80)
       Spacer()
     }
   }
@@ -58,13 +58,10 @@ struct TopButtonView: View {
     Button {
       action()
     } label: {
-        Image(.chevronLeft)
+        Image(.che)
         .foregroundStyle(.gray700)
-        .background(
-          Rectangle()
-            .fill(Color.clear)
-        )
     }
+    .padding(.leading, -8)
   }
 }
 
