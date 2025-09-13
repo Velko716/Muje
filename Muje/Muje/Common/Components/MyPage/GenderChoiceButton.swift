@@ -15,16 +15,16 @@ struct GenderChoiceButton: View {
     var body: some View {
         Button(action: action) {
             RoundedRectangle(cornerRadius: 10)
-                .fill(Color.blue.opacity(0.2)) // FIXME: - 컬러 수정
+                .fill(Color.gray50)
                 .frame(maxWidth: .infinity)
                 .overlay {
                     Text(title)
-                        .font(Font.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
-                        .foregroundStyle(isSelected ? Color.blue.opacity(0.6) : Color.black) // FIXME: - 컬러 수정
+                        .font(Font.pretendard(type: .semiBold, size: 18))
+                        .foregroundStyle(isSelected ? Color.pointSkyBlue : Color.gray700)
                 }
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(isSelected ? Color.blue : .clear, lineWidth: 1)
+                        .stroke(isSelected ? Color.pointSkyBlue : .clear, lineWidth: 1)
                 )
         }
         .animation(.smooth(duration: 0.20), value: isSelected)
