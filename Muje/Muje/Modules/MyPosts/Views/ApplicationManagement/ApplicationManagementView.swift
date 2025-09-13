@@ -68,25 +68,27 @@ struct ApplicationManagementView: View {
     //      await viewModel.loadApplicationData(for: postId)
     //    }
     .sheet(item: $selectedApplicant) { applicant in
-      ApplicantDetailModalView(
-        viewModel: ModalViewModel(
-          managementViewModel: viewModel,
-          applicant: applicant,
-          allApplicants: viewModel.getCurrentApplicant()
-        ),
-        selectedApplicant: $selectedApplicant
-      )
+      NavigationStack {
+        ApplicantDetailModalView(
+          viewModel: ModalViewModel(
+            managementViewModel: viewModel,
+            applicant: applicant,
+            allApplicants: viewModel.getCurrentApplicant()
+          ),
+          selectedApplicant: $selectedApplicant
+        )
+      }
     }
   }
   
   private var stickyHeader: some View {
     VStack(spacing: 0) {
       tabSelctionSection
-        .background(Color.white)
+        .background(.graywhite)
       if viewModel.selectedTab == .management && !viewModel.isSelectionMode {
         VStack(spacing: 0) {
           managementTabSection
-            .background(Color.white)
+            .background(.graywhite)
           selectAndSearchBar
         }
       } else if viewModel.selectedTab == .management && viewModel.isSelectionMode {

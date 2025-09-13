@@ -109,7 +109,7 @@ extension ApplicationManagementView {
         viewModel.endSearching()
         isSearchFieldFocused = false
       } label: {
-        Image(.chevronLeft)
+        Image(.che)
       }
       
       HStack {
@@ -137,15 +137,13 @@ extension ApplicationManagementView {
           }
         }
       }
-      .padding(.horizontal, 12)
-      .padding(.vertical, 18)
+      .hvPadding(18, 18)
       .background(.gray50)
       .clipShape(RoundedRectangle(cornerRadius: 100))
     }
-    .padding(.horizontal, 16)
+    .hvPadding(12, 12)
     .padding(.top, 2)
-    .padding(.vertical, 12)
-    .background(Color.white)
+    .background(.graywhite)
     .transition(.move(edge: .trailing))
   }
   
