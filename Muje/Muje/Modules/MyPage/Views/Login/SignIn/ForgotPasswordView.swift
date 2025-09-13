@@ -35,7 +35,7 @@ struct ForgotPasswordView: View {
                 BottomBar(
                     text: "비밀번호 초기화",
                     textColor: .white,
-                    bgColor: .black,
+                    bgColor: Color.primaryBlack,
                     enabled: !email.isEmpty
                 ) {
                     Task {
@@ -65,11 +65,11 @@ struct ForgotPasswordView: View {
     private var topTitleView: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("가입한 대학교 이메일을 입력해주세요")
-                .font(Font.system(size: 24, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.black) // FIXME: - 컬러 수정
+                .font(Font.pretendard(type: .semiBold, size: 24))
+                .foregroundStyle(Color.gray700)
             Text("입력한 이메일로 새로운 비밀번호를 보내드려요.")
-                .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.gray) // FIXME: - 폰트 수정
+                .font(Font.pretendard(type: .medium, size: 16))
+                .foregroundStyle(Color.gray700)
         }
     }
     
@@ -88,8 +88,8 @@ struct ForgotPasswordView: View {
             
             if showErrorMessage {
                 Text("존재하지 않는 이메일이에요")
-                    .font(Font.system(size: 14, weight: .medium))
-                    .foregroundStyle(Color.red) // FIXME: - 컬러 수정
+                    .font(Font.pretendard(type: .medium, size: 14))
+                    .foregroundStyle(Color.accentRed)
                     .offset(x: 7)
             }
         }
