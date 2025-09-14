@@ -17,16 +17,13 @@ struct ApplicantList: View {
       nameSection
       departmentSection
     }
-    .padding(.horizontal, 16)
-    .padding(.vertical, 12)
-    .background(
-      Color.gray.opacity(0.2)
-    )
+    .hvPadding(16, 16)
+    .background(.gray50)
     .clipShape(RoundedRectangle(cornerRadius: 10))
-    .overlay(
-      RoundedRectangle(cornerRadius: 10)
-        .stroke(Color.clear, lineWidth: 2)
-    )
+//    .overlay(
+//      RoundedRectangle(cornerRadius: 10)
+//        .stroke(Color.clear, lineWidth: 2)
+//    )
     .contentShape(Rectangle())
     .onTapGesture {
       onTap()
@@ -34,15 +31,16 @@ struct ApplicantList: View {
   }
   
   private var nameSection: some View {
-    HStack {
+    HStack(spacing: 16) {
       Text(application.applicantName)
-        .font(.headline)
-        .fontWeight(.medium)
+        .body1SemiBold18()
+        .foregroundStyle(.gray800)
       
       if let _ = application.applicantGender,
          let _ = application.applicantBirthYear {
         Text("\(application.genderDisplay) \(application.ageString)")
-          .font(.subheadline)
+          .body2Medium16()
+          .foregroundStyle(.gray500)
       }
       Spacer()
     }
@@ -52,7 +50,8 @@ struct ApplicantList: View {
     HStack {
       if let department = application.applicantDepartment {
         Text("\(department)")
-          .font(.subheadline)
+          .body2Medium16()
+          .foregroundStyle(.gray700)
       }
       Spacer()
     }

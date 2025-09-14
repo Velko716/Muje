@@ -15,7 +15,7 @@ struct ImageView: View {
   @Bindable var viewModel: RecruitmentViewModel
   
   let postImage: [PostImage]
-//  let cachedURL: [UUID: String]
+  //  let cachedURL: [UUID: String]
   
   
   var sortedImageUrls: [PostImage] {
@@ -28,40 +28,61 @@ struct ImageView: View {
       let size = geometry.size
       let screenWidth = UIScreen.main.bounds.width
       
-      TabView(selection: $currentPage) {
-        ForEach(sortedImageUrls.indices, id: \.self) { index in
-          let image = sortedImageUrls[index]
-          DownloadImage(postImage: image, cachedURL: viewModel.imageURLCache[image.imageId])
-            .frame(width: screenWidth)
-            .clipped()
-            .highPriorityGesture(
-              TapGesture().onEnded {
-                selectedImageForViewr = SelectedImageIndex(index: index)
-              }
-            )
-            .tag(index)
+      ZStack {
+        TabView(selection: $currentPage) {
+          ForEach(sortedImageUrls.indices, id: \.self) { index in
+            let image = sortedImageUrls[index]
+            DownloadImage(postImage: image, cachedURL: viewModel.imageURLCache[image.imageId])
+              .frame(width: screenWidth)
+              .clipped()
+              .highPriorityGesture(
+                TapGesture().onEnded {
+                  selectedImageForViewr = SelectedImageIndex(index: index)
+                }
+              )
+              .tag(index)
+          }
+        }
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+        .frame(
+          width: screenWidth,
+          height: size.height + (
+            minY > 0 ? minY : 0
+          )
+        )
+        .clipped()
+        .offset(y: minY > 0 ? -minY : 0)
+        
+        VStack {
+          LinearGradient(
+            gradient: Gradient(colors: [
+              Color.black.opacity(0.7),
+              Color.black.opacity(0.5),
+              Color.clear
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
+          )
+          .frame(
+            height: (size.height + (
+              minY > 0 ? minY : 0
+            )) / 3
+          )
+          .offset(y: minY > 0 ? -minY : 0)
+          Spacer()
+        }
+        .allowsHitTesting(false)
+        
+        VStack {
+          Spacer()
+          HStack {
+            Spacer()
+            ImageIndicator
+          }
+          .padding(.bottom, 16)
+          .padding(.trailing, 16)
         }
       }
-      .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-      .frame(
-        width: screenWidth,
-        height: size.height + (
-          minY > 0 ? minY : 0
-        )
-      )
-      .clipped()
-      .offset(y: minY > 0 ? -minY : 0)
-      
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                ImageIndicator
-            }
-            .padding(.bottom, 16)
-            .padding(.trailing, 16)
-        }
-      
     }
     .frame(height: UIScreen.main.bounds.width)
     .fullScreenCover(item: $selectedImageForViewr) { selectedImage in
