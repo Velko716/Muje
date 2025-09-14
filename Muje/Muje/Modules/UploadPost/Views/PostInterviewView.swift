@@ -14,18 +14,29 @@ struct PostInterviewView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 32) {
-            Text("면접 여부는 모집글 작성이 완려되면 수정할 수 없어요")
-                .foregroundStyle(Color.gray)
+            Text("면접 여부는 모집글 작성이 완료되면 수정할 수 없어요")
+                .caption14Medium()
+                .foregroundStyle(.gray500)
             
             HStack {
                 Button(action: {
-                    postInterviewViewModel.hasInterview = true
+                    if postInterviewViewModel.hasInterview == nil || postInterviewViewModel.hasInterview == false {
+                        postInterviewViewModel.hasInterview = true
+                    }
+                    else {
+                        postInterviewViewModel.hasInterview = nil // 버튼 한 번 더 클릭 시 선택 취소
+                    }
                 }, label: {
                     InterviewButton(condition: postInterviewViewModel.hasInterview, value: true, title: "예")
                 })
                 Spacer()
                 Button(action: {
-                    postInterviewViewModel.hasInterview = false
+                    if postInterviewViewModel.hasInterview == nil || postInterviewViewModel.hasInterview == true {
+                        postInterviewViewModel.hasInterview = false
+                    }
+                    else {
+                        postInterviewViewModel.hasInterview = nil // 버튼 한 번 더 클릭 시 선택 취소
+                    }
                 }, label: {
                     InterviewButton(condition: postInterviewViewModel.hasInterview, value: false, title: "아니요")
                 })
@@ -48,12 +59,7 @@ struct PostInterviewView: View {
     private var interviewSettingView: some View {
         VStack {
             VStack(alignment: .leading) {
-                HStack(spacing: 4) {
-                    Text("면접 일정")
-                    Text("추후 설정 가능")
-                        .font(.caption)
-                        .foregroundStyle(Color.gray)
-                }
+                TextWithDescription(MainText: "면접 일정", Description: "추후 설정 가능")
                 
                 Button(action: {
                     print("데이트 피커")
@@ -62,7 +68,8 @@ struct PostInterviewView: View {
                     HStack(spacing: 6) {
                         Text(interviewSlotViewModel.datePrint())
                         Spacer()
-                        Image(systemName: "calendar")
+                        Image(.calendarIcon)
+                            .frame(width: 24, height: 24)
                     }
                     .foregroundStyle(Color.gray)
                     .padding(18)
@@ -72,8 +79,10 @@ struct PostInterviewView: View {
                     )
                 })
             }
-            
-            CustomTextField(title: "면접 장소", tempTitle: "장소를 입력해주세요", textValue: $postInterviewViewModel.interviewLocation, subTitle: "추후 설정 가능", maxLength: 100)
+            VStack(alignment: .leading, spacing: 8) {
+                TextWithDescription(MainText: "면접 장소", Description: "추후 설정 가능")
+                RoundedTextField(text: $postInterviewViewModel.interviewLocation, placeholder: "장소를 입력해주세요", keyboard: .default)
+            }
         }
     }
 }

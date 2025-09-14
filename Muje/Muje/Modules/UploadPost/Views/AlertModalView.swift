@@ -13,32 +13,42 @@ struct AlertModalView: View {
     let action: () -> Void
     
     var body: some View {
-        VStack(spacing: 24) {
+        VStack {
             Text(uploadPostViewModel.alertContents[0])
+                .subheadline20SemiBold()
                 .multilineTextAlignment(.center)
-                .foregroundStyle(Color.black)
-                .frame(height: 60)
+                .foregroundStyle(.grayblack)
             
-            Spacer()
+            Spacer().frame(height: 40)
             
             Button(action: {
                 print(uploadPostViewModel.alertContents[1])
                 uploadPostViewModel.isQuit = false
                 action()
             }, label: {
-                ActionButton(title: uploadPostViewModel.alertContents[1], condition: false)
+                Text(uploadPostViewModel.alertContents[1])
+                    .body1SemiBold18()
+                    .foregroundStyle(.graywhite)
+                    .padding(.vertical, 14.5)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(.primaryBlack)
+                    )
             })
-            
+            Spacer().frame(height: 24)
             Button(action: {
                 uploadPostViewModel.isQuit = false
             }, label: {
                 Text(uploadPostViewModel.alertContents[2])
-                    .foregroundStyle(Color.gray)
+                    .body1Medium18()
+                    .foregroundStyle(.gray600)
+                    .frame(maxWidth: .infinity)
             })
         }
         .hvPadding(16, 48)
         .presentationDragIndicator(.hidden)
-        .presentationDetents([.height(240)])
+        .presentationDetents([.height(295)])
     }
 }
 

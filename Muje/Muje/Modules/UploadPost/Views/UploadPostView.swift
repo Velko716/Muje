@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct UploadPostView: View {
     @EnvironmentObject private var router: NavigationRouter
     @State var uploadPostViewModel = UploadPostViewModel()
@@ -16,7 +14,7 @@ struct UploadPostView: View {
     @State var postInterviewViewModel = PostInterviewViewModel()
     @State var recruitmentPostViewModel = RecruitmentPostViewModel()
     @State var interviewSlotViewModel = InterviewSlotViewModel()
-  
+    @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
       
@@ -31,15 +29,19 @@ struct UploadPostView: View {
                 PostInfoView(
                   postInfoViewModel: postInfoViewModel
                 )
+                .focused($isTextFieldFocused)
+                
               } else if uploadPostViewModel.currentStatus == .interview {
                 PostInterviewView(
                   postInfoViewModel: postInfoViewModel,
                   postInterviewViewModel: postInterviewViewModel, interviewSlotViewModel: interviewSlotViewModel
                 )
+                .focused($isTextFieldFocused)
               } else {
                 RecruitmentPostView(
                   viewModel: recruitmentPostViewModel
                 )
+                .focused($isTextFieldFocused)
               }
             }
             .safeAreaPadding(.horizontal, 16)
@@ -70,13 +72,14 @@ struct UploadPostView: View {
             }
           }
           .toast(isShown: $postInfoViewModel.showToast, message: "사진은 최대 5장까지만 업로드할 수 있어요", alignment: .bottom)
-          nextButtonView
-          
           if postInfoViewModel.isPicker {
             dateView
           }
         }
-        .ignoresSafeArea(edges: .bottom)
+        .safeAreaInset(edge: .bottom) {
+            nextButtonView
+        }
+        .ignoresSafeArea(.all, edges: .bottom)
         .navigationTitle("모임 올리기")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -101,63 +104,50 @@ struct UploadPostView: View {
     }
     
     private var nextButtonView: some View {
-        ZStack(alignment: .top) {
-            Rectangle()
-                .fill(Color.white)
-                .frame(height: 120)
-                .border(Color.gray.opacity(0.2))
-            
+        ZStack {
             if uploadPostViewModel.currentStatus == .input {
                 Button(action: {
                     uploadPostViewModel.currentStatus = .interview
                     postInfoViewModel.debug()
                 }, label: {
                     ActionButton(title: "다음", condition: postInfoViewModel.nextCheck())
-                        .hvPadding(16, 20)
+                        .padding(EdgeInsets(top: 20, leading: 16, bottom: 43, trailing: 16))
+                        .background(
+                            Rectangle()
+                                .fill(.graywhite)
+                                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
+                        )
                 })
                 .disabled(postInfoViewModel.nextCheck())
-                
             } else if uploadPostViewModel.currentStatus == .interview {
-                HStack {
-                    Button(action: {
-                        uploadPostViewModel.currentStatus = .input
-                    }, label: {
-                        ActionButton(title: "이전", condition: true)
-                    })
-                    Spacer()
-                    Button(action: {
+                TwoActionBottomButton(
+                    leftAction: { uploadPostViewModel.currentStatus = .input },
+                    leftText: "이전",
+                    rightAction: {
                         uploadPostViewModel.currentStatus = .info
-                    }, label: {
-                        ActionButton(title: "다음", condition: postInterviewViewModel.nextCheck())
-                    })
-                    .disabled(postInterviewViewModel.nextCheck())
-                }
-                .hvPadding(16, 20)
+                    },
+                    rightText: "다음",
+                    nextButtonCondition: postInterviewViewModel.nextCheck()
+                )
             } else {
-              HStack {
-                  Button(action: {
-                      uploadPostViewModel.currentStatus = .interview
-                  }, label: {
-                      ActionButton(title: "이전", condition: true)
-                  })
-                  Spacer()
-                Button(
-                  action: {
-                    Task {
-                      try await uploadPostViewModel.submit(
-                        postInfo: postInfoViewModel,
-                        requireInfo: recruitmentPostViewModel,
-                        postInterviewViewModel: postInterviewViewModel,
-                        interviewSlotViewModel: interviewSlotViewModel
-                      )
-                      router.push(to: .uploadCompleteView)
-                    }
-                  },
-                  label: {
-                      ActionButton(title: "모집글 올리기", condition: true)
-                  })
-              }
-              .hvPadding(16, 20)
+                TwoActionBottomButton(
+                    leftAction: { uploadPostViewModel.currentStatus = .interview
+                    },
+                    leftText: "이전",
+                    rightAction: {
+                        Task {
+                            try await uploadPostViewModel.submit(
+                                postInfo: postInfoViewModel,
+                                requireInfo: recruitmentPostViewModel,
+                                postInterviewViewModel: postInterviewViewModel,
+                                interviewSlotViewModel: interviewSlotViewModel
+                            )
+                            router.push(to: .uploadCompleteView)
+                        }
+                    },
+                    rightText: "모집글 올리기",
+                    nextButtonCondition: !recruitmentPostViewModel.nextCheck()
+                )
             }
         }
     }
@@ -184,6 +174,9 @@ struct UploadPostView: View {
                 .padding(.horizontal, 24)
         }
         .ignoresSafeArea()
+        .onAppear {
+            isTextFieldFocused = false
+        }
     }
 }
 

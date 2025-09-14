@@ -14,13 +14,13 @@ struct InterviewButton: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: 10)
-            .fill(Color.gray.opacity(0.2))
-            .stroke(condition == value ? Color.purple : Color.clear, lineWidth: 1)
+            .fill(condition == value ? .pointSkyBlueTinted : .gray50)
+            .stroke(condition == value ? .pointSkyBlue : Color.clear, lineWidth: 1)
             .frame(height: 56)
             .overlay(content: {
                 Text(title)
-                    .foregroundStyle(condition == value ? Color.purple : Color.secondary)
-                    .bold()
+                    .foregroundStyle(condition == value ? .pointSkyBlue : .gray700)
+                    .body1SemiBold18()
             })
     }
 }

@@ -44,17 +44,19 @@ struct InterviewSlotView: View {
             Button(action: {
                 calendarViewModel.changeMonth(by: -1)
             }, label: {
-                Image(systemName: "chevron.left")
+                Image(.chevronLeft)
+                    .foregroundStyle(.gray700)
             })
             
             Text(calendarViewModel.currentMonth, formatter: calendarViewModel.calendarHeaderDateFormatter)
-                .font(.title3)
-                .foregroundStyle(Color.black)
+                .subheadline20SemiBold()
+                .foregroundStyle(.gray700)
             
             Button(action: {
                 calendarViewModel.changeMonth(by: 1)
             }, label: {
-                Image(systemName: "chevron.right")
+                Image(.chevronRight)
+                    .foregroundStyle(.gray700)
             })
         })
     }
@@ -63,9 +65,9 @@ struct InterviewSlotView: View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 5, content: {
             ForEach(calendarViewModel.localizedWeekdaysSymbols.indices, id: \.self) { index in
                 Text(calendarViewModel.localizedWeekdaysSymbols[index])
-                    .foregroundStyle(Color.gray)
+                    .caption14Medium()
+                    .foregroundStyle(.gray300)
                     .frame(maxWidth: .infinity)
-                    .font(.caption)
             }
             .padding(.bottom, 30)
             
@@ -139,15 +141,21 @@ struct InterviewSlotView: View {
     private var delayView: some View {
         VStack(spacing: 24) {
             Text("날짜를 선택하세요")
-            Spacer()
-            Text("공고 작성을 완료한 후에도 \n면접일정을 설정할 수 있어요")
+                .body2Medium16()
+                .foregroundStyle(.gray700)
+            Spacer().frame(height: 24)
+            Text("공고 작성을 완료한 후에도\n면접일정을 설정할 수 있어요")
+                .body1Medium16()
+                .foregroundStyle(.gray700)
+            Spacer().frame(height: 16)
             Button(action: {
                 postInterviewViewModel.isSheet = false
             }, label: {
                 Text("다음에 하기")
+                    .body2Medium16()
+                    .foregroundStyle(.pointSkyBlue)
             })
         }
-        .padding(.vertical, 18)
     }
 }
 

@@ -13,7 +13,7 @@ struct RoundedTextField: View {
     var keyboard: UIKeyboardType
     var isSecure: Bool = false
     var overlayColorBule: Bool = false // FIXME: - 분기처리를 위한 임시 변수
-    
+    let config = Font.lineHeight(type: .medium, fontSize: 16, lineHeightPercent: 1.85, letterSpacingPercent: -1)
     @FocusState private var isFocused: Bool
     
     var body: some View {
@@ -25,7 +25,9 @@ struct RoundedTextField: View {
             }
         }
         .focused($isFocused)
-        .font(Font.pretendard(type: .medium, size: 16))
+        .font(.pretendard(type: .medium, size: 16))
+        .padding(.vertical, config.verticalPadding)
+        .tracking(config.letterSpacing)
         .keyboardType(keyboard)
         .padding(.horizontal, 16)
         .frame(height: 62)
