@@ -17,12 +17,15 @@ struct ManagementTabButton: View {
   var body: some View {
     HStack {
       Text("\(stage.displayName)")
-        .font(.system(size: 16))
-        .fontWeight(isSelected ? .bold : .medium)
+        .body1SemiBold16()
         .padding(.horizontal, 16)
         .padding(.vertical, 13)
-        .background(isSelected ? Color.primary : Color.gray)
-        .foregroundStyle(isSelected ? .white : .primary)
+        .background(
+          isSelected ? Color.grayblack : Color.gray50
+        )
+        .foregroundStyle(
+          isSelected ? Color.graywhite : Color.gray600
+        )
         .clipShape(RoundedRectangle(cornerRadius: 100))
         .onTapGesture {
           withAnimation(.easeInOut(duration: 0.2)) {

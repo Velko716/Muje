@@ -47,7 +47,7 @@ struct RecruitPostCard: View {
             
             HStack {
                 ButtonBox(title: "면접 일정", action: {
-                    print("면접 일정 페이지로 이동")
+                    router.push(to: .slotManagementView(post: item))
                 })
                 
                 Divider()

@@ -22,8 +22,10 @@ struct TermsAndPrivacyView: View {
             ScrollView {
                 VStack {
                     Text(legalDocumentType.content)
-                        .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
-                        .foregroundStyle(Color.black) // FIXME: - 컬러 수정
+                        .font(Font.pretendard(type: .medium, size:16))
+                        .foregroundStyle(Color.gray700)
+                        .lineSpacing(13.6)
+                        .kerning(-0.16)
                 }
             }
             .paddingH16()
@@ -32,8 +34,8 @@ struct TermsAndPrivacyView: View {
             VStack {
                 BottomBar(
                     text: "확인",
-                    textColor: Color.white, // FIXME: - 컬러 수정
-                    bgColor: Color.black, // FIXME: - 컬러 수정
+                    textColor: Color.white,
+                    bgColor: Color.primaryBlack,
                     enabled: true
                 ) {
                     switch legalDocumentType {

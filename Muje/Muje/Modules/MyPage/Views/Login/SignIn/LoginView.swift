@@ -66,8 +66,8 @@ struct LoginView: View {
     private var emailPasswordInputView: some View {
         VStack(alignment: .leading) {
             Text("대학교 이메일")
-                .font(Font.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.gray)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
             Spacer().frame(height: 8)
             RoundedTextField(
                 text: $email,
@@ -76,8 +76,8 @@ struct LoginView: View {
             )
             Spacer().frame(height: 32)
             Text("비밀번호")
-                .font(Font.system(size: 14, weight: .semibold))
-                .foregroundStyle(Color.gray)
+                .font(Font.pretendard(type: .semiBold, size: 14))
+                .foregroundStyle(Color.gray700)
             Spacer().frame(height: 8)
             RoundedTextField(
                 text: $password,
@@ -93,15 +93,15 @@ struct LoginView: View {
     private var findPasswordView: some View {
         HStack(spacing: 8) {
             Text("비밀번호가 기억나지 않으시나요?")
-                .font(Font.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
+                .font(Font.pretendard(type: .medium, size: 14))
+                .foregroundStyle(Color.gray500)
             Button {
                 router.push(to: .forgotPasswordView)
             } label: {
                 Text("내 계정찾기")
-                    .font(Font.system(size: 14, weight: .medium)) // FIXME: - 폰트 수정
-                    .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
-                    .underline(true, color: Color.gray) // FIXME: - 밑줄 색상 수정
+                    .font(Font.pretendard(type: .medium, size: 14))
+                    .foregroundStyle(Color.gray500)
+                    .underline(true, color: Color.gray500)
             }
         }
     }

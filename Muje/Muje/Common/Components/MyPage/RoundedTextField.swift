@@ -39,14 +39,14 @@ struct RoundedTextField: View {
             if isSecure {
                 if overlayColorBule {
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(isFocused ? Color.blue : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+                        .stroke(isFocused ? Color.pointSkyBlue : Color.gray100, lineWidth: 1)
                 } else {
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(isFocused ? Color.red : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+                        .stroke(isFocused ? Color.accentRed : Color.gray100, lineWidth: 1)
                 }
             } else {
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(isFocused ? .pointSkyBlue : .gray100, lineWidth: 1)
+                    .stroke(isFocused ? Color.pointSkyBlue : Color.gray100, lineWidth: 1)
             }
         }
         .animation(.easeOut(duration: 0.15), value: isFocused)
