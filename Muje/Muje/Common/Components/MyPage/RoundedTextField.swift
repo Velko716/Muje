@@ -25,7 +25,7 @@ struct RoundedTextField: View {
             }
         }
         .focused($isFocused)
-        .font(Font.system(size: 16, weight: .medium)) // FIXME: - 폰트 수정
+        .font(Font.pretendard(type: .medium, size: 16))
         .keyboardType(keyboard)
         .padding(.horizontal, 16)
         .frame(height: 62)
@@ -37,14 +37,14 @@ struct RoundedTextField: View {
             if isSecure {
                 if overlayColorBule {
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(isFocused ? Color.blue : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+                        .stroke(isFocused ? Color.pointSkyBlue : Color.gray100, lineWidth: 1)
                 } else {
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(isFocused ? Color.red : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+                        .stroke(isFocused ? Color.accentRed : Color.gray100, lineWidth: 1)
                 }
             } else {
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(isFocused ? Color.blue : Color.gray, lineWidth: 1) // FIXME: - 컬러 수정하기
+                    .stroke(isFocused ? Color.pointSkyBlue : Color.gray100, lineWidth: 1)
             }
         }
         .animation(.easeOut(duration: 0.15), value: isFocused)

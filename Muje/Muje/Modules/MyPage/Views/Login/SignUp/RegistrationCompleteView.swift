@@ -30,7 +30,7 @@ struct RegistrationCompleteView: View {
                 BottomBar(
                     text: "확인",
                     textColor: Color.white,
-                    bgColor: Color.black,
+                    bgColor: Color.primaryBlack,
                     enabled: true
                 ) {
                     router.popToRootView() // 전체 뒤로가기
@@ -50,11 +50,11 @@ struct RegistrationCompleteView: View {
     private var topTitleView: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("\(userName)님 환영해요!\n회원가입이 완료되었어요")
-                .font(Font.system(size: 24, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.black) // FIXME: - 컬러 수정
+                .font(Font.pretendard(type: .semiBold, size: 24))
+                .foregroundStyle(Color.gray800)
             Text("나에게 딱 맞는 사람들과 모임을 함께 찾아보아요")
-                .font(Font.system(size: 16, weight: .regular))
-                .foregroundStyle(Color.gray)
+                .font(Font.pretendard(type: .regular, size: 16))
+                .foregroundStyle(Color.gray500)
         }
     }
     
