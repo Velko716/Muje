@@ -198,9 +198,10 @@ private func rowView(_ row: MyPageRow) -> some View {
 }
 
 
-//#Preview {
-//    NavigationStack {
-//        MyPageView()
-//            .environmentObject(NavigationRouter())
-//    }
-//}
+#Preview {
+    NavigationStack {
+        MyPageView()
+            .environmentObject(NavigationRouter())
+            .environmentObject(FirebaseAuthManager.shared)
+    }
+}
