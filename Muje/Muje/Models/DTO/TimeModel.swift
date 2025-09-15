@@ -25,8 +25,8 @@ struct TimeModel: Equatable, Hashable, Codable {
         endTime: Timestamp,
         isStartShown: Bool,
         isEndShown: Bool,
-        createdAt: Timestamp?,
-        updatedAt: Timestamp?
+        createdAt: Timestamp? = nil,
+        updatedAt: Timestamp? = nil
     ) {
         self.timeId = timeId
         self.postId = postId
