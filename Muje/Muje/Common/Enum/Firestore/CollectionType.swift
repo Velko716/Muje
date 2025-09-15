@@ -20,6 +20,7 @@ enum CollectionType: String {
     case emailVerifications = "email_verifications"
     case phoneVerifications = "phone_verifications"
     case conversations = "conversations"
+    case timeModel = "time_model"
     
     // MARK: - 서브 컬렉션
     case blocks = "blocks"
