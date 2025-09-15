@@ -282,6 +282,7 @@ extension InterviewSlotViewModel {
       print("saveTimeModel 동기화 실패 \(error)")
     }
   }
+    
   // MARK: InterviewSlot 생성
   private func updateSlot(
     postId: String
@@ -316,6 +317,7 @@ extension InterviewSlotViewModel {
         print("interviewSlot 동기화 실패 \(error)")
       }
     }
+    
   // MARK: postId 조건 쿼리문
   private func fetchTimeModel(
     postId: String
@@ -329,8 +331,8 @@ extension InterviewSlotViewModel {
       }
     )
   }
-  
-  private func fetchSlot(postId: String) async throws -> [InterviewSlot] {
+    
+    private func fetchSlot(postId: String) async throws -> [InterviewSlot] {
     return try await firestoreManager.fetchWithCondition(
       from: .interviewSlots,
       whereField: "post_id",
@@ -340,6 +342,7 @@ extension InterviewSlotViewModel {
       }
     )
   }
+    
   // MARK: 단일 TimeModel create 생성 함수
   private func createNewTimeModel(
     _ slot: TimeModel,
