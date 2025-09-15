@@ -254,7 +254,7 @@ extension InterviewSlotViewModel {
     }
   }
   // MARK: update, create 분기 저장 함수
-  private func updateTimeModel(for postId: String) async {
+    private func updateTimeModel(for postId: String) async {
     do {
       let exist = try await fetchTimeModel(postId: postId)
       
@@ -329,7 +329,6 @@ extension InterviewSlotViewModel {
       }
     )
   }
-    
     private func fetchSlot(postId: String) async throws -> [InterviewSlot] {
     return try await firestoreManager.fetchWithCondition(
       from: .interviewSlots,
@@ -340,7 +339,6 @@ extension InterviewSlotViewModel {
       }
     )
   }
-    
   // MARK: 단일 TimeModel create 생성 함수
   private func createNewTimeModel(
     _ slot: TimeModel,
