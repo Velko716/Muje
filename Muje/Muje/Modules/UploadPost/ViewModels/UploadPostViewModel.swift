@@ -67,6 +67,12 @@ final class UploadPostViewModel {
             postInfoViewModel: postInfo
           )
         }
+        group.addTask {
+          await self.createTimeModel(
+            postId: postId.uuidString,
+            interviewSlotViewModel: interviewSlotViewModel
+          )
+        }
         try await group.waitForAll()
       }
     } catch {
@@ -142,6 +148,31 @@ final class UploadPostViewModel {
       }
     } catch {
       print("인터뷰 슬롯 생성 실패")
+    }
+  }
+  
+  // MARK: TimeModel 생성
+  func createTimeModel(
+    postId: String,
+    interviewSlotViewModel: InterviewSlotViewModel
+  ) async {
+    
+    do {
+      let time = interviewSlotViewModel.selectedSlots
+      
+      for t in time {
+        let timePostId = TimeModel(
+          timeId: t.timeId,
+          postId: postId,
+          startTime: t.startTime,
+          endTime: t.endTime,
+          isStartShown: t.isStartShown,
+          isEndShown: t.isEndShown
+        )
+        _ = try await firestoreManager.create(timePostId)
+      }
+    } catch {
+      print("timeModel 생성 실패")
     }
   }
   
