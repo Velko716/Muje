@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-struct InterviewSlot: Codable {
+struct InterviewSlot: Equatable, Hashable, Codable {
     let slotId: UUID
     let postId: String
     let interviewDate: Timestamp
