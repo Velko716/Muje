@@ -30,7 +30,7 @@ struct CustomQuestionItemView: View {
             Button {
                 onDelete()
             } label: {
-                Image(.removeCircleFill)
+                Image(.removeCIrcleFill)
             }
 
         } //: HSTACK
