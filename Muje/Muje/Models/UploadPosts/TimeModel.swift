@@ -8,8 +8,8 @@
 import Foundation
 
 //지원자 기준
-struct TimeModel: Identifiable, Equatable {
-    let id: UUID = .init()
+struct TimeModels: Identifiable, Equatable {
+    let id: UUID
     var startTime: Date
     var endTime: Date
     var isStartShown: Bool
