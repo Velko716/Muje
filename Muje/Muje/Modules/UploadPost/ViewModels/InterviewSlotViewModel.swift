@@ -11,13 +11,17 @@ import FirebaseFirestore
 
 @Observable
 class InterviewSlotViewModel {
+  
+    private let firestoreManager = FirestoreManager.shared
+    var isLoading: Bool = false
+  
     var selectedSlots: [TimeModel] = []
     var maxCount: Int = 1
     var timeInterval: Int = 30
     
     //배열 오름차순으로 정렬하는 조건
     let ascending: (TimeModel, TimeModel) -> Bool = { (lhs, rhs) in
-        return lhs.startTime < rhs.startTime
+      return lhs.startTime.dateValue() < rhs.startTime.dateValue()
     }
     
     var interviewSlotLists: [InterviewSlot] = [] //인터뷰 슬롯 DTO에 필요
@@ -47,7 +51,7 @@ class InterviewSlotViewModel {
             }
             return slots
         }
-        selectedSlots.append(.init(startTime: calendarDay.date.setTo9AM(), endTime: calendarDay.date.setTo9AM().addingTimeInterval(TimeInterval(60 * timeInterval)), isStartShown: false, isEndShown: false, timeLists: timeSlots))
+        selectedSlots.append(.init(startTime: calendarDay.date.setTo9AM(), endTime: calendarDay.date.setTo9AM().addingTimeInterval(TimeInterval(60 * timeInterval)), isStartShown: false, isEndShown: false))
     }
     
     //선택된 캘린더 슬롯에서 당일 인터뷰 슬롯 생성하는 함수
@@ -131,4 +135,79 @@ class InterviewSlotViewModel {
             
         }
     }
+}
+
+// MARK: KADAN
+extension InterviewSlotViewModel {
+  // MARK: TimeModel 로드
+  func loadTimeModel(for postId: String) async {
+    isLoading = true
+    defer { isLoading = false }
+    
+    do {
+      let t = try await fetchTimeModel(postId: postId)
+      self.selectedSlots = t
+      
+    } catch {
+      print("TimeModel 로드 실패")
+    }
+  }
+  // MARK: update, create 분기 저장 함수
+  func saveTimeModel(for postId: String) async {
+    do {
+      let exist = try await fetchTimeModel(postId: postId)
+      
+      // update or create
+      for slot in selectedSlots {
+        if exist.contains(where: { $0.timeId == slot.timeId}) {
+          _ = try await firestoreManager.update(slot)
+        } else {
+          await createNewTimeModel(slot, postId: postId)
+        }
+      }
+      // 삭제
+      for slot in exist {
+        if !selectedSlots.contains(
+          where: {
+            $0.timeId == slot.timeId
+          }) {
+          try await firestoreManager.delete(
+            collectionType: .timeModel,
+            documentID: slot.timeId.uuidString
+          )
+        }
+      }
+    } catch {
+      print("saveTimeModel 동기화 실패 \(error)")
+    }
+  }
+  // MARK: postId 조건 쿼리문
+  private func fetchTimeModel(
+    postId: String
+  ) async throws -> [TimeModel] {
+    return try await firestoreManager.fetchWithCondition(
+      from: .timeModel,
+      whereField: "post_id",
+      equalTo: postId,
+      sortedBy: {
+        $0.createdAt?.dateValue() ?? Date() < $1.createdAt?.dateValue() ?? Date()
+      }
+    )
+  }
+  // MARK: 단일 TimeModel create 생성 함수
+  private func createNewTimeModel(
+    _ slot: TimeModel,
+    postId: String
+  ) async {
+    let newSlot = TimeModel(
+      timeId: slot.timeId,
+      postId: postId,
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      isStartShown: slot.isStartShown,
+      isEndShown: slot.isEndShown,
+      createdAt: Timestamp()
+    )
+    _ = try? await firestoreManager.create(newSlot)
+  }
 }

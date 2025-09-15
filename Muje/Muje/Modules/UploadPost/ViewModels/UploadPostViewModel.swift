@@ -167,7 +167,8 @@ final class UploadPostViewModel {
           startTime: t.startTime,
           endTime: t.endTime,
           isStartShown: t.isStartShown,
-          isEndShown: t.isEndShown
+          isEndShown: t.isEndShown,
+          createdAt: Timestamp()
         )
         _ = try await firestoreManager.create(timePostId)
       }
