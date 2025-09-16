@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "settingsIcon.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
@@ -9,7 +10,6 @@
       "scale" : "2x"
     },
     {
-      "filename" : "settingIcon.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
