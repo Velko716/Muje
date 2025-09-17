@@ -13,7 +13,6 @@ enum RecruitmentField: String, CaseIterable, Identifiable {
     case age = "나이"
     case major = "학과/전공"
     case studentId = "학번"
-    case contact = "연락처"
     
     var id: String { rawValue } //ForEach에서 사용할 용도
 }
