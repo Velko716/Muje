@@ -69,7 +69,8 @@ struct MyPostsView: View {
                         item: post,
                         isPost: true,
                         tempLists: myPostsViewModel.getSlotsPosts(forPostId: post.postId.uuidString), thumbnailImage: myPostsViewModel.uploadThumbnail[post.postId],
-                        cachedURL: myPostsViewModel.imageURLCache[post.postId]
+                        cachedURL: myPostsViewModel.imageURLCache[post.postId],
+                        slot: myPostsViewModel.uploadPostSlot[post.postId]
                       )
                       .tag(index)
                     }
