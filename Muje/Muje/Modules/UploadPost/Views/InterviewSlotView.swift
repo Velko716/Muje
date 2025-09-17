@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct InterviewSlotView: View {
   @State var calendarViewModel: CalendarViewModel = .init()
@@ -174,12 +175,12 @@ struct InterviewSlotView: View {
               
               HStack {
                 Button(action: {
-                  interviewSlotViewModel.removeItem(withId: slot.id)
+                    interviewSlotViewModel.removeItem(withId: slot.id)
                 }) {
-                  Image(.iconRemove)
+                    Image(.iconRemove)
                 }
-                Spacer()
-                Button(action: {
+                  Spacer()
+                  Button(action: {
                   if let index = interviewSlotViewModel.selectedSlots.firstIndex(where: { $0.id == slot.id }) {
                     interviewSlotViewModel.selectedSlots[index].isStartShown.toggle()
                   }

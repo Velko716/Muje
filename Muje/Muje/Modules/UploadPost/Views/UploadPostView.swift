@@ -188,7 +188,7 @@ struct UploadPostView: View {
         }
 //        .zIndex(1)
         .ignoresSafeArea()
-        .onAppear {
+        .task {
             isTextFieldFocused = false
         }
     }
