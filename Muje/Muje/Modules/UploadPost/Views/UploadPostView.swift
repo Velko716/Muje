@@ -174,7 +174,7 @@ struct UploadPostView: View {
                 .padding(.horizontal, 24)
         }
         .ignoresSafeArea()
-        .onAppear {
+        .task {
             isTextFieldFocused = false
         }
     }
