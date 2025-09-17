@@ -42,10 +42,9 @@ struct TimeModel: Equatable, Hashable, Codable {
         case timeId = "time_id"
         case postId = "post_id"
         case startTime = "start_time"
-        case endTime = "end_time"
+        case endTime = "end_Time"
         case isStartShown = "is_start_shown"
         case isEndShown = "is_end_shown"
-        
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }

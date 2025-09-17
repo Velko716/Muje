@@ -59,6 +59,7 @@ extension View {
         }
     }
     
+<<<<<<< HEAD
   func startPicker(isShown: Bool, date: Binding<Timestamp>, onDismiss: @escaping () -> Void) -> some View {
     ZStack {
         self
@@ -72,6 +73,11 @@ extension View {
     func endPicker(isShown: Bool, endTime: Binding<Timestamp>, lists: Binding<[Timestamp]>) -> some View {
         ZStack {
             self
+=======
+    func endPicker(isShown: Bool, endTime: Binding<Timestamp>, lists: Binding<[Timestamp]>) -> some View {
+        VStack {
+            self     
+>>>>>>> 5d1a9b8 (✨[Feat]#85 - 오류 해결_원)
             if isShown {
                 Picker("", selection: endTime) {
                     ForEach(lists, id: \.self) { $date in

@@ -139,6 +139,7 @@ final class InterviewSlotViewModel {
         if selectedSlots.isEmpty {
             return "시작일 ~ 마감일 설정"
         } else {
+<<<<<<< HEAD
             return "\(selectedSlots.first?.startTime.dateValue().dateString ?? "시작오류") ~ \(selectedSlots.last?.startTime.dateValue().dateString ?? "끝 오류"))"
         }
     }
@@ -195,6 +196,9 @@ extension InterviewSlotViewModel {
 //                    selectedSlots[slotIndex].timeLists = generateTimeSlots(for: date)
                 }
             }
+=======
+            return "\(selectedSlots.first?.startTime.dateValue().dateString ?? "시작오류") ~ \(selectedSlots.last?.startTime.dateValue().dateString ?? "끝 오류")"
+>>>>>>> 5d1a9b8 (✨[Feat]#85 - 오류 해결_원)
         }
     }
     
