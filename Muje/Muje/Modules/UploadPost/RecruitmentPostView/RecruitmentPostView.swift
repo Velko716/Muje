@@ -72,7 +72,7 @@ struct RecruitmentPostView: View {
         Text("커스텀 질문 추가하기")
               .body1Medium16()
               .foregroundStyle(.pointSkyBlue)
-        Image(.addCircle)
+        Image(.addCircleFill)
               .foregroundStyle(.pointSkyBlue)
       }
       .frame(maxWidth: .infinity, alignment: .center)

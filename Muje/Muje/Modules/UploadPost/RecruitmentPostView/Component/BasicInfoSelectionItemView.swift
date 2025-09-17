@@ -27,19 +27,25 @@ struct BasicInfoSelectionItemView: View {
           .body2Medium16()
           .foregroundStyle(isChecked ? .pointSkyBlue : .gray500)
         Spacer()
-        Circle()
-          .strokeBorder(.gray200)
-          .frame(width: 26, height: 26)
-          .overlay(
-            text == "지원자 이름"
-            ? Image(.essentialCircle)
-            : (isChecked ? Image(.checkCircle) : nil)
-          )
+          if text == "지원자 이름"{
+              Image(.checkBoxFill)
+                  .foregroundStyle(.pointSkyBlueTinted)
+          }
+          else {
+              if isChecked {
+                  Image(.checkBoxFill)
+              }
+              else {
+                  Circle()
+                      .strokeBorder(.gray200)
+                      .frame(width: 26, height: 26)
+                      
+              }
+          }
         
       } //: HSTACK
       .frame(maxWidth: .infinity)
-      .padding(.horizontal, 16)
-      .padding(.vertical, 14)
+      .padding(18)
       .background (
         RoundedRectangle(cornerRadius: 10)
             .stroke(isChecked ? .pointSkyBlue : .gray100, lineWidth: 1)
