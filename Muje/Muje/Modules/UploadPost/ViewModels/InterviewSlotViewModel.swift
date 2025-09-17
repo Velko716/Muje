@@ -51,7 +51,7 @@ class InterviewSlotViewModel {
             }
             return slots
         }
-        selectedSlots.append(.init(startTime: calendarDay.date.setTo9AM(), endTime: calendarDay.date.setTo9AM().addingTimeInterval(TimeInterval(60 * timeInterval)), isStartShown: false, isEndShown: false))
+        selectedSlots.append(.init(timeId: .init(), postId: "", startTime: Timestamp(date: calendarDay.date.setTo9AM()), endTime: Timestamp(date: calendarDay.date.setTo9AM().addingTimeInterval(TimeInterval(60 * timeInterval))), isStartShown: false, isEndShown: false))
     }
     
     //선택된 캘린더 슬롯에서 당일 인터뷰 슬롯 생성하는 함수
