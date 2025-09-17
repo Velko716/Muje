@@ -175,43 +175,9 @@ struct InterviewSlotView: View {
               
               HStack {
                 Button(action: {
-<<<<<<< HEAD
                     interviewSlotViewModel.removeItem(withId: slot.id)
                 }) {
                     Image(.iconRemove)
-=======
-                    interviewSlotViewModel.createPicker(calendarDay: calendarDay)
-                }, label: {
-                    Cell(calendarDay: calendarDay, calendarViewModel: calendarViewModel, startDate: postInfoViewModel.startDate, endDate: postInfoViewModel.endDate)
-                })
-                .disabled(interviewSlotViewModel.checkSlot(date: calendarDay.date, startDate: postInfoViewModel.startDate, endDate: postInfoViewModel.endDate))
-            }
-        })
-        .frame(height: 250, alignment: .top)
-    }
-    
-    private var slotSettingView: some View {
-        HStack {
-            CountButton(value: $interviewSlotViewModel.maxCount, title: "한 타임 당 면접 인원", count: 1, unit: "명")
-            
-            Spacer()
-            
-            CountButton(value: $interviewSlotViewModel.timeInterval, title: "한 타임 당 면접 시간", count: 10, unit: "분", condition: interviewSlotViewModel.timeInterval == 30)
-        }
-        .padding(.horizontal, 24)
-        .onChange(of: interviewSlotViewModel.timeInterval) {
-            interviewSlotViewModel.selectedSlots.removeAll()
-        }
-    }
-    
-    private var slotListView: some View {
-        VStack {
-            if interviewSlotViewModel.selectedSlots.isEmpty {
-                delayView
-            } else {
-                ForEach($interviewSlotViewModel.selectedSlots, id: \.timeId) { $slot in
-                    ListCardView(interviewSlotViewModel: interviewSlotViewModel, slot: $slot)
->>>>>>> 5d1a9b8 (✨[Feat]#85 - 오류 해결_원)
                 }
                   Spacer()
                   Button(action: {
