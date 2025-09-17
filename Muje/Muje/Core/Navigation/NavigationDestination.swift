@@ -44,5 +44,5 @@ enum NavigationDestination: Equatable, Hashable {
     case loginView // 로그인 뷰 (기존 유저)
     case forgotPasswordView // 비밀번호 찾기 뷰
     case registrationCompleteView(userName: String) // 회원가입 완료 뷰
-    case slotManagementView(post: Post) //일정관리 뷰
+    case slotManagementView(post: Post, slot: [InterviewSlot]) //일정관리 뷰
 }
