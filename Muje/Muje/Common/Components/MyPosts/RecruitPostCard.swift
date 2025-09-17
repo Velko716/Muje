@@ -13,7 +13,7 @@ struct RecruitPostCard: View {
     var isPost: Bool
 
     
-    var tempLists: [InterviewSlot] = []
+    var tempLists: [InterviewSlot]
   
     let thumbnailImage: PostImage?
     let cachedURL: String?

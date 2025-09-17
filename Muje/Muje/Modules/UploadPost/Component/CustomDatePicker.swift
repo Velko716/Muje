@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct CustomDatePicker: UIViewRepresentable {
-    @Binding var date: Date
+    @Binding var date: Timestamp
     
     var minuteInterval: Int
 
@@ -32,7 +33,7 @@ struct CustomDatePicker: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIDatePicker, context: Context) {
         uiView.minuteInterval = minuteInterval
-        uiView.setDate(date, animated: true)
+        uiView.setDate(date.dateValue(), animated: true)
     }
 
     class Coordinator: NSObject {
@@ -43,7 +44,7 @@ struct CustomDatePicker: UIViewRepresentable {
         }
 
         @objc func dateChanged(_ sender: UIDatePicker) {
-            parent.date = sender.date
+            parent.date = Timestamp(date: sender.date)
         }
     }
 }

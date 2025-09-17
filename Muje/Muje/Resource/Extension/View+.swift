@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 extension View {
     /// 네비게이션 이동 시 자동으로 생성되는 뒤로가기 버튼을 제거합니다.
@@ -37,18 +38,13 @@ extension View {
         ZStack {
             self
             Toast(isShown: isShown, message: message)
-            .opacity(
-              isShown.wrappedValue ? 1 : 0
-            )
-            .animation(
-              .easeInOut(duration: 0.3),
-              value: isShown.wrappedValue
-            )
+            .opacity(isShown.wrappedValue ? 1 : 0)
+            .animation(.easeInOut(duration: 0.3), value: isShown.wrappedValue)
         }
     }
     
-    func startPicker(isShown: Bool, date: Binding<Date>) -> some View {
-        ZStack {
+    func startPicker(isShown: Bool, date: Binding<Timestamp>) -> some View {
+        VStack {
             self
             if isShown {
                 CustomDatePicker(date: date, minuteInterval: 5)
@@ -58,13 +54,13 @@ extension View {
         }
     }
     
-    func endPicker(isShown: Bool, endTime: Binding<Date>, lists: [Date]) -> some View {
-        ZStack {
-            self
+    func endPicker(isShown: Bool, endTime: Binding<Timestamp>, lists: Binding<[Timestamp]>) -> some View {
+        VStack {
+            self     
             if isShown {
                 Picker("", selection: endTime) {
-                    ForEach(lists, id: \.self) { date in
-                        Text(date.hourMinute24)
+                    ForEach(lists, id: \.self) { $date in
+                        Text(date.dateValue().hourMinute24)
                             .tag(date)
                     }
                 }

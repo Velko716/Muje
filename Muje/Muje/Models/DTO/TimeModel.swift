@@ -9,12 +9,12 @@ import Foundation
 import FirebaseFirestore
 
 struct TimeModel: Equatable, Hashable, Codable {
-    let timeId: UUID
-    let postId: String
-    let startTime: Timestamp
-    let endTime: Timestamp
-    let isStartShown: Bool
-    let isEndShown: Bool
+    var timeId: UUID
+    var postId: String
+    var startTime: Timestamp
+    var endTime: Timestamp
+    var isStartShown: Bool
+    var isEndShown: Bool
     @ServerTimestamp var createdAt: Timestamp?
     @ServerTimestamp var updatedAt: Timestamp?
 
@@ -42,9 +42,9 @@ struct TimeModel: Equatable, Hashable, Codable {
         case timeId = "time_id"
         case postId = "post_id"
         case startTime = "start_time"
-        case endTime = "end_time"
+        case endTime = "end_Time"
         case isStartShown = "is_start_shown"
-        case isEndShown = "is_end_shown"
+        case isEndShown = "isEndShown"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
