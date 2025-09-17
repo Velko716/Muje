@@ -30,15 +30,12 @@ struct CustomQuestionItemView: View {
             Button {
                 onDelete()
             } label: {
-                Image(.removeCIrcle)
-                    .resizable()
-                    .frame(width: 26, height: 26)
+                Image(.removeCircleFill)
             }
 
         } //: HSTACK
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, 18)
-        .padding(.vertical, 19.5)
+        .padding(18)
         .background (
             RoundedRectangle(cornerRadius: 10)
                 .stroke(isTyping ? .pointSkyBlue : .gray200, lineWidth: 1)
