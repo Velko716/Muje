@@ -14,6 +14,8 @@ struct SlotManagementView: View {
     @State var uploadPostViewModel: UploadPostViewModel = .init()
     
     var item: Post
+  
+    let slot: [InterviewSlot]?
     
     @Environment(\.dismiss) private var dismiss
         
@@ -41,12 +43,18 @@ struct SlotManagementView: View {
                     ToolbarCenterTitle(text: "면접 일정 열기")
                 }
             }
-            Button(action: {
-                Task {
-                    await interviewSlotViewModel.saveTimeModel(for: item.postId.uuidString)
-                }
-                dismiss()
-            }, label: {
+          Button(
+            action: {
+              Task {
+                guard let slot = slot else { return }
+                try await interviewSlotViewModel.saveAll(
+                  postId: item.postId.uuidString,
+                  interviewSlot: slot
+                )
+              }
+              dismiss()
+            },
+            label: {
                 ActionButton(title: "등록", condition: false)
                     .padding(.horizontal, 16)
             })
@@ -125,6 +133,6 @@ struct SlotManagementView: View {
     }
 }
 
-#Preview {
-    SlotManagementView(item: .init(postId: .init(), authorUserId: "sad", title: "qsdsdqq", organization: "asfdx", content: "sdnjask", recruitmentStart: .init(), recruitmentEnd: .init(date: Date().addingTimeInterval(3600 * 24 * 7)), status: "모집중", authorName: "sda", authorOrganization: "zzz"))
-}
+//#Preview {
+//    SlotManagementView(item: .init(postId: .init(), authorUserId: "sad", title: "qsdsdqq", organization: "asfdx", content: "sdnjask", recruitmentStart: .init(), recruitmentEnd: .init(date: Date().addingTimeInterval(3600 * 24 * 7)), status: "모집중", authorName: "sda", authorOrganization: "zzz"))
+//}
