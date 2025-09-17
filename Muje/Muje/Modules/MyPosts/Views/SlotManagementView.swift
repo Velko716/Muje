@@ -14,8 +14,6 @@ struct SlotManagementView: View {
     @State var uploadPostViewModel: UploadPostViewModel = .init()
     
     var item: Post
-  
-    
     @Environment(\.dismiss) private var dismiss
         
     var body: some View {
