@@ -17,6 +17,7 @@ struct RecruitPostCard: View {
   
     let thumbnailImage: PostImage?
     let cachedURL: String?
+    let slot: [InterviewSlot]?
   
     
     var body: some View {
@@ -47,7 +48,8 @@ struct RecruitPostCard: View {
             
             HStack {
                 ButtonBox(title: "면접 일정", action: {
-                    router.push(to: .slotManagementView(post: item))
+                  guard let slot = slot else { return }
+                    router.push(to: .slotManagementView(post: item, slot: slot))
                 })
                 
                 Divider()
