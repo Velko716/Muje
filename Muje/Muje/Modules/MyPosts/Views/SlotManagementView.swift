@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
 
 struct SlotManagementView: View {
     @State var calendarViewModel: CalendarViewModel = .init()
@@ -40,17 +41,19 @@ struct SlotManagementView: View {
                     ToolbarCenterTitle(text: "면접 일정 열기")
                 }
             }
-            
             Button(action: {
-                //여기에 서버에 인터뷰 슬롯들 올리는 메서드 추가
                 Task {
-                    await uploadPostViewModel.createInterviewSlot(postId: item.postId.uuidString, interviewSlotViewModel: interviewSlotViewModel)
+                    await interviewSlotViewModel.saveTimeModel(for: item.postId.uuidString)
                 }
                 dismiss()
             }, label: {
                 ActionButton(title: "등록", condition: false)
                     .padding(.horizontal, 16)
             })
+        }
+        .task {
+            await interviewSlotViewModel.loadTimeModel(for: item.postId.uuidString)
+            interviewSlotViewModel.slotUpdate()
         }
     }
     
@@ -112,34 +115,8 @@ struct SlotManagementView: View {
     
     private var slotListView: some View {
         VStack {
-            ForEach($interviewSlotViewModel.selectedSlots, id: \.id) { slot in
-                HStack(spacing: 24) {
-                    Button(action: {
-                        interviewSlotViewModel.removeItem(withId: slot.id)
-                    }, label: {
-                        Image(systemName: "xmark")
-                        
-                    })
-                    Spacer()
-                    Text(slot.wrappedValue.startTime.shortDateString)
-                    Spacer()
-                    Button(action: {
-                        slot.wrappedValue.isStartShown.toggle()
-                    }, label: {
-                        Text(slot.wrappedValue.startTime.hourMinute24)
-                            .startPicker(isShown: slot.wrappedValue.isStartShown, date: slot.startTime)
-                    })
-                    Button(action: {
-                        slot.wrappedValue.isEndShown.toggle()
-                    }, label: {
-                        Text(slot.wrappedValue.endTime.hourMinute24)
-                            .endPicker(isShown: slot.wrappedValue.isEndShown, endTime: slot.endTime, lists: slot.wrappedValue.timeLists)
-                    })
-                    .onChange(of: slot.startTime.wrappedValue) {
-                        interviewSlotViewModel.updateSlotTime(slot: slot)
-                    }
-                }
-                .padding()
+            ForEach($interviewSlotViewModel.selectedSlots, id: \.timeId) { $slot in
+                ListCardView(interviewSlotViewModel: interviewSlotViewModel, slot: $slot)
             }
         }
         .onChange(of: interviewSlotViewModel.selectedSlots) {

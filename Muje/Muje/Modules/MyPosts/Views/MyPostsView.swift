@@ -68,7 +68,7 @@ struct MyPostsView: View {
                       RecruitPostCard(
                         item: post,
                         isPost: true,
-                        thumbnailImage: myPostsViewModel.uploadThumbnail[post.postId],
+                        tempLists: myPostsViewModel.getSlotsPosts(forPostId: post.postId.uuidString), thumbnailImage: myPostsViewModel.uploadThumbnail[post.postId],
                         cachedURL: myPostsViewModel.imageURLCache[post.postId]
                       )
                       .tag(index)

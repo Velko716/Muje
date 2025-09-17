@@ -51,7 +51,7 @@ class InterviewSlotViewModel {
             }
             return slots
         }
-        selectedSlots.append(.init(startTime: calendarDay.date.setTo9AM(), endTime: calendarDay.date.setTo9AM().addingTimeInterval(TimeInterval(60 * timeInterval)), isStartShown: false, isEndShown: false))
+        selectedSlots.append(.init(timeId: .init(), postId: "", startTime: Timestamp(date: calendarDay.date.setTo9AM()), endTime: Timestamp(date: calendarDay.date.setTo9AM().addingTimeInterval(TimeInterval(60 * timeInterval))), isStartShown: false, isEndShown: false))
     }
     
     //선택된 캘린더 슬롯에서 당일 인터뷰 슬롯 생성하는 함수
@@ -77,7 +77,7 @@ class InterviewSlotViewModel {
     }
     
     func removeItem(withId id: UUID) {
-        if let index = selectedSlots.firstIndex(where: { $0.id == id }) {
+        if let index = selectedSlots.firstIndex(where: { $0.timeId == id }) {
             selectedSlots.remove(at: index)
         }
     }
@@ -85,20 +85,19 @@ class InterviewSlotViewModel {
     //선택된 캘린더 슬롯에서 모든 시간 당 인터뷰 슬롯 생성하는 함수 -> 인터뷰 슬롯 리스트에 저장됨
   func updateAllSlot(postId: String) -> [InterviewSlot] {
         for list in selectedSlots {
-          generateSlot(from: list.startTime, to: list.endTime, postId: postId)
+            generateSlot(from: list.startTime.dateValue(), to: list.endTime.dateValue(), postId: postId)
         }
     return interviewSlotLists
     }
     
     //인터뷰 시작 시간이 변경될 때마다 인터뷰 종료 피커들을 변경하는 함수
-    func updateSlotTime(slot: Binding<TimeModel>) {
-        slot.endTime.wrappedValue = slot.startTime.wrappedValue.addingTimeInterval(TimeInterval(60 * timeInterval))
-        var timeSlots: [Date] {
-            var slots: [Date] = []
-            var currentTime = slot.startTime.wrappedValue
+    func updateSlotTime(slot: Binding<TimeModel>) -> [Timestamp] {
+        var timeSlots: [Timestamp] {
+            var slots: [Timestamp] = []
+            var currentTime = slot.startTime.wrappedValue.dateValue()
             
-            while currentTime <= slot.startTime.wrappedValue.endOfDay() {
-                slots.append(currentTime)
+            while currentTime <= slot.startTime.wrappedValue.dateValue().endOfDay() {
+                slots.append(Timestamp(date: currentTime))
                 if let nextTime = Calendar.current.date(byAdding: .minute, value: timeInterval, to: currentTime) {
                     currentTime = nextTime
                 } else {
@@ -107,7 +106,7 @@ class InterviewSlotViewModel {
             }
             return slots
         }
-        slot.timeLists.wrappedValue = timeSlots
+        return timeSlots
     }
     
     //인터뷰 슬롯의 시작 날짜와 종료 날짜를 출력하는 함수
@@ -115,7 +114,7 @@ class InterviewSlotViewModel {
         if selectedSlots.isEmpty {
             return "시작일 ~ 마감일 설정"
         } else {
-          return "\(selectedSlots.first?.startTime.dateString ?? "시작오류") ~ \(selectedSlots.last?.startTime.dateString ?? "끝 오류")"
+            return "\(selectedSlots.first?.startTime.dateValue().dateString ?? "시작오류") ~ \(selectedSlots.last?.startTime.dateValue().dateString ?? "끝 오류")"
         }
     }
     
