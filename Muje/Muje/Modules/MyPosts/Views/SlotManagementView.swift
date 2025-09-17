@@ -43,12 +43,18 @@ struct SlotManagementView: View {
                     ToolbarCenterTitle(text: "면접 일정 열기")
                 }
             }
-            Button(action: {
-                Task {
-                    await interviewSlotViewModel.saveTimeModel(for: item.postId.uuidString)
-                }
-                dismiss()
-            }, label: {
+          Button(
+            action: {
+              Task {
+                guard let slot = slot else { return }
+                try await interviewSlotViewModel.saveAll(
+                  postId: item.postId.uuidString,
+                  interviewSlot: slot
+                )
+              }
+              dismiss()
+            },
+            label: {
                 ActionButton(title: "등록", condition: false)
                     .padding(.horizontal, 16)
             })
