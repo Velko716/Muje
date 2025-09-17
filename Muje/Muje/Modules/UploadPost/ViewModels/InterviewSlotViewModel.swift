@@ -230,8 +230,33 @@ extension InterviewSlotViewModel {
       print("TimeModel 로드 실패")
     }
   }
+  // MARK: updated,create,delete 병렬 처리
+  func saveAll(
+    postId: String,
+    interviewSlot: [InterviewSlot]
+  ) async throws {
+    isLoading = true
+    defer { isLoading = false }
+    
+    do {
+      try await withThrowingTaskGroup(of: Void.self) { group in
+        group.addTask {
+          await self.updateTimeModel(for: postId)
+        }
+        group.addTask {
+          await self.updateSlot(
+            postId: postId,
+            interviewSlot: interviewSlot
+          )
+        }
+        try await group.waitForAll()
+      }
+    } catch {
+      print("면접 일정 업데이트 실패 \(error)")
+    }
+  }
   // MARK: update, create 분기 저장 함수
-  func saveTimeModel(for postId: String) async {
+  private func updateTimeModel(for postId: String) async {
     do {
       let exist = try await fetchTimeModel(postId: postId)
       
@@ -257,6 +282,34 @@ extension InterviewSlotViewModel {
       }
     } catch {
       print("saveTimeModel 동기화 실패 \(error)")
+    }
+  }
+  // MARK: InterviewSlot 생성
+  private func updateSlot(
+    postId: String,
+    interviewSlot: [InterviewSlot]
+  ) async {
+    do {
+      let slots = self.updateAllSlot(postId: postId)
+      
+      for slot in slots {
+        if interviewSlot.contains(where: { $0.slotId == slot.slotId }) {
+          _ = try await firestoreManager.update(slot)
+        } else {
+          _ = try await firestoreManager.create(slot)
+        }
+      }
+      
+      for slot in interviewSlot {
+        if !slots.contains(where: { $0.slotId == slot.slotId }) {
+          _ = try await firestoreManager.delete(
+            collectionType: .interviewSlots,
+            documentID: slot.slotId.uuidString
+          )
+        }
+      }
+    } catch {
+      print("interviewSlot 동기화 실패 \(error)")
     }
   }
   // MARK: postId 조건 쿼리문
