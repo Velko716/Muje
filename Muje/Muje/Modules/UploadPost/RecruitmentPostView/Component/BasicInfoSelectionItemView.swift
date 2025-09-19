@@ -46,7 +46,9 @@ struct BasicInfoSelectionItemView: View {
         
       } //: HSTACK
       .frame(maxWidth: .infinity)
-      .hvPadding(16, 7)
+      .padding(.vertical, 7)
+      .padding(.leading, 16)
+      .padding(.trailing, 5)
       .background (
         RoundedRectangle(cornerRadius: 10)
             .stroke(isChecked ? .pointSkyBlue : .gray100, lineWidth: 1)

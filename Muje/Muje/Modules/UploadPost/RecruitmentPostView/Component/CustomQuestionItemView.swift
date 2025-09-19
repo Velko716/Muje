@@ -35,7 +35,9 @@ struct CustomQuestionItemView: View {
 
         } //: HSTACK
         .frame(maxWidth: .infinity)
-        .padding(18)
+        .padding(.vertical, 12.5)
+        .padding(.leading, 18)
+        .padding(.trailing, 7)
         .background (
             RoundedRectangle(cornerRadius: 10)
                 .stroke(isTyping ? .pointSkyBlue : .gray200, lineWidth: 1)

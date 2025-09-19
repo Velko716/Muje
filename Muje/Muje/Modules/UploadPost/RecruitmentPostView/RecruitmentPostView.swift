@@ -68,7 +68,7 @@ struct RecruitmentPostView: View {
   
   private var addQuestionButton: some View {
     Button(action: viewModel.addCustomQuestion) {
-      VStack(alignment: .center) {
+      VStack(alignment: .center, spacing: -2) {
         Text("커스텀 질문 추가하기")
               .body1Medium16()
               .foregroundStyle(.pointSkyBlue)
@@ -77,6 +77,7 @@ struct RecruitmentPostView: View {
       }
       .frame(maxWidth: .infinity, alignment: .center)
       .padding(.vertical, 17)
+      .padding(.bottom, -3)
       .background(
         RoundedRectangle(cornerRadius: 10)
             .fill(.gray100)
