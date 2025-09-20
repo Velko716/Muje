@@ -47,9 +47,12 @@ struct RecruitPostCard: View {
                 .padding(.bottom, 6)
             
             HStack {
-                ButtonBox(title: "면접 일정", action: {
-                  guard let slot = slot else { return }
-                    router.push(to: .slotManagementView(post: item, slot: slot))
+              ButtonBox(
+                title: "면접 일정",
+                action: {
+                  router.push(
+                    to: .slotManagementView(post: item)
+                  )
                 })
                 
                 Divider()
