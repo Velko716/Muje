@@ -16,17 +16,17 @@ struct ReportHistoryListItem: View {
         VStack(alignment: .leading) {
             HStack {
                 Text(title)
-                    .font(Font.system(size: 16, weight: .semibold)) // FIXME: - 폰트 수정
-                    .foregroundStyle(Color.black) // FIXME: - 컬러 수정
+                    .font(Font.pretendard(type: .semiBold, size: 16))
+                    .foregroundStyle(Color.gray700)
                 Spacer()
-                Text(date.fullDateSlashString) // FIXME: -
-                    .font(Font.system(size: 14)) // FIXME: - 폰트 수정
-                    .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
+                Text(date.fullDateSlashString)
+                    .font(Font.pretendard(type: .regular, size: 14))
+                    .foregroundStyle(Color.gray500)
             }
             Spacer().frame(height: 8)
             Text(content)
-                .font(Font.system(size: 16)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
+                .font(Font.pretendard(type: .regular, size: 16))
+                .foregroundStyle(Color.gray500)
         }
     }
 }
