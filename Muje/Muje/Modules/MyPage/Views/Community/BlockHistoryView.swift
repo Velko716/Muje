@@ -48,10 +48,10 @@ struct BlockHistoryView: View {
     // MARK: - 차단 리스트 뷰 (데이터가 존재 하지 않을때)
     private var emptyBlockListView: some View {
         VStack {
-            Spacer().frame(height: 48) // FIXME: - 수정
+            Spacer().frame(height: 48)
             Text("차단 내역이 없어요")
-                .font(Font.system(size: 16, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
+                .font(Font.pretendard(type: .semiBold, size: 16))
+                .foregroundStyle(Color.gray500)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 48)
