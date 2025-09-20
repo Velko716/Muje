@@ -217,233 +217,233 @@ extension InterviewSlotViewModel {
 
 // MARK: KADAN
 extension InterviewSlotViewModel {
-  // MARK: TimeModel 로드
-  func loadTimeModel(for postId: String) async {
-    isLoading = true
-    defer { isLoading = false }
-    
-    do {
-      let t = try await fetchTimeModel(postId: postId)
-      self.selectedSlots = t
-      
-    } catch {
-      print("TimeModel 로드 실패")
-    }
-  }
-  // MARK: updated,create,delete 병렬 처리
-  func saveAll(
-    postId: String
-  ) async throws {
-    isLoading = true
-    defer { isLoading = false }
-    
-    do {
-      try await withThrowingTaskGroup(of: Void.self) { group in
-        group.addTask {
-          await self.updateTimeModel(for: postId)
+    // MARK: TimeModel 로드
+    func loadTimeModel(for postId: String) async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            let t = try await fetchTimeModel(postId: postId)
+            self.selectedSlots = t
+            
+        } catch {
+            print("TimeModel 로드 실패")
         }
-        group.addTask {
-          await self.updateSlot(
-            postId: postId
-          )
-        }
-        try await group.waitForAll()
-      }
-    } catch {
-      print("면접 일정 업데이트 실패 \(error)")
     }
-  }
-  // MARK: update, create 분기 저장 함수
+    // MARK: updated,create,delete 병렬 처리
+    func saveAll(
+        postId: String
+    ) async throws {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    await self.updateTimeModel(for: postId)
+                }
+                group.addTask {
+                    await self.updateSlot(
+                        postId: postId
+                    )
+                }
+                try await group.waitForAll()
+            }
+        } catch {
+            print("면접 일정 업데이트 실패 \(error)")
+        }
+    }
+    // MARK: update, create 분기 저장 함수
     private func updateTimeModel(for postId: String) async {
-    do {
-      let exist = try await fetchTimeModel(postId: postId)
-      
-      // update or create
-      for slot in selectedSlots {
-        if exist.contains(where: { $0.timeId == slot.timeId}) {
-          _ = try await firestoreManager.update(slot)
-        } else {
-          await createNewTimeModel(slot, postId: postId)
+        do {
+            let exist = try await fetchTimeModel(postId: postId)
+            
+            // update or create
+            for slot in selectedSlots {
+                if exist.contains(where: { $0.timeId == slot.timeId}) {
+                    _ = try await firestoreManager.update(slot)
+                } else {
+                    await createNewTimeModel(slot, postId: postId)
+                }
+            }
+            // 삭제
+            for slot in exist {
+                if !selectedSlots.contains(
+                    where: {
+                        $0.timeId == slot.timeId
+                    }) {
+                    try await firestoreManager.delete(
+                        collectionType: .timeModel,
+                        documentID: slot.timeId.uuidString
+                    )
+                }
+            }
+        } catch {
+            print("saveTimeModel 동기화 실패 \(error)")
         }
-      }
-      // 삭제
-      for slot in exist {
-        if !selectedSlots.contains(
-          where: {
-            $0.timeId == slot.timeId
-          }) {
-          try await firestoreManager.delete(
-            collectionType: .timeModel,
-            documentID: slot.timeId.uuidString
-          )
-        }
-      }
-    } catch {
-      print("saveTimeModel 동기화 실패 \(error)")
     }
-  }
-  // MARK: InterviewSlot 생성
-  private func updateSlot(
-    postId: String
-  ) async {
-    do {
-      let existingSlots = try await fetchSlot(postId: postId)
-      
-      var reservationMal: [String: Int] = [:]
-      for existingSlot in existingSlots {
-        let dateStr = existingSlot.interviewDate.dateValue().dateString
-        let timeStr = existingSlot.interviewTime
-        let key = "\(dateStr)_\(timeStr)"
-        reservationMal[key] = existingSlot.currentReservations
-      }
-      
-        for existingSlot in existingSlots {
-          try await firestoreManager.delete(
-            collectionType: .interviewSlots,
-            documentID: existingSlot.slotId.uuidString
-          )
+    // MARK: InterviewSlot 생성
+    private func updateSlot(
+        postId: String
+    ) async {
+        do {
+            let existingSlots = try await fetchSlot(postId: postId)
+            
+            var reservationMal: [String: Int] = [:]
+            for existingSlot in existingSlots {
+                let dateStr = existingSlot.interviewDate.dateValue().dateString
+                let timeStr = existingSlot.interviewTime
+                let key = "\(dateStr)_\(timeStr)"
+                reservationMal[key] = existingSlot.currentReservations
+            }
+            
+            for existingSlot in existingSlots {
+                try await firestoreManager.delete(
+                    collectionType: .interviewSlots,
+                    documentID: existingSlot.slotId.uuidString
+                )
+            }
+            
+            let newSlots = generateNewSlots(
+                postId: postId,
+                reservationMap: reservationMal
+            )
+            
+            for newSlot in newSlots {
+                _ = try await firestoreManager.create(newSlot)
+            }
+        } catch {
+            print("interviewSlot 동기화 실패 \(error)")
         }
-        
-        let newSlots = generateNewSlots(
-          postId: postId,
-          reservationMap: reservationMal
-        )
-        
-        for newSlot in newSlots {
-          _ = try await firestoreManager.create(newSlot)
-        }
-      } catch {
-        print("interviewSlot 동기화 실패 \(error)")
-      }
     }
     // MARK: postId 조건 쿼리문
-  private func fetchTimeModel(
-    postId: String
-  ) async throws -> [TimeModel] {
-    return try await firestoreManager.fetchWithCondition(
-      from: .timeModel,
-      whereField: "post_id",
-      equalTo: postId,
-      sortedBy: {
-        $0.createdAt?.dateValue() ?? Date() < $1.createdAt?.dateValue() ?? Date()
-      }
-    )
-  }
-    private func fetchSlot(postId: String) async throws -> [InterviewSlot] {
-    return try await firestoreManager.fetchWithCondition(
-      from: .interviewSlots,
-      whereField: "post_id",
-      equalTo: postId,
-      sortedBy: {
-        $0.createdAt?.dateValue() ?? Date() < $1.createdAt?.dateValue() ?? Date()
-      }
-    )
-  }
-  // MARK: 단일 TimeModel create 생성 함수
-  private func createNewTimeModel(
-    _ slot: TimeModel,
-    postId: String
-  ) async {
-      let newSlot = TimeModel(
-        timeId: slot.timeId,
-        postId: postId,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-        isStartShown: slot.isStartShown,
-        isEndShown: slot.isEndShown,
-        createdAt: Timestamp()
-      )
-      _ = try? await firestoreManager.create(newSlot)
-  }
-  
-  private func generateNewSlots(
-    postId: String,
-    reservationMap: [String: Int]
-  ) -> [InterviewSlot] {
-    interviewSlotLists.removeAll()
-    
-    for timeModel in selectedSlots {
-      let calender = Calendar.current
-      var currentDate = timeModel.startTime.dateValue()
-      
-      while currentDate <= timeModel.endTime.dateValue() {
-        
-        let dateStr = currentDate.dateString
-        let timeStr = currentDate.hourMinute24
-        let key = "\(dateStr)_\(timeStr)"
-        
-        let savedReservations = reservationMap[key] ?? 0
-        
-        let model = InterviewSlot(
-          slotId: UUID(),
-          postId: postId,
-          interviewDate: Timestamp(date: currentDate),
-          interviewTime: currentDate.hourMinute24,
-          maxCapacity: maxCount,
-          currentReservations: savedReservations,
-          createdAt: Timestamp(date: Date())
+    private func fetchTimeModel(
+        postId: String
+    ) async throws -> [TimeModel] {
+        return try await firestoreManager.fetchWithCondition(
+            from: .timeModel,
+            whereField: "post_id",
+            equalTo: postId,
+            sortedBy: {
+                $0.createdAt?.dateValue() ?? Date() < $1.createdAt?.dateValue() ?? Date()
+            }
         )
-        interviewSlotLists.append(model)
-        guard let nexDate = calender.date(byAdding: .minute, value: timeInterval, to: currentDate) else {
-          break
+    }
+    private func fetchSlot(postId: String) async throws -> [InterviewSlot] {
+        return try await firestoreManager.fetchWithCondition(
+            from: .interviewSlots,
+            whereField: "post_id",
+            equalTo: postId,
+            sortedBy: {
+                $0.createdAt?.dateValue() ?? Date() < $1.createdAt?.dateValue() ?? Date()
+            }
+        )
+    }
+    // MARK: 단일 TimeModel create 생성 함수
+    private func createNewTimeModel(
+        _ slot: TimeModel,
+        postId: String
+    ) async {
+        let newSlot = TimeModel(
+            timeId: slot.timeId,
+            postId: postId,
+            startTime: slot.startTime,
+            endTime: slot.endTime,
+            isStartShown: slot.isStartShown,
+            isEndShown: slot.isEndShown,
+            createdAt: Timestamp()
+        )
+        _ = try? await firestoreManager.create(newSlot)
+    }
+    
+    private func generateNewSlots(
+        postId: String,
+        reservationMap: [String: Int]
+    ) -> [InterviewSlot] {
+        interviewSlotLists.removeAll()
+        
+        for timeModel in selectedSlots {
+            let calender = Calendar.current
+            var currentDate = timeModel.startTime.dateValue()
+            
+            while currentDate <= timeModel.endTime.dateValue() {
+                
+                let dateStr = currentDate.dateString
+                let timeStr = currentDate.hourMinute24
+                let key = "\(dateStr)_\(timeStr)"
+                
+                let savedReservations = reservationMap[key] ?? 0
+                
+                let model = InterviewSlot(
+                    slotId: UUID(),
+                    postId: postId,
+                    interviewDate: Timestamp(date: currentDate),
+                    interviewTime: currentDate.hourMinute24,
+                    maxCapacity: maxCount,
+                    currentReservations: savedReservations,
+                    createdAt: Timestamp(date: Date())
+                )
+                interviewSlotLists.append(model)
+                guard let nexDate = calender.date(byAdding: .minute, value: timeInterval, to: currentDate) else {
+                    break
+                }
+                currentDate = nexDate
+            }
         }
-        currentDate = nexDate
-      }
+        return interviewSlotLists
     }
-    return interviewSlotLists
-  }
-  
-  private func updatedWithUUID(
-    postId: String,
-    existingSlots: [InterviewSlot]
-  ) -> [InterviewSlot] {
-    interviewSlotLists.removeAll()
     
-    for timeModel in selectedSlots {
-      generateWithUUID(
-        from: timeModel.startTime.dateValue(),
-        to: timeModel.endTime.dateValue(),
-        postId: postId,
-        existingSlots: existingSlots
-      )
+    private func updatedWithUUID(
+        postId: String,
+        existingSlots: [InterviewSlot]
+    ) -> [InterviewSlot] {
+        interviewSlotLists.removeAll()
+        
+        for timeModel in selectedSlots {
+            generateWithUUID(
+                from: timeModel.startTime.dateValue(),
+                to: timeModel.endTime.dateValue(),
+                postId: postId,
+                existingSlots: existingSlots
+            )
+        }
+        return interviewSlotLists
     }
-    return interviewSlotLists
-  }
-  
-  private func generateWithUUID(
-    from startTime: Date,
-    to endTime: Date,
-    postId: String,
-    existingSlots: [InterviewSlot]
-  ) {
-    let calender = Calendar.current
-    var currentDate = startTime
     
-    while currentDate <= endTime {
-      let timeString = currentDate.hourMinute24
-      
-      let existingSlot = existingSlots.first { slot in
-        let slotData = slot.interviewDate.dateValue()
-        return Calendar.current.isDate(slotData, inSameDayAs: currentDate) && slot.interviewTime == timeString
-      }
-      
-      let slotId = existingSlot?.slotId ?? UUID()
-      
-      let model = InterviewSlot(
-        slotId: slotId,
-        postId: postId,
-        interviewDate: Timestamp(date: currentDate),
-        interviewTime: timeString,
-        maxCapacity: maxCount,
-        currentReservations: existingSlot?.currentReservations ?? 0,
-        createdAt: existingSlot?.createdAt ?? Timestamp(date: Date())
-      )
-      
-      interviewSlotLists.append(model)
-      guard let nexDate = calender.date(byAdding: .minute, value: timeInterval, to: currentDate) else {
-        break
-      }
-      currentDate = nexDate
+    private func generateWithUUID(
+        from startTime: Date,
+        to endTime: Date,
+        postId: String,
+        existingSlots: [InterviewSlot]
+    ) {
+        let calender = Calendar.current
+        var currentDate = startTime
+        
+        while currentDate <= endTime {
+            let timeString = currentDate.hourMinute24
+            
+            let existingSlot = existingSlots.first { slot in
+                let slotData = slot.interviewDate.dateValue()
+                return Calendar.current.isDate(slotData, inSameDayAs: currentDate) && slot.interviewTime == timeString
+            }
+            
+            let slotId = existingSlot?.slotId ?? UUID()
+            
+            let model = InterviewSlot(
+                slotId: slotId,
+                postId: postId,
+                interviewDate: Timestamp(date: currentDate),
+                interviewTime: timeString,
+                maxCapacity: maxCount,
+                currentReservations: existingSlot?.currentReservations ?? 0,
+                createdAt: existingSlot?.createdAt ?? Timestamp(date: Date())
+            )
+            
+            interviewSlotLists.append(model)
+            guard let nexDate = calender.date(byAdding: .minute, value: timeInterval, to: currentDate) else {
+                break
+            }
+            currentDate = nexDate
+        }
     }
-  }
 }
