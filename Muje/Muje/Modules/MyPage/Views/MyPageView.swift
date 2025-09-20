@@ -64,7 +64,7 @@ struct MyPageView: View {
                             ForEach(section.rows, id: \.stableID) { row in
                                 rowView(row)
                             }
-                            .listRowBackground(Color(.secondarySystemBackground)) // FIXME: - Gray 50으로 색상 변경
+                            .listRowBackground(Color.gray50)
                         } header: {
                             headerView(section.header)
                                 .listRowInsets(.init(top: 40, leading: 0, bottom: 8, trailing: 0)) // 리스트 Row랑 자동 정렬 맞추기
@@ -182,6 +182,9 @@ private func rowView(_ row: MyPageRow) -> some View {
                 .font(.pretendard(type: .medium, size: 16))
                 .foregroundStyle(Color.gray700)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 20)
+        .contentShape(Rectangle())
     case .action(_, let title, let action):
         LabeledContent {
             Image(systemName: "chevron.right")
@@ -211,3 +214,4 @@ private func rowView(_ row: MyPageRow) -> some View {
             .environmentObject(FirebaseAuthManager.shared)
     }
 }
+
