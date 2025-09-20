@@ -113,16 +113,20 @@ struct MyPageView: View {
                     
                 } label: {
                     VStack(alignment: .leading) {
-                        // FIXME: - 디자인 수정 (폰트, 컬러)
                         Text(user.name)
-                            .font(Font.system(size: 24, weight: .semibold))
-                            .foregroundStyle(Color.black)
-                        Text(user.department)
-                            .font(Font.system(size: 16))
-                            .foregroundStyle(Color.gray)
-                        Text(user.studentId)
-                            .font(Font.system(size: 16))
-                            .foregroundStyle(Color.gray)
+                            .font(Font.pretendard(type: .semiBold, size: 24))
+                            .foregroundStyle(Color.gray700)
+                        Spacer().frame(height: 8)
+                        Text("\(user.department)\n\(user.studentId)")
+                            .font(Font.pretendard(type: .regular, size: 16))
+                            .foregroundStyle(Color.gray600)
+                            .lineSpacing(13.6)
+                            .kerning(-0.16)
+//                        Text(user.studentId)
+//                            .font(Font.pretendard(type: .regular, size: 16))
+//                            .foregroundStyle(Color.gray600)
+//                            .lineSpacing(13.6)
+//                            .kerning(-0.16)
                     }
                     .contentShape(Rectangle()) // 전체 폭 터치
                 }
@@ -130,8 +134,8 @@ struct MyPageView: View {
             } else {
                 HStack(spacing: .zero) {
                     Text("로그인 해주세요")
-                        .font(Font.system(size: 24, weight: .semibold))
-                        .foregroundStyle(Color.black)
+                        .font(Font.pretendard(type: .semiBold, size: 24))
+                        .foregroundStyle(Color.gray700)
                     Image(systemName: "chevron.right")
                         .foregroundStyle(Color.black)
                         .frame(width: 24, height: 24)
@@ -156,8 +160,8 @@ private func headerView(_ headerText: String) -> some View {
     } else {
         VStack {
             Text(headerText)
-                .font(Font.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.black) // FIXME: - Gray 700 수정
+                .font(Font.pretendard(type: .semiBold, size: 18))
+                .foregroundStyle(Color.gray700)
             Spacer().frame(height: 8)
         }
     }
@@ -171,20 +175,22 @@ private func rowView(_ row: MyPageRow) -> some View {
     case .value(let title, let value):
         LabeledContent {
             Text(value)
-                .foregroundStyle(.secondary) // FIXME: - 컬러 수정
+                .font(.pretendard(type: .medium, size: 16))
+                .foregroundStyle(Color.gray700)
         } label: {
             Text(title)
-                .settingListItem(color: Color.black) // FIXME: - Gray700 수정
+                .font(.pretendard(type: .medium, size: 16))
+                .foregroundStyle(Color.gray700)
         }
     case .action(_, let title, let action):
         LabeledContent {
             Image(systemName: "chevron.right")
-                .foregroundStyle(.gray)
+                .foregroundStyle(Color.black)
                 .frame(width: 24, height: 24)
         } label: {
             Text(title)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(title == "회원 탈퇴" ? .red : .primary)
+                .font(.pretendard(type: .medium, size: 16))
+                .foregroundStyle(title == "회원 탈퇴" ? Color.accentRed : .gray700)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 20)
