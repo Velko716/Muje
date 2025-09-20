@@ -15,7 +15,6 @@ struct SlotManagementView: View {
     
     var item: Post
   
-    let slot: [InterviewSlot]?
     
     @Environment(\.dismiss) private var dismiss
         
@@ -46,10 +45,8 @@ struct SlotManagementView: View {
           Button(
             action: {
               Task {
-                guard let slot = slot else { return }
                 try await interviewSlotViewModel.saveAll(
-                  postId: item.postId.uuidString,
-                  interviewSlot: slot
+                  postId: item.postId.uuidString
                 )
               }
               dismiss()
