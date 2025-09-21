@@ -13,8 +13,8 @@ struct MyPageView: View {
     @Environment(\.openURL) private var openURL
     @State private var viewModel: MyPageViewModel = .init()
     
-    @State private var showLogoutAlert: Bool = false
-    @State private var showWithdrawAlert: Bool = false
+    @State private var showConfirmLogout: Bool = false
+    @State private var showConfirmWithdraw: Bool = false
     
     private var sections: [MyPageSection] {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
@@ -41,9 +41,8 @@ struct MyPageView: View {
                 header: "기타",
                 rows: [
                     .init(kind: .action(id: "consent", title: "정보 동의 설정", action: { router.push(to: .contentView )})),
-                    // FIXME: - 라우터 변경
-                    .init(kind: .action(id: "logout", title: "로그아웃", action: { showLogoutAlert = true })),
-                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { showWithdrawAlert = true })) // FIXME: - 라우터 변경
+                    .init(kind: .action(id: "logout", title: "로그아웃", action: { showConfirmLogout = true })),
+                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { showConfirmWithdraw = true }))
                 ]
             ))
         }
@@ -79,28 +78,38 @@ struct MyPageView: View {
                 ToolbarLeadingBackButton()
                 ToolbarCenterTitle(text: "설정")
             }
-            .alert("로그아웃 하시겠어요?", isPresented: $showLogoutAlert) {
-                Button("취소", role: .cancel) { }
-                Button("로그아웃", role: .destructive) {
-                    Task {
-                        await viewModel.currentUserSignOut()
-                    }
+        }
+        .overlay(alignment: .bottom) {
+            Group {
+                // 로그아웃
+                if showConfirmLogout {
+                    BottomConfirmSheet(
+                        title: "로그아웃 하시겠어요?",
+                        primaryTitle: "로그아웃",
+                        onPrimary: {
+                            Task { await viewModel.currentUserSignOut() }
+                            showConfirmLogout = false
+                        },
+                        onCancel: { showConfirmLogout = false }
+                    )
+                }
+                // 회원 탈퇴
+                if showConfirmWithdraw {
+                    BottomConfirmSheet(
+                        title: "정말로 탈퇴하시겠습니까?\n작성한 공고와 채팅 기록이 모두 삭제됩니다",
+                        primaryTitle: "탈퇴",
+                        onPrimary: {
+                            Task {
+                                do { try await viewModel.deleteAuth() }
+                                catch { print("error: \(error)") }
+                            }
+                            showConfirmWithdraw = false
+                        },
+                        onCancel: { showConfirmWithdraw = false }
+                    )
                 }
             }
-            .alert("정말로 탈퇴하시겠습니까?", isPresented: $showWithdrawAlert) {
-                Button("취소", role: .cancel) { }
-                Button("탈퇴", role: .destructive) {
-                    Task {
-                        do {
-                            try await viewModel.deleteAuth()
-                        } catch {
-                            print("erorr: \(error)")
-                        }
-                    }
-                }
-            } message: {
-                Text("작성한 공고와 채팅 기록이 모두 삭제됩니다")
-            }
+            .animation(.easeInOut(duration: 0.22), value: showConfirmLogout || showConfirmWithdraw)
         }
     }
     
@@ -182,9 +191,6 @@ private func rowView(_ row: MyPageRow) -> some View {
                 .font(.pretendard(type: .medium, size: 16))
                 .foregroundStyle(Color.gray700)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 20)
-        .contentShape(Rectangle())
     case .action(_, let title, let action):
         LabeledContent {
             Image(systemName: "chevron.right")
@@ -214,4 +220,3 @@ private func rowView(_ row: MyPageRow) -> some View {
             .environmentObject(FirebaseAuthManager.shared)
     }
 }
-
