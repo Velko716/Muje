@@ -14,7 +14,6 @@ struct MyPageView: View {
     @State private var viewModel: MyPageViewModel = .init()
     
     @State private var showConfirmLogout: Bool = false
-    @State private var showConfirmWithdraw: Bool = false
     
     private var sections: [MyPageSection] {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
@@ -42,7 +41,7 @@ struct MyPageView: View {
                 rows: [
                     .init(kind: .action(id: "consent", title: "정보 동의 설정", action: { router.push(to: .contentView )})),
                     .init(kind: .action(id: "logout", title: "로그아웃", action: { showConfirmLogout = true })),
-                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { showConfirmWithdraw = true }))
+                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { router.push(to: .deleteAccountReauthView) }))
                 ]
             ))
         }
@@ -80,37 +79,20 @@ struct MyPageView: View {
             }
         }
         .overlay(alignment: .bottom) {
-            Group {
-                // 로그아웃
-                if showConfirmLogout {
-                    BottomConfirmSheet(
-                        title: "로그아웃 하시겠어요?",
-                        primaryTitle: "로그아웃",
-                        onPrimary: {
-                            Task { await viewModel.currentUserSignOut() }
-                            showConfirmLogout = false
-                        },
-                        onCancel: { showConfirmLogout = false }
-                    )
-                }
-                // 회원 탈퇴
-                if showConfirmWithdraw {
-                    BottomConfirmSheet(
-                        title: "정말로 탈퇴하시겠습니까?\n작성한 공고와 채팅 기록이 모두 삭제됩니다",
-                        primaryTitle: "탈퇴",
-                        onPrimary: {
-                            Task {
-                                do { try await viewModel.deleteAuth() }
-                                catch { print("error: \(error)") }
-                            }
-                            showConfirmWithdraw = false
-                        },
-                        onCancel: { showConfirmWithdraw = false }
-                    )
-                }
+            // 로그아웃
+            if showConfirmLogout {
+                BottomConfirmSheet(
+                    title: "로그아웃 하시겠어요?",
+                    primaryTitle: "로그아웃",
+                    onPrimary: {
+                        Task { await viewModel.currentUserSignOut() }
+                        showConfirmLogout = false
+                    },
+                    onCancel: { showConfirmLogout = false }
+                )
             }
-            .animation(.easeInOut(duration: 0.22), value: showConfirmLogout || showConfirmWithdraw)
         }
+        .animation(.easeInOut(duration: 0.22), value: showConfirmLogout)
     }
     
     // MARK: - 탑) 유저 정보 입력 뷰
