@@ -9,11 +9,13 @@ import SwiftUI
 
 struct CustomInput: View {
     @FocusState private var isFocused: Bool
+    @Binding var textLen: Int
     var title: String
     var tempTitle: String
     var textValue: Binding<String>
     var subTitle: String?
     let maxLength: Int
+    let minLength: Int
     let config = Font.lineHeight(
         type: .medium,
         fontSize: 16,
@@ -47,8 +49,26 @@ struct CustomInput: View {
                 .background(
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color.clear)
-                        .strokeBorder(isFocused ? .pointSkyBlue : .gray100, lineWidth: 1)
+                        .strokeBorder(borderStrokeColor, lineWidth: 1)
                 )
+                .onChange(of: isFocused) { _, newValue in
+                    if !newValue {
+                        textLen = textValue.wrappedValue.count
+                    }
+                }
+        }
+    }
+    
+    private var borderStrokeColor: Color {
+        if !isFocused && textValue.wrappedValue.count < minLength && textValue.wrappedValue.count != 0 {
+            return Color.accentRed
+        }
+        else if !isFocused {
+            return Color.gray100
+        } else if isFocused {
+            return Color.pointSkyBlue
+        } else {
+            return Color.pointSkyBlue
         }
     }
 }

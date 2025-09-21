@@ -10,6 +10,10 @@ import PhotosUI
 
 struct PostInfoView: View {
     @Bindable var postInfoViewModel: PostInfoViewModel
+    @State private var titleTextLength: Int = 0
+    @State private var orgTextLength: Int = 0
+    @State private var hasContentError: Bool = false
+    @FocusState private var isContentFocused: Bool
     let config = Font.lineHeight(
         type: .medium,
         fontSize: 16,
@@ -19,15 +23,43 @@ struct PostInfoView: View {
     
     var body: some View {
         ZStack {
-            VStack(spacing: 32) {
-                CustomInput(title: "모집글 제목", tempTitle: "공고 제목을 적어주세요", textValue: $postInfoViewModel.title, maxLength: 100)
-                CustomInput(title: "단체명", tempTitle: "단체명을 적어주세요", textValue: $postInfoViewModel.organization, maxLength: 50)
-                
+            VStack {
+                CustomInput(
+                    textLen: $titleTextLength,
+                    title: "모집글 제목",
+                    tempTitle: "공고 제목을 적어주세요",
+                    textValue: $postInfoViewModel.title,
+                    maxLength: 100,
+                    minLength: 5
+                )
+                .padding(.bottom, (titleTextLength != 0 || titleTextLength >= 5) ? 0 : 32)
+                if titleTextLength != 0 || titleTextLength >= 5 {
+                    Text("5자 이상 입력해주세요")
+                        .caption14Medium()
+                        .foregroundStyle(.accentRed)
+                        .padding(.bottom, 32)
+                }
+                CustomInput(
+                    textLen: $orgTextLength,
+                    title: "단체명",
+                    tempTitle: "단체명을 적어주세요",
+                    textValue: $postInfoViewModel.organization,
+                    maxLength: 50,
+                    minLength: 2
+                )
+                .padding(.bottom, (orgTextLength != 0 || orgTextLength >= 2) ? 0 : 32)
+                if orgTextLength != 0 || orgTextLength >= 2 {
+                    Text("2자 이상 입력해주세요")
+                        .caption14Medium()
+                        .foregroundStyle(.accentRed)
+                        .padding(.bottom, 32)
+                }
                 PostDatePicker(title: "모집 마감일", content: postInfoViewModel.endDateString, function: {
                     postInfoViewModel.isPicker = true
                 })
                 
                 imageView
+                    .padding(.vertical, 32)
                 contentView
             }
             .padding(.bottom, 67)
@@ -112,12 +144,35 @@ struct PostInfoView: View {
                 .font(.pretendard(type: .medium, size: 16))
                 .padding(.vertical, config.verticalPadding)
                 .tracking(config.letterSpacing)
-                .padding(16)
+                .padding()
+                .focused($isContentFocused)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
                         .fill(Color.clear)
-                        .strokeBorder(.gray100, lineWidth: 1)
+                        .strokeBorder(borderColor, lineWidth: 1)
                 )
+                .onChange(of: isContentFocused) { _, newFocus in
+                    if newFocus == false {
+                        hasContentError = postInfoViewModel.content.count > 0 && postInfoViewModel.content.count < 20
+                    }
+                }
+                .padding(.bottom, (postInfoViewModel.content.count == 0 || postInfoViewModel.content.count >= 20) ? 32 : 0)
+                if postInfoViewModel.content.count > 0 && postInfoViewModel.content.count < 20 {
+                    Text("20글자 이상 작성해주세요.")
+                        .caption14Medium()
+                        .foregroundStyle(.accentRed)
+                        .padding(.bottom, 32)
+                }
+        }
+    }
+    
+    private var borderColor: Color {
+        if hasContentError {
+            return .accentRed
+        } else if isContentFocused {
+            return .pointSkyBlue
+        } else {
+            return .gray100
         }
     }
 }
