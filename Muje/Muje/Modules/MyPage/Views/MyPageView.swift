@@ -173,6 +173,8 @@ private func rowView(_ row: MyPageRow) -> some View {
                 .font(.pretendard(type: .medium, size: 16))
                 .foregroundStyle(Color.gray700)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 20)
     case .action(_, let title, let action):
         LabeledContent {
             Image(systemName: "chevron.right")
