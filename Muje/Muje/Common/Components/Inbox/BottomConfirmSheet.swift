@@ -12,6 +12,7 @@ struct BottomConfirmSheet: View {
     var primaryTitle: String
     var onPrimary: () -> Void
     var onCancel: () -> Void
+    var showWarning: Bool = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -34,12 +35,17 @@ struct BottomConfirmSheet: View {
                     VStack(spacing: 24) {
                         Button(action: onPrimary) {
                             RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.primaryBlack)
+                                .fill(showWarning ? Color.accentRed : Color.primaryBlack)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 56)
                                 .overlay {
                                     Text(primaryTitle)
-                                        .font(Font.pretendard(type: .semiBold, size: 18))
+                                        .font(
+                                            Font.pretendard(
+                                                type: .semiBold,
+                                                size: 18
+                                            )
+                                        )
                                         .foregroundStyle(.graywhite)
                                 }
                         }
