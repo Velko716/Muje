@@ -215,13 +215,9 @@ final class FirebaseAuthManager: ObservableObject {
     func deleteAccountWithEmailPassword(email: String, password: String) async throws {
         guard let user = Auth.auth().currentUser else { return }
         let cred = EmailAuthProvider.credential(withEmail: email, password: password)
-        do {
-            try await user.reauthenticate(with: cred)
-            try await user.delete()
-            self.currentUser = nil
-        } catch {
-            print("error: \(error.localizedDescription)")
-        }
+        try await user.reauthenticate(with: cred)
+        try await user.delete()
+        self.currentUser = nil
     }
     
     
