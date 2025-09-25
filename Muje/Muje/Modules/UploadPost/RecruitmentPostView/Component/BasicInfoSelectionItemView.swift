@@ -39,13 +39,16 @@ struct BasicInfoSelectionItemView: View {
                   Circle()
                       .strokeBorder(.gray200)
                       .frame(width: 26, height: 26)
+                      .padding(9)
                       
               }
           }
         
       } //: HSTACK
       .frame(maxWidth: .infinity)
-      .padding(18)
+      .padding(.vertical, 7)
+      .padding(.leading, 16)
+      .padding(.trailing, 5)
       .background (
         RoundedRectangle(cornerRadius: 10)
             .stroke(isChecked ? .pointSkyBlue : .gray100, lineWidth: 1)
