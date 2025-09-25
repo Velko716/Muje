@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		45DEC9ED2E68A65700045CB8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 45DEC9EC2E68A65700045CB8 /* GoogleService-Info.plist */; };
 		AA451A952E51C2E4007A259B /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = AA451A942E51C2E4007A259B /* FirebaseStorage */; };
 		C99815E12E2C35D200AA4975 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C99815E02E2C35D200AA4975 /* FirebaseAuth */; };
 		C99815E32E2C35D200AA4975 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C99815E22E2C35D200AA4975 /* FirebaseFirestore */; };
@@ -17,7 +16,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		45DEC9EC2E68A65700045CB8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C99813E62E2BB57500AA4975 /* Muje.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Muje.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9803C042E5502B600B6CD91 /* ci_post_clone.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = ci_post_clone.sh; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -62,7 +60,6 @@
 		C99813DD2E2BB57500AA4975 = {
 			isa = PBXGroup;
 			children = (
-				45DEC9EC2E68A65700045CB8 /* GoogleService-Info.plist */,
 				E9803C022E55027100B6CD91 /* ci_scripts */,
 				C99813E82E2BB57500AA4975 /* Muje */,
 				C99813E72E2BB57500AA4975 /* Products */,
@@ -158,7 +155,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9803C052E5502B600B6CD91 /* ci_post_clone.sh in Resources */,
-				45DEC9ED2E68A65700045CB8 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -79,6 +79,8 @@ struct NavigationRoutingView: View {
                 ForgotPasswordView() // 비밀번호 찾기 뷰
             case .slotManagementView(let post):
                 SlotManagementView(item: post)
+            case .deleteAccountReauthView:
+                DeleteAccountReauthView()
             }
         }
         .hideBackButton()

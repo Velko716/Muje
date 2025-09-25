@@ -27,6 +27,11 @@ extension View {
             }
     }
     
+    /// 키보드 창이 내려가는 메서드 입니다.
+    func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+    
     /// 기본 여백 좌우 16입니다.
     func paddingH16() -> some View {
         self.padding(.horizontal, 16)

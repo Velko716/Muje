@@ -13,8 +13,7 @@ struct MyPageView: View {
     @Environment(\.openURL) private var openURL
     @State private var viewModel: MyPageViewModel = .init()
     
-    @State private var showLogoutAlert: Bool = false
-    @State private var showWithdrawAlert: Bool = false
+    @State private var showConfirmLogout: Bool = false
     
     private var sections: [MyPageSection] {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
@@ -41,9 +40,8 @@ struct MyPageView: View {
                 header: "기타",
                 rows: [
                     .init(kind: .action(id: "consent", title: "정보 동의 설정", action: { router.push(to: .contentView )})),
-                    // FIXME: - 라우터 변경
-                    .init(kind: .action(id: "logout", title: "로그아웃", action: { showLogoutAlert = true })),
-                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { showWithdrawAlert = true })) // FIXME: - 라우터 변경
+                    .init(kind: .action(id: "logout", title: "로그아웃", action: { showConfirmLogout = true })),
+                    .init(kind: .action(id: "withdraw", title: "회원 탈퇴", action: { router.push(to: .deleteAccountReauthView) }))
                 ]
             ))
         }
@@ -64,7 +62,7 @@ struct MyPageView: View {
                             ForEach(section.rows, id: \.stableID) { row in
                                 rowView(row)
                             }
-                            .listRowBackground(Color(.secondarySystemBackground)) // FIXME: - Gray 50으로 색상 변경
+                            .listRowBackground(Color.gray50)
                         } header: {
                             headerView(section.header)
                                 .listRowInsets(.init(top: 40, leading: 0, bottom: 8, trailing: 0)) // 리스트 Row랑 자동 정렬 맞추기
@@ -79,29 +77,22 @@ struct MyPageView: View {
                 ToolbarLeadingBackButton()
                 ToolbarCenterTitle(text: "설정")
             }
-            .alert("로그아웃 하시겠어요?", isPresented: $showLogoutAlert) {
-                Button("취소", role: .cancel) { }
-                Button("로그아웃", role: .destructive) {
-                    Task {
-                        await viewModel.currentUserSignOut()
-                    }
-                }
-            }
-            .alert("정말로 탈퇴하시겠습니까?", isPresented: $showWithdrawAlert) {
-                Button("취소", role: .cancel) { }
-                Button("탈퇴", role: .destructive) {
-                    Task {
-                        do {
-                            try await viewModel.deleteAuth()
-                        } catch {
-                            print("erorr: \(error)")
-                        }
-                    }
-                }
-            } message: {
-                Text("작성한 공고와 채팅 기록이 모두 삭제됩니다")
+        }
+        .overlay(alignment: .bottom) {
+            // 로그아웃
+            if showConfirmLogout {
+                BottomConfirmSheet(
+                    title: "로그아웃 하시겠어요?",
+                    primaryTitle: "로그아웃",
+                    onPrimary: {
+                        Task { await viewModel.currentUserSignOut() }
+                        showConfirmLogout = false
+                    },
+                    onCancel: { showConfirmLogout = false }
+                )
             }
         }
+        .animation(.easeInOut(duration: 0.22), value: showConfirmLogout)
     }
     
     // MARK: - 탑) 유저 정보 입력 뷰
@@ -113,16 +104,20 @@ struct MyPageView: View {
                     
                 } label: {
                     VStack(alignment: .leading) {
-                        // FIXME: - 디자인 수정 (폰트, 컬러)
                         Text(user.name)
-                            .font(Font.system(size: 24, weight: .semibold))
-                            .foregroundStyle(Color.black)
-                        Text(user.department)
-                            .font(Font.system(size: 16))
-                            .foregroundStyle(Color.gray)
-                        Text(user.studentId)
-                            .font(Font.system(size: 16))
-                            .foregroundStyle(Color.gray)
+                            .font(Font.pretendard(type: .semiBold, size: 24))
+                            .foregroundStyle(Color.gray700)
+                        Spacer().frame(height: 8)
+                        Text("\(user.department)\n\(user.studentId)")
+                            .font(Font.pretendard(type: .regular, size: 16))
+                            .foregroundStyle(Color.gray600)
+                            .lineSpacing(13.6)
+                            .kerning(-0.16)
+//                        Text(user.studentId)
+//                            .font(Font.pretendard(type: .regular, size: 16))
+//                            .foregroundStyle(Color.gray600)
+//                            .lineSpacing(13.6)
+//                            .kerning(-0.16)
                     }
                     .contentShape(Rectangle()) // 전체 폭 터치
                 }
@@ -130,8 +125,8 @@ struct MyPageView: View {
             } else {
                 HStack(spacing: .zero) {
                     Text("로그인 해주세요")
-                        .font(Font.system(size: 24, weight: .semibold))
-                        .foregroundStyle(Color.black)
+                        .font(Font.pretendard(type: .semiBold, size: 24))
+                        .foregroundStyle(Color.gray700)
                     Image(systemName: "chevron.right")
                         .foregroundStyle(Color.black)
                         .frame(width: 24, height: 24)
@@ -156,8 +151,8 @@ private func headerView(_ headerText: String) -> some View {
     } else {
         VStack {
             Text(headerText)
-                .font(Font.system(size: 18, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.black) // FIXME: - Gray 700 수정
+                .font(Font.pretendard(type: .semiBold, size: 18))
+                .foregroundStyle(Color.gray700)
             Spacer().frame(height: 8)
         }
     }
@@ -171,20 +166,24 @@ private func rowView(_ row: MyPageRow) -> some View {
     case .value(let title, let value):
         LabeledContent {
             Text(value)
-                .foregroundStyle(.secondary) // FIXME: - 컬러 수정
+                .font(.pretendard(type: .medium, size: 16))
+                .foregroundStyle(Color.gray700)
         } label: {
             Text(title)
-                .settingListItem(color: Color.black) // FIXME: - Gray700 수정
+                .font(.pretendard(type: .medium, size: 16))
+                .foregroundStyle(Color.gray700)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 20)
     case .action(_, let title, let action):
         LabeledContent {
             Image(systemName: "chevron.right")
-                .foregroundStyle(.gray)
+                .foregroundStyle(Color.black)
                 .frame(width: 24, height: 24)
         } label: {
             Text(title)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(title == "회원 탈퇴" ? .red : .primary)
+                .font(.pretendard(type: .medium, size: 16))
+                .foregroundStyle(title == "회원 탈퇴" ? Color.accentRed : .gray700)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 20)
@@ -198,9 +197,10 @@ private func rowView(_ row: MyPageRow) -> some View {
 }
 
 
-//#Preview {
-//    NavigationStack {
-//        MyPageView()
-//            .environmentObject(NavigationRouter())
-//    }
-//}
+#Preview {
+    NavigationStack {
+        MyPageView()
+            .environmentObject(NavigationRouter())
+            .environmentObject(FirebaseAuthManager.shared)
+    }
+}

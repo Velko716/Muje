@@ -49,11 +49,11 @@ struct ReportsHistoryView: View {
     // MARK: - 신고 리스트 뷰 (데이터가 존재 하지 않을때)
     private var emptyReportListView: some View {
         VStack {
-            Spacer().frame(height: 48) // FIXME: - 수정
+            Spacer().frame(height: 48)
             Text("신고 내역이 없어요")
-                .font(Font.system(size: 16, weight: .semibold)) // FIXME: - 폰트 수정
-                .foregroundStyle(Color.gray) // FIXME: - 컬러 수정
-        } //: VSTACK
+                .font(Font.pretendard(type: .semiBold, size: 16))
+                .foregroundStyle(Color.gray500)
+        }
         .frame(maxWidth: .infinity)
         .frame(height: 48)
     }
@@ -82,6 +82,7 @@ struct ReportsHistoryView: View {
                 await viewModel.createReportTestButtonTapped()
             }
         } label: {
+            // FIXME: - 삭제예정
             Text("테스트 버튼")
                 .font(Font.system(size: 18, weight: .semibold))
                 .foregroundStyle(Color.black)

@@ -14,16 +14,18 @@ struct BlockHistoryListItem: View {
     var body: some View {
         HStack {
             Text(blockedName)
+                .font(Font.pretendard(type: .semiBold, size: 16))
+                .foregroundStyle(Color.gray700)
             Spacer()
             Button(action: action) {
                 Text("차단 해제")
-                    .font(.system(size: 16, weight: .semibold)) // FIXME: 폰트 수정
-                    .foregroundStyle(.red) // FIXME: 컬러 수정
+                    .font(Font.pretendard(type: .semiBold, size: 16))
+                    .foregroundStyle(Color.accentRed)
                     .frame(width: 92)
                     .frame(height: 40)
                     .background(
                         RoundedRectangle(cornerRadius: 10)
-                            .fill(Color.secondary) // FIXME: 컬러 수정
+                            .fill(Color.gray50)
                     )
             }
             .frame(width: 92)
