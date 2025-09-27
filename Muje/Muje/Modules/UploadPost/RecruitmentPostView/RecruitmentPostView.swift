@@ -24,7 +24,7 @@ struct RecruitmentPostView: View {
   private var titleView: some View {
     VStack(alignment: .leading) {
       HStack {
-          Image(.informationIcon)
+        Image(.iconInformation)
               .frame(width: 20, height: 20)
         Text("모집글 작성이 완료되면 수정할 수 없어요")
           .caption14Medium()
