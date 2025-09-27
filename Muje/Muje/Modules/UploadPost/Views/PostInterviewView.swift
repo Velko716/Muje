@@ -51,9 +51,13 @@ struct PostInterviewView: View {
             Spacer()
             
         }
-        .sheet(isPresented: $postInterviewViewModel.isSheet, content: {
-            InterviewSlotView(postInfoViewModel: postInfoViewModel, postInterviewViewModel: postInterviewViewModel, interviewSlotViewModel: interviewSlotViewModel)
-        })
+        .fullScreenCover(isPresented: $postInterviewViewModel.isSheet) {
+            InterviewSlotView(
+                postInfoViewModel: postInfoViewModel,
+                postInterviewViewModel: postInterviewViewModel,
+                interviewSlotViewModel: interviewSlotViewModel
+            )
+        }
     }
     
     private var interviewSettingView: some View {
