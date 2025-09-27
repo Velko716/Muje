@@ -32,11 +32,13 @@ struct PostInfoView: View {
                     maxLength: 100,
                     minLength: 5
                 )
-                .padding(.bottom, (titleTextLength != 0 || titleTextLength >= 5) ? 0 : 32)
-                if titleTextLength != 0 || titleTextLength >= 5 {
+                .padding(.bottom, (titleTextLength != 0 && titleTextLength < 5) ? 0 : 32)
+                if titleTextLength != 0 && titleTextLength < 5 {
                     Text("5자 이상 입력해주세요")
                         .caption14Medium()
                         .foregroundStyle(.accentRed)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+//                        .padding(.leading, 14)
                         .padding(.bottom, 32)
                 }
                 CustomInput(
@@ -47,12 +49,14 @@ struct PostInfoView: View {
                     maxLength: 50,
                     minLength: 2
                 )
-                .padding(.bottom, (orgTextLength != 0 || orgTextLength >= 2) ? 0 : 32)
-                if orgTextLength != 0 || orgTextLength >= 2 {
+                .padding(.bottom, (orgTextLength != 0 && orgTextLength < 2) ? 0 : 32)
+                if orgTextLength != 0 && orgTextLength < 2 {
                     Text("2자 이상 입력해주세요")
                         .caption14Medium()
                         .foregroundStyle(.accentRed)
                         .padding(.bottom, 32)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 14)
                 }
                 PostDatePicker(title: "모집 마감일", content: postInfoViewModel.endDateString, function: {
                     postInfoViewModel.isPicker = true
