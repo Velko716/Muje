@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "icon-chevron-right-active.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,11 +1,11 @@
 {
   "images" : [
     {
+      "filename" : "icon-chevron-right-active.pdf",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "iconChevronRight.svg",
       "idiom" : "universal",
       "scale" : "2x"
     },
