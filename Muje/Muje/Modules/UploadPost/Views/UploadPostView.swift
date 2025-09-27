@@ -76,9 +76,6 @@ struct UploadPostView: View {
                 }
           }
           .toast(isShown: $postInfoViewModel.showToast, message: "사진은 최대 5장까지만 업로드할 수 있어요", alignment: .bottom)
-          if postInfoViewModel.isPicker {
-            dateView
-          }
         }
         .safeAreaInset(edge: .bottom) {
             nextButtonView
@@ -89,7 +86,13 @@ struct UploadPostView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading, content: {
                 Button(action: {
+                  if postInfoViewModel.title != "" || postInfoViewModel.content != "" ||
+                      postInfoViewModel.organization != "" || !postInfoViewModel.selectedImagesData.isEmpty
+                  {
                     uploadPostViewModel.isQuit = true
+                  } else {
+                    router.pop()
+                  }
                 }, label: {
                     Image(systemName: "chevron.left")
                         .foregroundStyle(Color.gray)
@@ -105,6 +108,11 @@ struct UploadPostView: View {
             uploadPostViewModel.isLoading,
             message: "업로드 중..."
         )
+        .overlay {
+            if postInfoViewModel.isPicker {
+                dateView
+            }
+        }
     }
     
     private var nextButtonView: some View {
@@ -158,25 +166,27 @@ struct UploadPostView: View {
     
     private var dateView: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.black.opacity(0.4))
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
+                .contentShape(Rectangle())
                 .onTapGesture {
                     postInfoViewModel.isPicker = false
                 }
-            
             DatePicker("", selection: $postInfoViewModel.endDate, in: postInfoViewModel.dateRange, displayedComponents: .date)
                 .background(content: {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color.white)
                         .offset(y: 12)
+                        .onTapGesture {}
                 })
                 .datePickerStyle(.graphical)
                 .onChange(of: postInfoViewModel.endDate, {
                     postInfoViewModel.connectDate()
                 })
                 .padding(.horizontal, 24)
+                .zIndex(999)
         }
+//        .zIndex(1)
         .ignoresSafeArea()
         .onAppear {
             isTextFieldFocused = false
