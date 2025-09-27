@@ -98,11 +98,11 @@ struct SlotManagementView: View {
     
     private var slotSettingView: some View {
         HStack {
-            CountButton(value: $interviewSlotViewModel.maxCount, title: "한 타임 당 면접 인원", count: 1, unit: "명")
+          CountButton(value: $interviewSlotViewModel.maxCount, title: "면접 시간", subTitle: "한 면접을 진행하는 시간", count: 1, unit: "분")
             
             Spacer()
             
-            CountButton(value: $interviewSlotViewModel.timeInterval, title: "한 타임 당 면접 시간", count: 10, unit: "분", condition: interviewSlotViewModel.timeInterval == 30)
+          CountButton(value: $interviewSlotViewModel.timeInterval, title: "면접 인원", subTitle: "한 면접에 참여하는 지원자 수", count: 10, unit: "분", condition: interviewSlotViewModel.timeInterval == 30)
         }
         .padding(.horizontal, 24)
         .onChange(of: interviewSlotViewModel.timeInterval) {
