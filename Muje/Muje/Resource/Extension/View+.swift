@@ -63,6 +63,16 @@ extension View {
         }
     }
     
+  func startPicker(isShown: Bool, date: Binding<Date>, onDismiss: @escaping () -> Void) -> some View {
+    ZStack {
+        self
+        if isShown {
+            CustomDatePicker(date: date, minuteInterval: 5)
+                .frame(width: 200)
+                .background(Color.white)
+        }
+    }
+  }
     func endPicker(isShown: Bool, endTime: Binding<Date>, lists: [Date]) -> some View {
         ZStack {
             self

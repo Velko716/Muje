@@ -13,7 +13,7 @@ final class PostInfoViewModel {
     var title: String = ""
     var organization: String = ""
     var content: String = ""
-    var startDate = Date()
+    var startDate: Date = .now
     var endDate: Date = Date()
     var endDateString: String = "마감일 선택"
     var isPicker: Bool = false

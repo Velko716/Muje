@@ -15,6 +15,7 @@ struct UploadPostView: View {
     @State var recruitmentPostViewModel = RecruitmentPostViewModel()
     @State var interviewSlotViewModel = InterviewSlotViewModel()
     @FocusState private var isTextFieldFocused: Bool
+    @State private var keyboardHandler = KeyboardResponder()
     
     var body: some View {
       
@@ -46,6 +47,9 @@ struct UploadPostView: View {
             }
             .safeAreaPadding(.horizontal, 16)
           }
+          .safeAreaInset(edge: .bottom) {
+            Color.clear.frame(height: keyboardHandler.currentHeight)
+          }
           .onChange(of: postInfoViewModel.selectedItems) { old, new in
             postInfoViewModel.selectedImagesData.removeAll()
             if new.count == 5 {
@@ -54,27 +58,24 @@ struct UploadPostView: View {
                 postInfoViewModel.showToast = false
               }
             }
-            Task {
-              let loadingTasks = new.map { item in
                 Task {
-                  try? await item.loadTransferable(type: Data.self)
+                  let loadingTasks = new.map { item in
+                    Task {
+                      try? await item.loadTransferable(type: Data.self)
+                    }
+                  }
+                  var imageData: [Data] = []
+                  for task in loadingTasks {
+                    if let data = await task.value {
+                      imageData.append(data)
+                    }
+                  }
+                  await MainActor.run {
+                    postInfoViewModel.selectedImagesData = imageData
+                  }
                 }
-              }
-              var imageData: [Data] = []
-              for task in loadingTasks {
-                if let data = await task.value {
-                  imageData.append(data)
-                }
-              }
-              await MainActor.run {
-                postInfoViewModel.selectedImagesData = imageData
-              }
-            }
           }
           .toast(isShown: $postInfoViewModel.showToast, message: "사진은 최대 5장까지만 업로드할 수 있어요", alignment: .bottom)
-          if postInfoViewModel.isPicker {
-            dateView
-          }
         }
         .safeAreaInset(edge: .bottom) {
             nextButtonView
@@ -83,24 +84,35 @@ struct UploadPostView: View {
         .navigationTitle("모임 올리기")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-          ToolbarItem(placement: .topBarLeading, content: {
-            Button(action: {
-              uploadPostViewModel.isQuit = true
-            }, label: {
-              Image(systemName: "chevron.left")
-                .foregroundStyle(Color.gray)
+            ToolbarItem(placement: .topBarLeading, content: {
+                Button(action: {
+                  if postInfoViewModel.title != "" || postInfoViewModel.content != "" ||
+                      postInfoViewModel.organization != "" || !postInfoViewModel.selectedImagesData.isEmpty
+                  {
+                    uploadPostViewModel.isQuit = true
+                  } else {
+                    router.pop()
+                  }
+                }, label: {
+                    Image(systemName: "chevron.left")
+                        .foregroundStyle(Color.gray)
+                })
             })
-          })
         }
         .sheet(isPresented: $uploadPostViewModel.isQuit) {
-          AlertModalView(uploadPostViewModel: $uploadPostViewModel) {
-            router.pop()
-          }
+            AlertModalView(uploadPostViewModel: $uploadPostViewModel) {
+                router.pop()
+            }
         }
         .loadingOverlay(
-          uploadPostViewModel.isLoading,
-          message: "업로드 중..."
+            uploadPostViewModel.isLoading,
+            message: "업로드 중..."
         )
+        .overlay {
+            if postInfoViewModel.isPicker {
+                dateView
+            }
+        }
     }
     
     private var nextButtonView: some View {
@@ -154,33 +166,33 @@ struct UploadPostView: View {
     
     private var dateView: some View {
         ZStack {
-            Rectangle()
-                .fill(Color.black.opacity(0.4))
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
+                .contentShape(Rectangle())
                 .onTapGesture {
                     postInfoViewModel.isPicker = false
                 }
-            
             DatePicker("", selection: $postInfoViewModel.endDate, in: postInfoViewModel.dateRange, displayedComponents: .date)
                 .background(content: {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color.white)
                         .offset(y: 12)
+                        .onTapGesture {}
                 })
                 .datePickerStyle(.graphical)
                 .onChange(of: postInfoViewModel.endDate, {
                     postInfoViewModel.connectDate()
                 })
                 .padding(.horizontal, 24)
+                .zIndex(999)
         }
+//        .zIndex(1)
         .ignoresSafeArea()
         .onAppear {
             isTextFieldFocused = false
         }
     }
 }
-
-
 
 #Preview {
     UploadPostView()

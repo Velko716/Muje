@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "icon-remove-inactive.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
