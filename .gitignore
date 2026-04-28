@@ -137,3 +137,7 @@ iOSInjectionProject/
 
 
 Muje/Muje/Service/GoogleService-Info (2).plist
+
+# Xcode 표준 보강 (Phase E, 2026-04-29)
+*.xcuserstate
+.swiftpm/
